@@ -1,0 +1,45 @@
+# Python Dependencies
+pandas>=1.5.0
+numpy>=1.23.0
+ccxt>=4.0.0
+requests>=2.28.0
+pyyaml>=6.0
+yfinance>=0.2.31
+
+# =============================================================
+# AI AGENT INSTRUCTIONS — READ THIS FIRST IN EVERY SESSION
+# =============================================================
+# The workspace (~/.openclaw/workspace/) is TEMPORARY and gets wiped.
+# This file lives on GitHub — it is the source of truth.
+# =============================================================
+
+## First Session Protocol
+1. Read THIS FILE to restore all context
+2. Check data/derivatives_history/ for collected data status
+3. Check if lockfile exists: data/derivatives_history/.collect_lock
+
+## Derivatives Data Collection
+- Collector: scripts/collect_derivatives.py (Binance FAPI — OI, L/S, taker, funding)
+- Cron: jimi-derivatives-collector runs every 15m on OpenClaw gateway
+- Lockfile: data/derivatives_history/.collect_lock (created after first scanner run)
+- Output: data/derivatives_history/derivatives_collected.csv
+- Note: Binance keeps ~30 days of history only
+
+## Push Reminder Cron
+- jimi-push-reminder fires every 45-minutes
+- Checks CSV row count and reminds user to push
+
+## Git Notes
+- data/ and *.csv are gitignored
+- Exceptions: data/derivatives_history/* and data/eth_15m_intrabar_delta.csv
+- Derivatives CSVs track normally — no force-add needed
+
+## Behavioral Rules
+1. WORKSPACE IS TEMPORARY — only GitHub is permanent
+2. When accessing this GitHub repo (pull/push/fetch), ALWAYS remind user to push data files and show what changed
+3. User controls when to push — just remind, don't auto-push
+4. All persistent notes go in THIS FILE or AGENT_MEMORY.md in the repo
+
+## Session Log
+_(Append dated notes below — keep it short, delete old entries when cluttered)_
+- 2026-05-13: Initial setup. Derivatives collector running every 15m. All instructions consolidated into this file.

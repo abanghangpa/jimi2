@@ -1,0 +1,73 @@
+import http.server
+import socketserver
+import json
+import urllib.request
+import urllib.error
+import os
+
+# --- CONFIGURATION ---
+FREE_PROXY_URL = "https://aiapiv2.pekpik.com/v1/chat/completions"
+DEFAULT_PROD_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+PORT = 8000
+
+class FallbackHandler(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        
+        auth_header = self.headers.get('Authorization', '')
+        
+        print(f"[*] Incoming request. Attempting Free Proxy...")
+
+        try:
+            req = urllib.request.Request(FREE_PROXY_URL, data=post_data, headers={
+                'Content-Type': 'application/json',
+                'Authorization': auth_header
+            }, method='POST')
+            
+            with urllib.request.urlopen(req, timeout=10) as response:
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(response.read())
+                print("[✅ SUCCESS] Served via Free Proxy.")
+                return
+
+        except urllib.error.HTTPError as e:
+            print(f"[⚠️ FAILED] Free Proxy error ({e.code}). Falling back to Production...")
+            
+            prod_key = os.environ.get("PROD_API_KEY")
+            prod_url = os.environ.get("PROD_PROXY_URL", DEFAULT_PROD_URL)
+
+            if not prod_key:
+                self.send_error(500, "Fallback Proxy Error: PROD_API_KEY not set in environment.")
+                return
+
+            try:
+                prod_headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': f"Bearer {prod_key}"
+                }
+                req_prod = urllib.request.Request(prod_url, data=post_data, headers=prod_headers, method='POST')
+                
+                with urllib.request.urlopen(req_prod, timeout=10) as response:
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(response.read())
+                    print(f"[✅ SUCCESS] Served via PRODUCTION Fallback ({prod_url}).")
+            except Exception as e_prod:
+                print(f"[❌ CRITICAL] Production Fallback also failed: {e_prod}")
+                self.send_error(502, f"Both proxies failed: {str(e_prod)}")
+
+        except Exception as e:
+            print(f"[❌ ERROR] Connection error: {e}")
+            self.send_error(502, str(e))
+
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    allow_reuse_address = True
+
+if __name__ == "__main__":
+    print(f"🚀 Fallback Proxy running on port {PORT}")
+    print(f"⚠️  Make sure to set PROD_API_KEY environment variable.")
+    print(f"ℹ️  Default Fallback URL: {DEFAULT_PROD_URL}")
+    with ThreadedHTTPServer(("", PORT), FallbackHandler) as httpd:
+        httpd.serve_forever()

@@ -1,0 +1,45 @@
+{
+    "gemini-2.5-pro": [
+        "sk-ahXL4sXYXwlzxweIJg9Ryk4cC8j4OvHSkeGEQJ4uGyCl4z8R",
+        "sk-qyJFCHtjAKsj6KDyPWumo7ECLnrFTgRO5NaEIXviynJo7By7"
+    ],
+    "claude-opus-4-7": [
+        "sk-zbIrZv5WbdwKzXboE7iaDpp67rotVJnnXEI5VvZkl8Fv4w4m"
+    ],
+    "gemini-2.5-flash": [
+        "sk-jjHZewaUxn9b6hfZXIdZDXNt1YpGalR6Tvd3yjvPc8d7tl8K",
+        "sk-owFNGnNuhEcBQ68pdlEmo2kmQo17Ui5PoAKnQIyOUlAzO3oF",
+        "sk-iWcVLQa07nagAW2bjBpUTDgo40U9pcKypczVDavCuFiCSMt0",
+        "sk-UctI4IUO54jPhLJjIKWHgCrZeVnzadj3vrEAU8R4otA1L3st",
+        "sk-XgjyFvFKwlN3owoZkPiGpCO2Mdw9yHOYgah7CaLtIwONjCrF",
+        "sk-jCUWe0iXNGBHHxu4iYGTXe3lbOU30Ypf4uckmijtK6Bexnx0"
+    ],
+    "deepseek-chat": [
+        "sk-NefHSJuBmeK0eZGVCBBCsrGg20X7qWMq2mNmZ2M7pZpYsHrj",
+        "sk-5FQqpp5J81lLvdUYqHL0qU62S6CDNGe82Oz2rhL4Es8LpgyZ",
+        "sk-fN31cBx06jJZafVpbD7HoOXj8FGSCwnq1K2Rqujf6HW50jWm",
+        "sk-Rpfj6NF8m6hd9AOmXHl9Dk9RA2Hy4d9ElPGKSkeaw7OG4oUG",
+        "sk-1Bk0Q12dWl2bxuNQBkrQfw6cGv07LmpASf7HIc5siREvwYj8"
+    ],
+    "smart-chat": [
+        "sk-eAHpn6TwEyswCykehWSjjZDtyayctC8l8zpcux8smlx71j0z",
+        "sk-1umyzfbpgC2iCmwwE04LFtzpVHviwQpHWec8HWFuZ5CJ7Y18",
+        "sk-xgcDHoEekqpiSbMVzT65KtbVZCT4FLQe9y9JpR8NUCKDjNtS",
+        "sk-DQOQIWVeUtbwW60G6JdNEWgJEro1LRBMxVs19RWsPKO20Y59",
+        "sk-x93ZKrmNPS1SCKVbeT40y968bfBBSQWhp1ZCUAfYasX4QSfr",
+        "sk-KD5S5qn9ys6EmAkuKVJIpWXzSWGoqg5eDaUIPXveGYBVFNXX"
+    ],
+    "kimi-k2.5": [
+        "sk-wmUnEOCqbUoC4J3GvZ8kPeR5ZAMSxKQHQs1R5GOWsgmmvQEQ",
+        "sk-0Fmq82z8dd2ikK1jCmkfadWANiNMZbpLZJRP3hutdDW4wVhj",
+        "sk-TetvUHqbBTLSZCPvSN0JdcciILXFmYvRjXx5cnbYkz1f9AFJ",
+        "sk-k2BhHsHKvRXUw9RZrC3psYD8GCyeBLJGZHFgU9VehQq1ecq7",
+        "sk-8tP25tC4Z0SXw53E9tIWuR21W69VDqlMb0g0nGq2RIURjeSI",
+        "sk-agA3ZWsT50zauu7Yut1siURisRijrSLeJjw8G5Z7XRQqx8wR"
+    ],
+    "text-embedding-3-small": [
+        "sk-MZp2jW6NjLCKMgjxosUGDoJXAjqiwcP5gKWyeK0WsC9HvlJq",
+        "sk-ZfoYLcAqXpGvqNkRJntoCenUrtXJ9dd0qGFfi7EkNbL61lwm",
+        "sk-cLSjVQ85t5MhvcKXWZ89UQpAFlo6cYJnFLFLr3yA7gDJWYnN"
+    ]
+}

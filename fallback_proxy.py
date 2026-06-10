@@ -1,0 +1,121 @@
+import http.server
+import socketserver
+import json
+import urllib.request
+import urllib.error
+import os
+
+# --- CONFIGURATION ---
+FREE_PROXY_URL = "https://aiapiv2.pekpik.com/v1/chat/completions"
+FREE_EMBEDDING_URL = "https://aiapiv2.pekpik.com/v1/embeddings"
+DEFAULT_PROD_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+DEFAULT_PROD_EMBEDDING_URL = "https://generativelanguage.googleapis.com/v1beta/openai/embeddings"
+PORT = 8000
+
+# The free proxy upstream service only supports this model (as per its /v1/models endpoint)
+UPSTREAM_MODEL = "gemini-2.5-pro"
+
+class FallbackHandler(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        
+        auth_header = self.headers.get('Authorization', '')
+        
+        print(f"[*] Incoming request to {self.path}. Attempting Free Proxy...")
+
+        # Replace model field with the upstream-supported model for chat/completions
+        mapped_post_data = post_data
+        if self.path.endswith('/chat/completions'):
+            try:
+                data = json.loads(post_data.decode('utf-8'))
+                original_model = data.get('model')
+                if original_model:
+                    data['model'] = UPSTREAM_MODEL
+                    mapped_post_data = json.dumps(data).encode('utf-8')
+                    print(f"[*] Mapped model '{original_model}' -> '{UPSTREAM_MODEL}' for upstream")
+                else:
+                    print("[*] No model field in request, leaving as-is")
+            except Exception as e:
+                print(f"[*] Could not parse JSON for model mapping: {e}")
+        
+        elif self.path.endswith('/embeddings'):
+            try:
+                data = json.loads(post_data.decode('utf-8'))
+                original_model = data.get('model')
+                # Map to Gemini Embedding 2 (text-embedding-004)
+                data['model'] = 'text-embedding-004'
+                mapped_post_data = json.dumps(data).encode('utf-8')
+                print(f"[*] Mapped embedding model '{original_model}' -> 'text-embedding-004' for upstream")
+            except Exception as e:
+                print(f"[*] Could not parse JSON for embedding mapping: {e}")
+
+        try:
+            if self.path.endswith('/chat/completions'):
+                free_url = FREE_PROXY_URL
+            elif self.path.endswith('/embeddings'):
+                free_url = FREE_EMBEDDING_URL
+            else:
+                self.send_error(404, f"Unsupported path: {self.path}")
+                return
+
+            req = urllib.request.Request(free_url, data=mapped_post_data, headers={
+                'Content-Type': 'application/json',
+                'Authorization': auth_header
+            }, method='POST')
+            
+            with urllib.request.urlopen(req, timeout=10) as response:
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(response.read())
+                print("[✅ SUCCESS] Served via Free Proxy.")
+                return
+
+        except urllib.error.HTTPError as e:
+            print(f"[⚠️ FAILED] Free Proxy error ({e.code}). Falling back to Production...")
+            
+            prod_key = os.environ.get("PROD_API_KEY")
+            if not prod_key:
+                self.send_error(500, "Fallback Proxy Error: PROD_API_KEY not set in environment.")
+                return
+
+            if self.path.endswith('/chat/completions'):
+                prod_url = os.environ.get("PROD_PROXY_URL", DEFAULT_PROD_URL)
+            elif self.path.endswith('/embeddings'):
+                prod_url = os.environ.get("PROD_PROXY_EMBEDDING_URL", DEFAULT_PROD_EMBEDDING_URL)
+            else:
+                # Should not happen due to above check
+                self.send_error(404, f"Unsupported path: {self.path}")
+                return
+
+            try:
+                # For production fallback, we use the same mapped_post_data (which for chat/completions has the model mapped, for embeddings is original)
+                prod_headers = {
+                    'Content-Type': 'application/json',
+                    "Authorization": f"Bearer {prod_key}"
+                }
+                req_prod = urllib.request.Request(prod_url, data=mapped_post_data, headers=prod_headers, method='POST')
+                
+                with urllib.request.urlopen(req_prod, timeout=10) as response:
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(response.read())
+                    print(f"[✅ SUCCESS] Served via PRODUCTION Fallback ({prod_url}).")
+            except Exception as e_prod:
+                print(f"[❌ CRITICAL] Production Fallback also failed: {e_prod}")
+                self.send_error(502, f"Both proxies failed: {str(e_prod)}")
+
+        except Exception as e:
+            print(f"[❌ ERROR] Connection error: {e}")
+            self.send_error(502, str(e))
+
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    allow_reuse_address = True
+
+if __name__ == "__main__":
+    print(f"🚀 Fallback Proxy running on port {PORT}")
+    print(f"⚠️  Make sure to set PROD_API_KEY environment variable.")
+    print(f"ℹ️  Default Fallback URL: {DEFAULT_PROD_URL}")
+    print(f"ℹ️  Default Fallback Embedding URL: {DEFAULT_PROD_EMBEDDING_URL}")
+    with ThreadedHTTPServer(("", PORT), FallbackHandler) as httpd:
+        httpd.serve_forever()

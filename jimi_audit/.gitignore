@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Data (use Git LFS for large CSVs)
+data/raw/
+data/processed/
+
+# Secrets
+config/secrets.env
+.env
+
+# Cache
+/tmp/jimi_*/
+.jimi_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+jimi_trades.csv
+direction_optimization.json
+regime_results.csv
+.venv/
+
+# Scan results
+data/scans/
+venv/
+data/
+!data/derivatives_history/
+*.csv
+!data/derivatives_history/*.csv
+__pycache__/
+
+# Intrabar delta (pre-computed, shared)
+!data/eth_15m_intrabar_delta.csv
+screenshot*.jpg
