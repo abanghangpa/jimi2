@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-06-10 09:00:00",
-  "price": 1622.69,
+  "timestamp": "2026-06-10 09:30:00",
+  "price": 1621.19,
   "swing_bias": "BEARISH",
-  "phase0": 0.31017929256688204,
+  "phase0": 0.3114468213040193,
   "trend_dir": "STRONG_DOWN",
-  "trend_val": -0.8692273229596076,
+  "trend_val": -0.9695033489240775,
   "m9": {
     "regime": "UNKNOWN",
     "raw": 0.5,
@@ -22,47 +22,35 @@
   },
   "magnets": [
     [
-      1638.25,
-      1.9,
+      1619.16,
+      2.61,
       true,
-      "2026-06-10T07:15:00.000"
+      "2026-06-10T08:45:00.000"
     ],
     [
-      1622.5,
-      1.76,
+      1637.94,
+      2.06,
       true,
-      "2026-06-10T08:30:00.000"
+      "2026-06-10T07:15:00.000"
     ]
   ],
-  "gaps": [
-    1625.04,
-    1628.09,
-    1624.02,
-    1624.53,
-    1625.55
-  ],
+  "gaps": [],
   "target_scores": {
-    "LONG": 0.299,
+    "LONG": 0.132,
     "SHORT": 0.0,
     "long_details": {
       "direction": "LONG",
       "targets": [
         {
-          "price": 1638.25,
-          "strength": 1.9,
-          "dist_pct": 0.96,
+          "price": 1637.94,
+          "strength": 2.06,
+          "dist_pct": 1.03,
           "contrib": 0.132
         }
       ],
-      "gaps": [
-        {
-          "price": 1628.09,
-          "dist_pct": 0.33,
-          "contrib": 0.167
-        }
-      ],
+      "gaps": [],
       "sr": [],
-      "score": 0.299
+      "score": 0.132
     },
     "short_details": {
       "direction": "SHORT",
@@ -74,66 +62,65 @@
   },
   "sr_levels": [],
   "derivatives": {
-    "oi": 2294776.0,
-    "oi_usd": 3718593189.0,
-    "oi_roc_1h": 0.048,
-    "ls_ratio": 2.3333,
-    "long_pct": 70.0,
-    "short_pct": 30.0,
-    "ls_zscore": 1.402,
-    "positioning": "NEUTRAL",
-    "top_ls_ratio": 3.0967,
+    "oi": 2299347.0,
+    "oi_usd": 3720895971.0,
+    "oi_roc_1h": 0.273,
+    "ls_ratio": 2.3979,
+    "long_pct": 70.6,
+    "short_pct": 29.4,
+    "ls_zscore": 2.104,
+    "positioning": "CROWDED_LONG",
+    "top_ls_ratio": 3.2265,
     "whale_signal": "WHALE_BULLISH",
-    "whale_retail_gap": 0.7634,
-    "futures_taker_ratio": 0.9675,
+    "whale_retail_gap": 0.8286,
+    "futures_taker_ratio": 0.9647,
     "futures_flow": "NEUTRAL",
     "funding_rate": -4.6e-05,
     "oi_price_div": "NONE"
   },
   "cascade_risk": {
     "verdict": "FLUSH",
-    "score": 0.0,
-    "factors": []
+    "score": 0.2,
+    "factors": [
+      "L/S z=2.10 (extreme positioning)"
+    ]
   },
   "m4b": {
     "status": "PASS",
-    "score": 0.783,
+    "score": 0.767,
     "divergence": "BEARISH",
-    "bars_ago": 8,
-    "cvd_slope": -750.11,
+    "bars_ago": 10,
+    "cvd_slope": -899.03,
     "details": {
       "type": "BEARISH",
       "confirming": true,
       "opposing": false,
-      "bars_ago": 8,
-      "freshness": 0.667,
-      "score": 0.783
+      "bars_ago": 10,
+      "freshness": 0.583,
+      "score": 0.767
     }
   },
   "liquidity_levels": {
-    "current_price": 1622.69,
+    "current_price": 1621.19,
     "below": [
       {
-        "price": 1614.94,
-        "type": "LONG_STOP",
-        "source": "Rejection L $1618 @ 2026-06-10T08:45",
-        "strength": 84.4,
-        "cluster_size": 2,
-        "cascade_risk": "MED",
-        "formed_at": 8,
-        "fresh": true,
-        "dist_pct": -0.48,
-        "age_bars": "1",
+        "price": 1617.78,
+        "type": "BID_WALL",
+        "strength": 100,
+        "source": "Order book (1413 ETH clustered)",
+        "cascade_risk": "LOW",
+        "dist_pct": -0.21,
         "swept": false,
-        "swept_at": null
+        "swept_at": null,
+        "age_bars": null
       },
       {
-        "price": 1604.84,
+        "price": 1587.15,
         "type": "LONG_LIQ",
-        "strength": 57.9,
+        "strength": 31.5,
         "source": "OI+leverage est.",
         "cascade_risk": "MED",
-        "dist_pct": -1.1,
+        "dist_pct": -2.1,
         "age_bars": null,
         "swept": false,
         "swept_at": null
@@ -141,23 +128,9 @@
     ],
     "above": [
       {
-        "price": 1651.8,
-        "type": "SHORT_STOP",
-        "source": "Swing H $1644 @ 2026-06-10T07:30",
-        "strength": 70.5,
-        "cluster_size": 3,
-        "cascade_risk": "MED",
-        "formed_at": 3,
-        "fresh": true,
-        "dist_pct": 1.79,
-        "age_bars": "6",
-        "swept": false,
-        "swept_at": null
-      },
-      {
-        "price": 1653.52,
+        "price": 1651.99,
         "type": "SHORT_LIQ",
-        "strength": 73.6,
+        "strength": 65.6,
         "source": "OI+leverage est.",
         "cascade_risk": "HIGH",
         "dist_pct": 1.9,
@@ -168,49 +141,32 @@
     ],
     "all": [
       {
-        "price": 1614.94,
-        "type": "LONG_STOP",
-        "source": "Rejection L $1618 @ 2026-06-10T08:45",
-        "strength": 84.4,
-        "cluster_size": 2,
-        "cascade_risk": "MED",
-        "formed_at": 8,
-        "fresh": true,
-        "dist_pct": -0.48,
-        "age_bars": "1",
-        "swept": false,
-        "swept_at": null
-      },
-      {
-        "price": 1651.8,
-        "type": "SHORT_STOP",
-        "source": "Swing H $1644 @ 2026-06-10T07:30",
-        "strength": 70.5,
-        "cluster_size": 3,
-        "cascade_risk": "MED",
-        "formed_at": 3,
-        "fresh": true,
-        "dist_pct": 1.79,
-        "age_bars": "6",
-        "swept": false,
-        "swept_at": null
-      },
-      {
-        "price": 1622.69,
+        "price": 1617.78,
         "type": "BID_WALL",
         "strength": 100,
-        "source": "Order book (2167 ETH clustered)",
+        "source": "Order book (1413 ETH clustered)",
         "cascade_risk": "LOW",
-        "dist_pct": 0.0,
+        "dist_pct": -0.21,
         "swept": false,
         "swept_at": null,
         "age_bars": null
       },
       {
-        "price": 1622.69,
+        "price": 1617.78,
         "type": "ASK_WALL",
         "strength": 100,
-        "source": "Order book (4558 ETH clustered)",
+        "source": "Order book (1413 ETH clustered)",
+        "cascade_risk": "LOW",
+        "dist_pct": -0.21,
+        "swept": false,
+        "swept_at": null,
+        "age_bars": null
+      },
+      {
+        "price": 1621.19,
+        "type": "BID_WALL",
+        "strength": 100,
+        "source": "Order book (1078 ETH clustered)",
         "cascade_risk": "LOW",
         "dist_pct": 0.0,
         "swept": false,
@@ -218,9 +174,20 @@
         "age_bars": null
       },
       {
-        "price": 1653.52,
+        "price": 1621.19,
+        "type": "ASK_WALL",
+        "strength": 100,
+        "source": "Order book (3764 ETH clustered)",
+        "cascade_risk": "LOW",
+        "dist_pct": 0.0,
+        "swept": false,
+        "swept_at": null,
+        "age_bars": null
+      },
+      {
+        "price": 1651.99,
         "type": "SHORT_LIQ",
-        "strength": 73.6,
+        "strength": 65.6,
         "source": "OI+leverage est.",
         "cascade_risk": "HIGH",
         "dist_pct": 1.9,
@@ -229,26 +196,26 @@
         "swept_at": null
       },
       {
-        "price": 1604.84,
+        "price": 1587.15,
         "type": "LONG_LIQ",
-        "strength": 57.9,
+        "strength": 31.5,
         "source": "OI+leverage est.",
         "cascade_risk": "MED",
-        "dist_pct": -1.1,
+        "dist_pct": -2.1,
         "age_bars": null,
         "swept": false,
         "swept_at": null
       }
     ],
-    "bid_walls": 1,
-    "ask_walls": 1,
+    "bid_walls": 2,
+    "ask_walls": 2,
     "high_cascade_zones": 1,
     "liq_source": "binance"
   },
   "rsi": NaN,
   "vol_trend": NaN,
-  "atr": 5.6292805794798415,
-  "range_width": 1.5653020601593566,
+  "atr": 7.462308805837058,
+  "range_width": 2.3174334902139746,
   "vol_ratio": 0.15,
   "vol_ma20": NaN,
   "oi_proxy": 1.0,
@@ -256,11 +223,11 @@
   "bar_vol_spike": NaN,
   "bar_range_expansion": 1.0,
   "bar_taker_extreme": true,
-  "squeeze_quality": 0.7701023454880482,
-  "raw_taker_ratio": 0.9024674017601689,
-  "raw_bar_range_pct": 0.08257892758321955,
+  "squeeze_quality": 0.7136924882339519,
+  "raw_taker_ratio": 0.655308678944621,
+  "raw_bar_range_pct": 0.19491854748672777,
   "taker_summary": {
-    "raw": 0.9025,
+    "raw": 0.6553,
     "avg_4h": null,
     "avg_12h": null,
     "avg_24h": null,
@@ -351,73 +318,73 @@
   "exchange_activity": {
     "snapshots": {
       "binance": {
-        "funding_rate": -3.578e-05,
-        "oi": 2297194.0,
+        "funding_rate": -3.736e-05,
+        "oi": 2301225.0,
         "ls_ratio": 2.2841,
-        "mark_price": 1622.47
+        "mark_price": 1620.08089922
       },
       "okx": {
         "funding_rate": null,
-        "oi": 6975640.0,
-        "ls_ratio": 2.6778,
+        "oi": 6892194.0,
+        "ls_ratio": 2.8589,
         "mark_price": null
       },
       "bybit": {
-        "funding_rate": -5.577e-05,
+        "funding_rate": -9.061e-05,
         "oi": 912877.0,
         "ls_ratio": 2.785,
-        "mark_price": 1622.31
+        "mark_price": 1619.92
       },
       "htx": {
         "funding_rate": null,
-        "oi": 684507.0,
+        "oi": 683964.0,
         "ls_ratio": null,
         "mark_price": null
       },
       "phemex": {
-        "funding_rate": -1.266e-05,
-        "oi": 62006.0,
+        "funding_rate": -3.775e-05,
+        "oi": 61956.0,
         "ls_ratio": null,
-        "mark_price": 1622.5
+        "mark_price": 1620.0
       },
       "kraken": {
-        "funding_rate": 9.42e-06,
+        "funding_rate": 9.44e-06,
         "oi": null,
         "ls_ratio": null,
-        "mark_price": 1621.75813612686
+        "mark_price": 1619.28549809642
       }
     },
     "signals": {
-      "funding_spread": 6.519e-05,
+      "funding_spread": 0.00010005,
       "funding_spread_exchanges": [
         "kraken",
         "bybit"
       ],
       "funding_by_exchange": {
-        "kraken": 9.42e-06,
-        "binance": -3.578e-05,
-        "bybit": -5.577e-05,
-        "phemex": -1.266e-05
+        "kraken": 9.44e-06,
+        "bybit": -9.061e-05,
+        "binance": -3.736e-05,
+        "phemex": -3.775e-05
       },
-      "funding_mean": -2.37e-05,
+      "funding_mean": -3.907e-05,
       "funding_outliers": {},
       "oi_shares": {
-        "okx": 0.6381,
-        "binance": 0.2101,
-        "bybit": 0.0835,
-        "htx": 0.0626,
-        "phemex": 0.0057
+        "okx": 0.6351,
+        "bybit": 0.0841,
+        "binance": 0.2121,
+        "phemex": 0.0057,
+        "htx": 0.063
       },
-      "oi_total": 10932225.0,
+      "oi_total": 10852216.0,
       "oi_dominant_exchange": "okx",
-      "oi_concentration": 0.4622,
-      "ls_spread": 0.5009,
+      "oi_concentration": 0.4594,
+      "ls_spread": 0.5748,
       "ls_by_exchange": {
-        "okx": 2.6778,
-        "binance": 2.2841,
-        "bybit": 2.785
+        "okx": 2.8589,
+        "bybit": 2.785,
+        "binance": 2.2841
       },
-      "ls_most_bullish": "bybit",
+      "ls_most_bullish": "okx",
       "ls_most_bearish": "binance",
       "funding_spread_trend": "STABLE",
       "funding_spread_recent": 0.00014996,
@@ -427,9 +394,9 @@
       "funding_trend_htx": "FALLING",
       "funding_trend_kraken": "RISING",
       "funding_trend_phemex": "FALLING",
-      "oi_roc_binance": 0.65,
+      "oi_roc_binance": 0.55,
       "oi_roc_bybit": 0.007,
-      "oi_migration_spread": 0.643,
+      "oi_migration_spread": 0.543,
       "oi_migration": "BALANCED"
     },
     "spot": {
@@ -444,147 +411,143 @@
       "okx": {
         "price": null,
         "vol_24h": null,
-        "ob_ratio": 1.8309,
-        "trade_ratio": 0.0437,
-        "buy_pct": 4.2,
+        "ob_ratio": 1.7886,
+        "trade_ratio": 0.1739,
+        "buy_pct": 14.8,
         "max_ask": {
-          "price": 1623.17,
-          "size": 21.59
+          "price": 1620.86,
+          "size": 21.61
         }
       },
       "bybit": {
-        "price": 1622.99,
-        "vol_24h": 207835.0,
-        "ob_ratio": 1.1521,
-        "trade_ratio": 1.135,
-        "buy_pct": 53.2,
+        "price": 1620.4,
+        "vol_24h": 212203.0,
+        "ob_ratio": 0.5553,
+        "trade_ratio": 0.0124,
+        "buy_pct": 1.2,
         "max_ask": {
-          "price": 1623.26,
-          "size": 3.84
+          "price": 1620.37,
+          "size": 14.44
         }
       },
       "binance": {
-        "price": 1622.81,
-        "vol_24h": 321175.0,
-        "ob_ratio": 6.3767,
-        "trade_ratio": 0.7492,
-        "buy_pct": 42.8,
+        "price": 1620.37,
+        "vol_24h": 325878.0,
+        "ob_ratio": 1.3374,
+        "trade_ratio": 2.663,
+        "buy_pct": 72.7,
         "max_ask": {
-          "price": 1622.99,
-          "size": 17.32
+          "price": 1620.53,
+          "size": 15.43
         }
       },
       "htx": {
-        "price": 1623.82,
-        "vol_24h": 14995.0,
-        "ob_ratio": 0.7202,
-        "trade_ratio": 0.1831,
-        "buy_pct": 15.5,
+        "price": 1621.66,
+        "vol_24h": 15470.0,
+        "ob_ratio": 4.5578,
+        "trade_ratio": 3.0768,
+        "buy_pct": 75.5,
         "max_ask": {
-          "price": 1628.22,
-          "size": 124.36
+          "price": 1623.11,
+          "size": 6.65
         }
       },
       "coinbase": {
-        "price": 1621.35,
+        "price": 1619.13,
         "vol_24h": null,
-        "ob_ratio": 1.4097,
-        "trade_ratio": 4.2367,
-        "buy_pct": 80.9,
+        "ob_ratio": 1.3033,
+        "trade_ratio": 1.4687,
+        "buy_pct": 59.5,
         "max_ask": {
-          "price": 1621.84,
-          "size": 3.82
+          "price": 1619.39,
+          "size": 4.26
         }
       }
     },
     "spot_signals": {
       "basis": {
-        "bybit": -0.0419,
-        "binance": -0.021
+        "bybit": -0.0296,
+        "binance": -0.0178
       },
-      "basis_avg": -0.0314,
+      "basis_avg": -0.0237,
       "basis_state": "BACKWARDATION",
       "spot_vol_shares": {
-        "bybit": 0.382,
-        "binance": 0.5904,
-        "htx": 0.0276
+        "bybit": 0.3833,
+        "binance": 0.5887,
+        "htx": 0.0279
       },
-      "spot_vol_total": 544005.0,
+      "spot_vol_total": 553551.0,
       "spot_vol_dominant": "binance",
       "spot_ob_ratios": {
-        "okx": 1.8309,
-        "bybit": 1.1521,
-        "binance": 6.3767,
-        "htx": 0.7202,
-        "coinbase": 1.4097
+        "okx": 1.7886,
+        "bybit": 0.5553,
+        "binance": 1.3374,
+        "htx": 4.5578,
+        "coinbase": 1.3033
       },
-      "spot_ob_avg": 2.2979,
+      "spot_ob_avg": 1.9085,
       "spot_sell_walls": [],
       "spot_bid_support": [
         "okx",
-        "binance"
+        "htx"
       ],
-      "spot_wall_htx": {
-        "price": 1628.22,
-        "size": 124.36,
-        "side": "ASK"
-      },
       "spot_trade_ratios": {
-        "okx": 0.0437,
-        "bybit": 1.135,
-        "binance": 0.7492,
-        "htx": 0.1831,
-        "coinbase": 4.2367
+        "okx": 0.1739,
+        "bybit": 0.0124,
+        "binance": 2.663,
+        "htx": 3.0768,
+        "coinbase": 1.4687
       },
-      "spot_trade_avg": 1.2695,
+      "spot_trade_avg": 1.479,
       "spot_flow": "BUYERS",
       "spot_flow_okx": "SELLERS",
-      "spot_flow_htx": "SELLERS",
+      "spot_flow_bybit": "SELLERS",
+      "spot_flow_binance": "BUYERS",
+      "spot_flow_htx": "BUYERS",
       "spot_flow_coinbase": "BUYERS",
-      "spot_vol_bybit": 207835.0,
-      "spot_vol_binance": 321175.0,
-      "spot_vol_htx": 14995.0
+      "spot_vol_bybit": 212203.0,
+      "spot_vol_binance": 325878.0,
+      "spot_vol_htx": 15470.0
     },
     "score": 0.52,
     "status": "PASS",
     "direction_details": {
-      "funding_spread": 6.519e-05,
-      "funding_mean": -2.37e-05,
+      "funding_spread": 0.00010005,
+      "funding_mean": -3.907e-05,
       "funding_trends": {
         "binance": "FALLING",
         "okx": "?",
         "bybit": "FALLING"
       },
       "oi_migration": "BALANCED",
-      "ls_spread": 0.5009,
+      "ls_spread": 0.5748,
       "ls_by_exchange": {
-        "okx": 2.6778,
-        "binance": 2.2841,
-        "bybit": 2.785
+        "okx": 2.8589,
+        "bybit": 2.785,
+        "binance": 2.2841
       },
       "funding_outliers": {},
       "exchange_score": 0.52,
       "factors": [
         "kraken funding rising (bearish)",
-        "L/S divergence 0.50",
+        "L/S divergence 0.57",
         "most bearish exchange: binance"
       ]
     },
     "spot_score": 0.45,
     "spot_status": "PASS",
     "spot_details": {
-      "basis_avg": -0.0314,
+      "basis_avg": -0.0237,
       "basis_state": "BACKWARDATION",
-      "spot_ob_avg": 2.2979,
+      "spot_ob_avg": 1.9085,
       "spot_sell_walls": [],
       "spot_flow": "BUYERS",
-      "spot_trade_avg": 1.2695,
+      "spot_trade_avg": 1.479,
       "spot_score": 0.45,
       "factors": [
-        "futures discount -0.0314% (confirms bearish)",
-        "strong spot bid support (ratio=2.298)",
-        "spot flow: buyers (1.27)",
-        "htx wall: 124 ETH @ $1628"
+        "futures discount -0.0237% (confirms bearish)",
+        "strong spot bid support (ratio=1.909)",
+        "spot flow: buyers (1.48)"
       ]
     }
   },
@@ -675,7 +638,7 @@
       "phase_details": {},
       "premium_discount": {
         "zone": "UNKNOWN",
-        "eq": 1622.69,
+        "eq": 1621.19,
         "position": 0.5,
         "long_allowed": true,
         "short_allowed": true
@@ -1255,7 +1218,7 @@
     "phase": "ANTICIPATION",
     "release_type": "CPI",
     "release_date": "2026-06-10",
-    "hours_since": -4.5,
+    "hours_since": -4.0,
     "trade_action": "REDUCE_SIZE",
     "size_multiplier": 0.5,
     "session_data": {
@@ -1311,17 +1274,17 @@
   },
   "m10": {
     "status": "PASS",
-    "score": 0.803,
+    "score": 0.805,
     "details": {
-      "btc_ema_diff": -0.0539,
-      "ethbtc_roc7": -0.0636,
-      "btc_roc7": -0.0442,
+      "btc_ema_diff": -0.054,
+      "ethbtc_roc7": -0.0644,
+      "btc_roc7": -0.0454,
       "macro_agreement": "3/3 agree",
-      "m10_score": 0.803,
+      "m10_score": 0.805,
       "m10_components": {
         "btc_trend": 0.8,
         "ethbtc_rel": 0.8,
-        "btc_momentum": 0.815,
+        "btc_momentum": 0.823,
         "consensus": 0.8
       }
     }
@@ -1331,22 +1294,22 @@
     "score": 0.5
   },
   "m12": {
-    "status": "FAIL",
-    "score": 0.4,
+    "status": "PASS",
+    "score": 0.7,
     "details": {
-      "bid_ask_ratio": 1.2903,
-      "bid_walls": 2,
-      "ask_walls": 1,
-      "largest_bid": 27.7421,
-      "largest_ask": 31.8044,
-      "ob_score": 0.4
+      "bid_ask_ratio": 0.2111,
+      "bid_walls": 4,
+      "ask_walls": 2,
+      "largest_bid": 12.0971,
+      "largest_ask": 40.7512,
+      "ob_score": 0.7
     }
   },
   "m20": {
     "status": "SKIP",
     "score": 0.5
   },
-  "ics": 0.4504,
+  "ics": 0.4505,
   "effective_floor": 0.48,
   "taker_score": 0.5,
   "veto": "CLEAR",
@@ -1356,8 +1319,8 @@
   "timeframe": "15m",
   "dual_strategy": {
     "base": {
-      "timestamp": "2026-06-10 09:00:00",
-      "price": 1622.69,
+      "timestamp": "2026-06-10 09:30:00",
+      "price": 1621.19,
       "regime": "UNKNOWN",
       "direction": "LONG",
       "swing_bias": "BEARISH",
