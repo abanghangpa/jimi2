@@ -1,0 +1,150 @@
+╔══════════════════════════════════════════════════════════════════╗
+║  JIMI — 2026 Q1 Backtest Results (Independent Run)               ║
+║  Run date: 2026-05-02                                            ║
+╚══════════════════════════════════════════════════════════════════╝
+  Data: Binance ETH/USDT 15m (fetched via ccxt)
+  Range: 2026-01-01 → 2026-03-31
+  Config: config/settings.yaml (current weights)
+
+══════════════════════════════════════════════════════════════════════
+  SUMMARY
+══════════════════════════════════════════════════════════════════════
+
+  Total Trades:        74
+  Winners:             48 (64.9%)
+  Losers:              26
+  Net PnL (weighted):  +193.36%
+  Avg Win:             +1.26%
+  Avg Loss:            -0.83%
+  Profit Factor:       2.79
+  Max Drawdown:        36.80%
+  Return/DD Ratio:     5.3×
+  Avg Bars Held:       13.5
+
+  Direction: 100% SHORT (0 LONG trades)
+  ICS range at entry: 0.523 – 0.646
+
+══════════════════════════════════════════════════════════════════════
+  MONTHLY BREAKDOWN
+══════════════════════════════════════════════════════════════════════
+
+  Month       Trades    WR       PnL
+  ──────────  ───────  ───────  ──────────
+  2026-01        26    73.1%    +71.02%
+  2026-02        47    61.7%    +127.52%
+  2026-03         1    0.0%     -5.18%
+
+  Jan–Feb was the strong period. March had only 1 trade (system
+  went quiet — likely post-crash cooldown + veto blocks).
+
+══════════════════════════════════════════════════════════════════════
+  SIGNAL FLOW (7,313 bars checked → 74 entries = 1.01% entry rate)
+══════════════════════════════════════════════════════════════════════
+
+  signals_checked:     7,313
+  adaptive_dir_block:  2,754  (37.7% — biggest filter)
+  ics_blocked:         2,402  (32.8%)
+  veto_hard_block:       672  (9.2%)
+  m9_block:              460  (6.3%)
+  m4_false_anchored:   1,048  (14.3%)
+  post_crash_block:       97  (1.3%)
+  entries:                74
+
+══════════════════════════════════════════════════════════════════════
+  MODULE ANALYSIS
+══════════════════════════════════════════════════════════════════════
+
+  Forensic: M5 (Liquidation Magnet) is the only statistically
+  predictive module in this period.
+    Winners avg M5: 0.6089
+    Losers avg M5:  0.5567
+    Delta:          +0.0522 ✓ PREDICTIVE
+
+  ICS composite was essentially neutral:
+    Winners avg ICS: 0.5905
+    Losers avg ICS:  0.5814
+    Delta:           +0.0091 (~ NEUTRAL)
+
+  M4 (CVD): All 74 trades passed M4 — no filtering power.
+  M7 (Regime): Fixed at 0.46 for all trades — no differentiation.
+
+══════════════════════════════════════════════════════════════════════
+  EXIT ANALYSIS
+══════════════════════════════════════════════════════════════════════
+
+  TP1: 48 (64.9%)  — matches win rate exactly
+  TP2: 13 (17.6%)
+  TP3:  6 (8.1%)
+  SL:  27 (36.5%)
+  EARLY_EXIT: 13 (17.6%)
+
+  The system hits TP1 reliably but struggles to extend to TP2/TP3.
+  Early exits (13 trades) suggest the trailing/exit logic is
+  cutting winners short.
+
+══════════════════════════════════════════════════════════════════════
+  KEY FINDINGS
+══════════════════════════════════════════════════════════════════════
+
+  1. STRONG Q1: +193% in 3 months with 64.9% WR and PF 2.79.
+     This is the best backtest period observed.
+
+  2. DIRECTION BIAS: 100% SHORT. The adaptive direction module
+     blocked 2,754 signals (37.7%). ETH dropped from ~3000 to
+     ~1800 in Q1 2026 — the system correctly identified the
+     downtrend but missed any bounce trades.
+
+  3. M5 IS THE KEY MODULE: Only M5 (Liquidation Magnet) showed
+     statistical significance. Winners had higher M5 scores.
+     Current weight (0.05) is too low — consider increasing.
+
+  4. ICS IS NEUTRAL: The composite score doesn't differentiate
+     winners from losers in this period. The 0.58-0.62 range
+     was sufficient; higher ICS didn't help.
+
+  5. M4 HAS NO FILTERING POWER: All 74 trades passed M4.
+     The CVD module is not providing meaningful gate function.
+
+  6. M7 IS STATIC: Score was 0.46 for every single trade.
+     The market regime module needs recalibration for this
+     period's volatility profile.
+
+  7. RISK CONCERN: 36.80% max drawdown is high. The system
+     concentrates entries (47 trades in Feb alone) which
+     amplifies drawdown during losing streaks.
+
+  8. MARCH SILENCE: Only 1 trade in March. Post-crash cooldown
+     and veto systems shut down nearly all signals after the
+     Feb selloff. This protected capital but also missed
+     potential entries.
+
+══════════════════════════════════════════════════════════════════════
+  COMPARISON WITH PREVIOUS 2026 REPORT
+══════════════════════════════════════════════════════════════════════
+
+  Previous findings_2026.txt showed:
+    71 trades, 47.9% WR, +14.84% PnL, ICS↔PnL correlation -0.121
+
+  This run shows:
+    74 trades, 64.9% WR, +193.36% PnL
+
+  Discrepancy likely due to:
+    - Different data source/merge methodology
+    - Config evolution (weights were rebalanced between runs)
+    - The previous run included April data (through Apr 28)
+
+  The previous report's conclusion that "ICS is inverted" may
+  have been an artifact of the April data or config state.
+
+══════════════════════════════════════════════════════════════════════
+  RECOMMENDATIONS
+══════════════════════════════════════════════════════════════════════
+
+  1. Increase M5 weight (currently 0.05, suggest 0.15-0.20)
+  2. Reduce M4 weight (no filtering power, currently 0.06)
+  3. Investigate why M7 is static at 0.46
+  4. Add position concentration limits (max N trades per week)
+  5. Consider adding LONG signals when trend reverses
+  6. Review early-exit logic — 13 trades exited early
+
+══════════════════════════════════════════════════════════════════════

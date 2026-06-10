@@ -1,0 +1,1217 @@
+# ═══════════════════════════════════════════════════════════════
+# JIMI Framework — Central Configuration
+# ═══════════════════════════════════════════════════════════════
+# Override any parameter here. Unset keys fall back to defaults.
+# Switch between "modes" by passing --config v615.yaml etc.
+
+# ─── MACRO CACHE ─────────────────────────────────────────────
+# TTL in days for macro indicator cache (default: 7).
+# Macro data (PMI, CPI, GDP, rate decisions) releases monthly/quarterly.
+# Set to 0 to always fetch fresh (old behavior: 24h TTL).
+MACRO_CACHE_TTL_DAYS: 7
+
+# ─── GATE THRESHOLDS ─────────────────────────────────────────
+ICS_THRESHOLD_NORMAL: 0.65     # raised from 0.62 — 0.65+ bucket has 76% WR
+ICS_THRESHOLD_CAUTION: 0.65
+ICS_FLOOR: 0.48       # keep original — 0.48-0.55 bucket has positive edge
+
+# ─── M4b: INTRABAR CVD (LucF-style) ─────────────────────────
+M4B_INTRABAR_ENABLED: true
+M4B_INTRABAR_HOURS: 72
+ICS_FLOOR_M4_FALSE: 0.48
+ICS_CEILING: 0.75       # relaxed — 0.7+ bucket was strong in 10d attribution
+
+# Pre-check gate (M1-M4+M10 only, before M5/M7/M8/M11-M14)
+# Separate from final ICS threshold — pre-check has fewer modules
+ICS_PRECHECK_FLOOR: 0.45
+ICS_PRECHECK_THRESHOLD: 0.45
+
+# ─── MODULE WEIGHTS (ICS) ────────────────────────────────────
+# Rebalance based on 10-day attribution (2026-04-24 → 2026-05-03) + OOS validation:
+#   M4 (CVD): STRONG — +0.22 delta, 100% WR at ≥0.7. Moderate boost.
+#   M10 (Macro): stabilizer, restore to 0.20 for regime gating.
+#   M11 (MTF Mom): INVERTED — high scores predict losses → zero.
+#   M5 (Liquidation): no differentiating power → zero.
+#   M1 (MACD): decent at 0.6-0.7 → small boost.
+#   M3 (VWAP): stable predictor → boost to 0.20.
+#   M6 (Derivatives): reduce to 0.08.
+#   M12 (OrderBook): live-only, no backtest signal → zero.
+#   Weights sum to 1.00 (base=0.65 + extras=0.35).
+#   ICS threshold raised to 0.62 (weights lower = easier to cross).
+M1_WEIGHT: 0.00       # INVERTED 2026: Δ=-0.047, winners score LOWER → zero
+M2_WEIGHT: 0.00       # veto-only (also inverted: Δ=-0.023)
+M3_WEIGHT: 0.25       # STRONG predictor 2026: Δ=+0.060, boost (was 0.20)
+M4_WEIGHT: 0.20       # STRONG predictor 2026: Δ=+0.106, boost (was 0.15)
+M5_WEIGHT: 0.00       # no signal power 2026: Δ=+0.003 → zero
+M10_WEIGHT: 0.15      # moderate, neutral predictor 2026: Δ=+0.007 (was 0.20)
+M11_WEIGHT: 0.00      # INVERTED — high scores predict losses → zero
+M13_WEIGHT: 0.10      # structural bias, keep
+M14_WEIGHT: 0.08      # sweep-retest, keep
+M8_WEIGHT: 0.10       # funding rate, keep
+M6_WEIGHT: 0.08       # derivatives, keep
+M20_WEIGHT: 0.10      # failed breakout detector
+TAKER_ENABLED: true
+TAKER_WEIGHT: 0.08    # taker flow momentum + regime
+TAKER_DEVIATION_THRESHOLD: 0.02   # min deviation from 0.50 to score
+TAKER_MOMENTUM_BONUS: 0.20       # max score from momentum
+TAKER_12H_AGREE_BONUS: 0.15      # bonus when 12h confirms
+TAKER_DIVERGENCE_PENALTY: 0.50   # multiplier when 12h disagrees
+
+# ─── V6.12 IMPROVEMENTS ─────────────────────────────────────
+BIAS_GATE_ENABLED: true
+BIAS_GATE_LONG_ICS: 0.50
+TREND_FILTER_ENABLED: true
+TREND_BLOCK_COUNTER_TREND: false
+TREND_STRONG_ONLY: false
+TREND_MIN_SCORE: 0.05
+TREND_MIN_SCORE_NEUTRAL: 0.03   # relaxed in NEUTRAL/COMPRESSING regime
+MONTHLY_DD_CIRCUIT: 0.05
+
+# ─── V6.13 SEASONAL ─────────────────────────────────────────
+SUMMER_MONTHS: [6, 7, 8, 9]
+SUMMER_SIZE_MULT: 0.60
+SUMMER_ICS_BOOST: 0.03
+TP1_CLOSE_BASE: 0.30
+TP1_CLOSE_SUMMER: 0.45
+TP1_ATR_SUMMER: 0.7
+MAX_CONSEC_LOSS_SUMMER: 2
+CONSEC_LOSS_PAUSE_SUMMER: 12
+PHASE0_SUMMER_BLOCK: 0.60
+
+SHOULDER_MONTHS: [3, 10]
+SHOULDER_SIZE_MULT: 0.50
+SHOULDER_SL_ATR: 1.4
+SHOULDER_SL_HARD_MAX: 0.016
+SHOULDER_TP1_ATR: 0.8
+SHOULDER_TP1_CLOSE: 0.45
+SHOULDER_ICS_BOOST: 0.02
+SHOULDER_MAX_TRADES_DAY: 3
+
+# ─── MODULE GATES ────────────────────────────────────────────
+M2_VETO_ENABLED: true
+M2_VETO_THRESHOLD: 0.40
+M5_FAIL_ICS_BOOST: 0.00
+M5_FAIL_HARD_THRESHOLD: 0.25
+M7_HARD_GATE: false
+M7_GATE_THRESHOLD: 0.30
+M7_GATE_STRONG_THRESHOLD: 0.60
+M7_GATE_STRONG_BOOST: 0.04
+SESSION_ASIAN_BLOCK: false
+POST_CRASH_COOLDOWN: true
+POST_CRASH_THRESHOLD: 0.10
+POST_CRASH_BARS: 48
+CASCADE_MULTIPLIER: 1.12
+CASCADE_PENALTY: 0.85
+DIR_VETO_ENABLED: true
+
+# ─── TECHNICAL INDICATORS ────────────────────────────────────
+MACD_FAST: 12
+MACD_SLOW: 26
+MACD_SIGNAL: 9
+EMA_FAST: 21
+EMA_SLOW: 55
+RSI_PERIOD: 14
+ATR_PERIOD: 14
+
+# ─── M3: VWAP ENTRY ZONE ────────────────────────────────────
+VWAP_LOOKBACK: 96
+VWAP_ZONE_PCT: 0.012
+VOL_THRESHOLD: 0.25
+TAKER_LONG: 0.52
+TAKER_SHORT: 0.48
+TAKER_FILLNA: 0.50
+SIGNAL_EXPIRY: 3
+
+# ─── M4: CVD ────────────────────────────────────────────────
+CVD_LOOKBACK: 36
+CVD_DIVERGENCE_WINDOW: 12
+M4_ZL_LOOKBACK: 18
+M4_ZL_MOMENTUM_BARS: 13      # v7: was 8, raised to filter bid-ask churn (13 bars = 3.25hr)
+M4_DIV_WEIGHT: 0.40
+M4_ZL_WEIGHT: 0.60
+# v7: Sigmoid gating — weak M4 signals get near-zero weight
+M4_SIGMOID_CENTER: 0.65      # inflection point where gate = 0.5
+M4_SIGMOID_STEEPNESS: 12     # transition sharpness (higher = sharper cliff)
+# v7: ATR scaling — dampen M4 in low-vol sessions (spread noise dominates)
+M4_ATR_SCALING_ENABLED: true
+
+# ─── M5: LIQUIDATION MAGNET ─────────────────────────────────
+M5_VP_LOOKBACK: 672
+M5_VP_BINS: 50
+M5_MIN_SCORE: 0.25
+M5_SWEET_SPOT_LOW: 0.30
+M5_SWEET_SPOT_HIGH: 0.50
+M5_SWEET_SPOT_BOOST: 0.04
+
+# ─── STOP LOSS ───────────────────────────────────────────────
+SL_ATR_STD: 1.3
+SL_ATR_STD_SUMMER: 1.6
+SL_ATR_TRANSITION: 1.0
+TP1_ATR_TRANSITION: 1.2
+TRANSITION_SIZE_MULT: 0.50
+TRANSITION_SCORE_RANGE: 0.20
+SL_HARD_MAX_PCT: 0.018
+SL_HARD_MAX_SUMMER: 0.018
+SL_BREAKEVEN_AFTER_TP1: true
+EARLY_EXIT_BARS: 24           # tightened: was 16, 16 early exits had 0% WR (-9.71% drag)
+EARLY_EXIT_MIN_LOSS: 0.005    # tightened: was 0.003, require bigger loss before cutting
+EARLY_EXIT_BARS_SUMMER: 12
+EARLY_EXIT_MIN_LOSS_SUMMER: 0.002
+
+# ─── TAKE PROFIT LADDER ─────────────────────────────────────
+TP1_ATR: 1.5
+TP2_ATR: 2.0
+TP3_ATR: 3.5
+TP1_CLOSE: 0.30
+TP2_CLOSE: 0.30
+
+# ─── POSITION SIZING ────────────────────────────────────────
+SIZE_STD: 5.0
+SIZE_LONG: 5.0
+SIZE_M2_NEUTRAL: 2.5
+SIZE_CAUTION: 3.5
+
+# ─── ENTRY FILTERS ──────────────────────────────────────────
+BAR_MOVE_ATR: 0.5
+ATR_FILTER_MAX: 0.035
+MIN_ENTRY_DIST_PCT: 0.002
+MIN_RR_RATIO: 0.50             # reject signals where TP1 R:R is below this (e.g. 0.50 = TP1 must be ≥50% of SL distance)
+
+# ─── RISK MANAGEMENT ────────────────────────────────────────
+MAX_TRADES_DAY: 5
+MAX_TRADES_DAY_SUMMER: 3
+MAX_DAILY_LOSS: 0.05
+MAX_DAILY_LOSS_SUMMER: 0.03
+COOLDOWN_BARS: 2
+COOLDOWN_BARS_SUMMER: 4
+SHOULDER_COOLDOWN_BARS: 3
+ROLLING_WR_WINDOW: 20
+ROLLING_WR_MIN: 0.15
+MAX_CONSEC_LOSS: 3
+CONSEC_LOSS_PAUSE_BARS: 8
+
+# ─── LONG FILTER ────────────────────────────────────────────
+LONG_MIN_ICS: 0.50
+
+# ─── PHASE0 MIN BLOCK (forensic P1) ────────────────────────
+# Phase0 < 0.2 is the "death zone" — 33% WR in 2024, 49% in 2023.
+# Block entries when Phase0 is too low (market is directionless).
+PHASE0_MIN_BLOCK: 0.20        # raised from 0.10 — death zone <0.15 has 50% WR
+
+# ─── M5 REGIME GATE (forensic P1) ──────────────────────────
+# M5 (Liquidation Magnet) is inverted in bull markets, predictive in bear.
+# Gate M5 scoring: only give full M5 credit in trending/bear regimes.
+# In CHOP_MILD/bull ranges, M5 score is capped to 0.5 (neutral).
+M5_REGIME_GATE_ENABLED: true
+
+# ─── M6: DERIVATIVES ────────────────────────────────────────
+M6_WEIGHT: 0.08
+M3_WEIGHT_DERIV: 0.25
+M4_WEIGHT_DERIV: 0.20
+DERIV_ENABLED: true
+
+# ─── M7: MARKET REGIME ──────────────────────────────────────
+M7_ENABLED: true
+M7_WEIGHT: 0.00
+M7_SIZE_REDUCTION: 0.70
+M7_SIZE_MILD: 0.85
+
+# ─── M8: FUNDING RATE ───────────────────────────────────────
+M8_ENABLED: true
+M8_WEIGHT: 0.10
+M8_HIGH_FUNDING: 0.05
+M8_LOW_FUNDING: -0.05
+M8_FLIP_BONUS: 0.15
+
+# ─── M9: VOLATILITY REGIME ──────────────────────────────────
+M9_ENABLED: true
+M9_WEIGHT: 0.00
+M9_BLOCK_REGIMES: ["CRISIS", "CHOP_HARD", "NEUTRAL_CHOP"]
+M9_SIZE_CHOP_MILD: 0.55
+M9_SIZE_COMPRESSING: 0.85
+# Chop regime: tap nearest liquidity, exit, no continuation
+CHOP_TP1_ATR: 0.6          # tight TP1 — nearest liquidity pool
+CHOP_TP1_CLOSE: 0.90       # exit 90% at TP1
+CHOP_SL_ATR: 0.5           # very tight SL — small loss if wrong
+CHOP_SL_HARD_MAX: 0.008    # hard SL cap in chop (0.8%)
+# Regime detection thresholds (v2)
+M9_WHIPSAW_THRESHOLD: 0.45
+M9_RETRACE_THRESHOLD: 0.50
+M9_TRENDING_MIN_DIR: 0.45
+M9_TRENDING_MIN_VOLUME: 0.50
+M9_TRENDING_MAX_WHIPSAW: 0.35
+M9_TRENDING_MAX_RETRACE: 0.45
+M9_TRENDING_MIN_COHERENCE: 0.50
+
+# Regime classification thresholds
+M9_CRISIS_ATR_THRESHOLD: 0.85
+M9_CRISIS_BB_THRESHOLD: 0.90
+M9_CHOP_HARD_CHOP_SCORE: 0.72
+M9_CHOP_HARD_WHIPSAW: 0.70
+M9_CHOP_HARD_RETRACE: 0.80
+M9_CHOP_MILD_CHOP_SCORE: 0.50
+M9_CHOP_MILD_TREND_CEILING: 0.35
+M9_TRENDING_TREND_SCORE: 0.40
+M9_TRENDING_MAX_WHIPSAW_SCORE: 0.65
+M9_TRENDING_MAX_RETRACE_SCORE: 0.80
+M9_COMPRESSING_BB: 0.30
+M9_COMPRESSING_ATR: 0.40
+M9_COMPRESSING_RANGE: 0.60
+M9_HYSTERESIS_CONFIRM_BARS: 2
+M9_TRENDING_CONFIRM_BARS: 3
+M9_COMPRESSING_CONFIRM_BARS: 3
+M9_CRISIS_COOLDOWN: 8
+M9_TRENDING_COOLDOWN: 4
+M9_COMPRESSING_COOLDOWN: 6
+M9_CHOP_HARD_COOLDOWN: 6
+M9_CHOP_MILD_COOLDOWN: 4
+
+# CHOP_MILD directional split + time-based exit
+M9_CHOP_SPLIT_ENABLED: true
+M9_CHOP_MAX_BARS: 96
+M9_CHOP_EXIT_COOLDOWN: 12
+
+# NEUTRAL sub-classification: split NEUTRAL into TRENDING vs CHOP
+M9_NEUTRAL_DIR_THRESHOLD: 0.40
+M9_NEUTRAL_VOL_THRESHOLD: 1.05
+
+# ─── SURVIVAL FILTER ────────────────────────────────────────
+# Momentum gate: reject entries when recent bars show no directional push
+SURVIVAL_FILTER_ENABLED: true
+SURVIVAL_LOOKBACK: 12           # bars to check (12 = 3h on 15m)
+SURVIVAL_MIN_MOVE: 0.002        # min net move in trade direction (0.2%)
+SURVIVAL_MIN_CONSISTENCY: 0.35  # min fraction of bars closing in trade direction
+SURVIVAL_VOL_RATIO: 0.30        # min recent ATR / 1H ATR ratio
+
+# ─── TIME-STOP (ADAPTIVE) ───────────────────────────────────
+# Exit trade if TP1 not hit within N bars (0 = disabled)
+# ADAPTIVE: time stop scales with TP1 distance.
+#   bars = max(BASE, BASE + tp1_pct * PER_PCT), capped at MAX
+# Wider TP targets get more time; tight TPs exit faster.
+TIME_STOP_BARS: 20            # legacy fallback (overridden by BASE below)
+TIME_STOP_BASE_BARS: 20       # minimum time stop bars
+TIME_STOP_PER_PCT: 25         # extra bars per 1% of TP1 distance
+TIME_STOP_MAX_BARS: 60        # hard cap
+
+# ─── M10: CROSS-ASSET MACRO ─────────────────────────────────
+M10_ENABLED: true
+M10_FETCH_ON_BACKTEST: true
+
+# ─── M11: MULTI-TF MOMENTUM ─────────────────────────────────
+M11_ENABLED: true
+M11_RSI_PERIOD_15M: 14
+M11_RSI_PERIOD_1H: 14
+M11_REQUIRE_AGREEMENT: true
+
+# ─── M12: ORDER BOOK ────────────────────────────────────────
+M12_ENABLED: true
+M12_WEIGHT: 0.00
+M12_LIVE_ONLY: true
+
+# ─── ADAPTIVE DIRECTION BIAS ────────────────────────────────
+ADAPTIVE_DIR_ENABLED: true
+ADAPTIVE_DIR_MIN_BIAS: 0.05
+ADAPTIVE_DIR_BLOCK_THRESHOLD: 0.40
+
+# ─── DATA FRESHNESS ─────────────────────────────────────────
+DATA_FRESHNESS_ENABLED: true
+DATA_FRESHNESS_MAX_AGE_MIN: 20
+DATA_FRESHNESS_CHECK_INTERVAL: 5
+
+# ─── VETO SYSTEM ────────────────────────────────────────────
+VETO_ENABLED: true
+VETO_CRISIS_HARD: true
+VETO_CHOP_HARD: false
+VETO_STALE_DATA_HARD: true
+VETO_MONTHLY_DD_HARD: true
+VETO_DIR_CONFLICT_HARD: true
+
+# ─── ADAPTIVE WEIGHTS ───────────────────────────────────────
+ADAPTIVE_WEIGHTS_ENABLED: true
+ADAPTIVE_DECAY: 0.97
+ADAPTIVE_MIN_MULT: 0.8
+ADAPTIVE_MAX_MULT: 1.2
+ADAPTIVE_WARMUP_TRADES: 15
+
+# ─── SESSION AWARENESS ──────────────────────────────────────
+SESSION_AWARENESS_ENABLED: true
+SESSION_ASIAN_MULT: 1.10
+SESSION_EU_MULT: 1.0
+SESSION_US_MULT: 0.85         # reduced from 1.05 — US session 50% WR, -0.32% PnL in 2026
+SESSION_LATE_US_MULT: 0.90
+SESSION_US_OPEN_BOOST: 0.85
+
+# ─── MULTI-TF ENTRY CONFIRMATION ────────────────────────────
+MTF_CONFIRM_ENABLED: true
+MTF_1H_CANDLE_CHECK: true
+MTF_4H_EMA_CHECK: false
+
+# ─── M13: STRUCTURAL BIAS ─────────────────────────────────────
+M13_ENABLED: true
+M13_WEIGHT: 0.10
+# M13 defers to M9 during chop (anti-predictive when agreeing)
+M13_DEFER_IN_CHOP: true
+
+# ─── COHERENCE CHECK ────────────────────────────────────────
+COHERENCE_CHECK_ENABLED: true
+COHERENCE_MAX_CONFLICTS: 3
+COHERENCE_M4_PENALTY: 0.01    # v8: was 0.02 — M4 at 6% weight + sigmoid-gated, penalty was 33% of max contribution
+COHERENCE_M5_PENALTY: 0.03
+COHERENCE_M13_PENALTY: 0.03
+COHERENCE_M7_PENALTY: 0.02
+COHERENCE_MAX_PENALTY: 0.10
+
+# ─── LIQUIDITY-AWARE TP ─────────────────────────────────────
+LIQUIDITY_TP_ENABLED: true
+LIQUIDITY_FRICTION_THRESHOLD: 0.60
+LIQUIDITY_VOID_THRESHOLD: 0.20
+LIQUIDITY_TP1_ADJUST_UP: 0.08
+LIQUIDITY_TP1_ADJUST_DOWN: 0.05
+STOP_RISK_THRESHOLD: 0.55
+STOP_RISK_TIGHTEN: true
+STOP_RISK_TIGHTEN_FACTOR: 0.85
+
+# ─── M14: SWEEP-RETEST-RECLAIM ──────────────────────────────
+M14_ENABLED: true
+M14_WEIGHT: 0.08
+M14_SWEEP_LOOKBACK: 20
+M14_SWEEP_DEPTH_MIN: 0.001
+M14_SWEEP_DEPTH_MAX: 0.020
+M14_RECLAIM_BARS: 3
+M14_RECLAIM_WICK_RATIO: 0.40
+M14_VOL_CONFIRM_MULT: 1.2
+M14_STRONG_SCORE: 0.85
+M14_WEAK_SCORE: 0.55
+M14_SLICE_PENALTY: 0.30
+M14_NO_SWEEP_SCORE: 0.50
+WICK_SLICE_BLOCK: false
+
+# ─── M17: RESISTANCE QUALITY ─────────────────────────────────
+M17_ENABLED: true
+M17_WEIGHT: 0.05
+M17_ZONE_LOOKBACK: 960           # 10 days of 15m bars
+M17_ZONE_WIDTH_PCT: 0.5          # zone width as % of price (±0.5%)
+M17_ZONE_THIN_THRESHOLD: 0.5     # volume ratio below this = thin zone
+M17_ZONE_THICK_THRESHOLD: 1.5    # volume ratio above this = thick zone
+M17_REJECT_MIN_TOUCHES: 3        # minimum touches to analyze
+M17_REJECT_VOL_STRONG: 2.5       # vol ratio = active defender
+M17_REJECT_VOL_WEAK: 1.2         # vol ratio = passive defender
+M17_REJECT_WICK_STRONG: 5.0      # avg wick above zone ($) = strong defense
+M17_DEFENDER_TRAPPED_Z: -2.0     # L/S z-score = defender trapped (shorts)
+M17_DEFENDER_TRAPPED_Z_LONG: 2.0 # L/S z-score = defender trapped (longs)
+M17_DEFENDER_LEAVING_OI_ROC: -0.5 # OI dropping = defender exiting
+M17_DEFENDER_ADDING_OI_ROC: 1.0  # OI rising = defender building
+M17_BREAKOUT_VOL_MIN: 1.2        # min volume surge for breakout attempt
+M17_BREAKOUT_MOMENTUM_MIN: 0.3   # min % move toward zone
+M17_W_ZONE: 0.25                 # weight: zone volume density
+M17_W_REJECT: 0.30               # weight: rejection pattern
+M17_W_DEFENDER: 0.25             # weight: defender behavior
+M17_W_READINESS: 0.20            # weight: breakout readiness
+
+# ─── M1 ENHANCEMENT ─────────────────────────────────────────
+M1_RSI_ENABLED: true
+M1_MOMENTUM_ENABLED: true
+M1_RSI_PERIOD: 14
+M1_RSI_OVERBOUGHT: 70
+M1_RSI_OVERSOLD: 30
+M1_MOMENTUM_LOOKBACK: 6
+
+# ─── M1 MACD DIVERGENCE ─────────────────────────────────────
+# Swing-based MACD histogram divergence on 1H, alongside RSI divergence.
+# Fires when price makes a new extreme but MACD histogram doesn't confirm.
+M1_MACD_DIV_ENABLED: true
+M1_MACD_DIV_LOOKBACK: 40       # bars to scan for divergence swings
+
+# M1 v2 blend weights (RSI div + MACD div + crossover + momentum)
+M1_W_RSI_DIV: 0.25
+M1_W_MACD_DIV: 0.20
+M1_W_CROSSOVER: 0.35
+M1_W_MOMENTUM: 0.20
+M1_DIV_AGREE_BOOST: 0.03       # bonus when both RSI + MACD div fire same side
+
+# ─── LIQUIDITY-AWARE SL/TP ─────────────────────────────────
+LIQUIDITY_LEVELS_ENABLED: true     # use liquidity data for SL/TP placement
+SL_VOID_BUFFER_PCT: 0.003          # buffer around levels = "clustered"
+SL_VOID_MIN_DIST_PCT: 0.002        # min SL distance as % of price
+SL_VOID_MAX_DIST_PCT: 0.025        # max SL distance (2.5% cap)
+TP1_USE_MAGNET: true               # target nearest unswept magnet for TP1
+TP1_MAGNET_MIN_DIST_PCT: 0.002     # min distance to magnet
+
+# ─── M14 SWEEP GATE ────────────────────────────────────────
+M14_ENTRY_GATE: false              # require M14 sweep before signaling
+SWEEP_PROXIMITY_PCT: 0.001         # 0.1% — near-miss tolerance for swept detection (price within X% of level counts as tested)
+
+# ─── M23: PPI SESSION ANALYSIS ──────────────────────────────
+M23_ENABLED: true
+
+# ─── MACRO EVENT PRE-FILTER ─────────────────────────────────
+# Backtested Phase0 + 30d trend + cascade window filter
+# Phase0 < 0.15 = DEATH_ZONE (43% WR) → block entries
+# Phase0 0.15-0.30 = LOW → reduced size
+# Active HIGHEST impact cascade → block or reduce size
+MACRO_EVENT_FILTER_ENABLED: true
+PHASE0_CAUTION: 0.30
+MACRO_CASCADE_SIZE_MULT: 0.70
+MACRO_LOOKBACK_HOURS: 4
+MACRO_LOOKAHEAD_HOURS: 2
+M23_CLAIMS_ENABLED: true          # Include jobless claims in macro analysis
+M23_CLAIMS_WEIGHT: 0.08           # ICS weight for claims signal (when standalone release)
+M23_COMBO_ENABLED: true           # Enable CPI×PPI×Claims combo matrix
+
+# ─── CASCADE META-AGGREGATOR ───────────────────────────────
+# Generic cascade engine: scores regional macro release chains
+# as unified signals. Each cascade has a weight in the global score.
+CASCADE_ENABLED: true                  # Master switch for all cascades
+CASCADE_US_INFLATION_ENABLED: true     # CPI→PPI→PCE→FOMC→Presser→Minutes
+CASCADE_US_LABOR_ENABLED: true         # ADP→JOLTS→NFP→Unemployment→Claims
+CASCADE_US_ACTIVITY_ENABLED: true      # ISM Mfg→ISM Svc→Retail→Durables→GDP
+CASCADE_CHINA_MACRO_ENABLED: true      # GDP→PMI→Caixin→Activity→CPI/PPI→PBOC
+M_CHINA_ACTIVITY_ENABLED: true          # China monthly activity data (IP, Retail, FAI, Unemp, House)
+CASCADE_EU_MACRO_ENABLED: true         # GDP→PMI→DE CPI→EZ CPI→IFO→ECB
+CASCADE_UK_MACRO_ENABLED: true         # GDP→CPI→Wages→BoE
+CASCADE_JAPAN_MACRO_ENABLED: true      # GDP→CPI→BoJ (carry trade)
+CASCADE_AU_MACRO_ENABLED: true         # CPI→RBA
+
+# ─── POWER OF 3 PHASE DETECTOR ─────────────────────────────
+P3_MIN_KEY_LEVEL_DIST_PCT: 0.005   # min 0.5% distance for actionable key levels
+P3_SWEEP_LOOKBACK: 96              # bars to check for completed sweep (96 = 24h on 15m)
+
+# ─── CROSS-ASSET CORRELATION ────────────────────────────────
+CROSS_ASSET_ENABLED: true
+CROSS_ASSET_BTC_WEIGHT: 0.08
+CROSS_ASSET_LOOKBACK: 48
+
+# ─── M18 SQUEEZE DETECTOR v6 (box typology + quality entry) ──
+M18_ENABLED: true
+M18_WEIGHT: 0.08
+
+# Detection params (wide_A config: 126 entries, relaxed for more signals)
+SQUEEZE_RANGE48_MAX: 3.0             # max 48h range % to consider compression (was 1.2)
+SQUEEZE_COIL_DELTA_MAX: 0.15         # 2h MACD DIF-DEA delta % for coiling (was 0.05)
+SQUEEZE_COIL_BARS_MIN: 3             # min 2h bars in coil (was 6)
+SQUEEZE_COMPRESSION_BARS_MIN: 6      # min 15m compression bars (was 12)
+SQUEEZE_DRY_BARS_MIN: 2              # min dry bars (was 4)
+SQUEEZE_DOJI_BARS_MIN: 4             # min doji bars (was 8)
+SQUEEZE_REQUIRE_HIST_FLIP: false     # allow all trigger types (was true)
+SQUEEZE_EMA_FILTER: false            # don't pre-filter on EMA (we filter post-entry)
+
+# Entry trigger
+SQUEEZE_ENTRY_BUFFER_PCT: 0.001      # 0.1% buffer above/below coil range
+SQUEEZE_ENTRY_EXPIRY_BARS: 32        # entry expires after 8h
+SQUEEZE_BREAKOUT_VOL_MULT: 1.0       # volume confirmation on breakout bar
+SQUEEZE_ENTRY_MODE: BASELINE          # BASELINE (single close) — was TWO_BAR, faster entry on breakout
+SQUEEZE_TAKER_LONG: 0.54              # lowered from 0.58 — Apr 26 05:00 taker was 0.564
+SQUEEZE_TAKER_SHORT: 0.46             # raised from 0.42 — symmetric
+SQUEEZE_COIL_HOURS_MIN: 12           # skip squeezes with coil < 12h
+
+# ── v6: Box typology ──
+SQUEEZE_SWING_PERIOD: 3              # bars each side for fractal detection
+SQUEEZE_SLOPE_THRESHOLD: 0.0008      # min slope (fraction of price) to count as trending
+SQUEEZE_CONVERGENCE_MIN: 0.3         # min convergence ratio
+SQUEEZE_MATURITY_WINDOW: 8           # bars to measure compression maturity
+SQUEEZE_MATURITY_THRESHOLD: 1.15     # range_current / range_min below this = mature
+
+# ── v6: Breakout bar quality ──
+SQUEEZE_BREAKOUT_CLOSE_PCT: 0.75     # close must be in top/bottom 25% of bar range
+SQUEEZE_BREAKOUT_BODY_MIN: 0.50      # body must be > 50% of bar range
+SQUEEZE_BREAKOUT_WICK_MAX: 0.30      # rejection wick must be < 30% of bar range
+SQUEEZE_VOL_EXPANSION_MIN: 1.3       # breakout bar vol / prev bar vol
+SQUEEZE_TAKER_ALIGN: true            # require taker ratio to align with direction
+
+# ── v6: Retest entry ──
+SQUEEZE_RETEST_ENABLED: true
+SQUEEZE_RETEST_BARS: 8               # max bars to wait for retest after breakout
+SQUEEZE_RETEST_TOLERANCE: 0.002      # how close price must come to broken level (0.2%)
+SQUEEZE_RETEST_HOLD_BARS: 2          # bars price must hold above/below level after retest
+
+# 5-filter confirmation gate (backtested: 84.6% WR on 4h, 13 signals)
+# ALL must pass for squeeze to be considered "confirmed"
+SQUEEZE_CONFIRM_EMA: false            # disabled: EMA is lagging during squeeze breakout
+SQUEEZE_CONFIRM_CVD: true            # require no CVD divergence against direction
+SQUEEZE_CONFIRM_RSI: true            # require RSI not extreme against direction
+SQUEEZE_CONFIRM_QUALITY: false        # disabled: quality is low during tight compression (that's the signal)
+SQUEEZE_CONFIRM_ATR_FLOOR: false     # disabled: ATR is low DURING compression (that's the signal)
+
+# ATR floor filter (backtest: ATR is #1 predictor of $25+ moves)
+SQUEEZE_MIN_ATR: 2.0                 # lowered: was 5.0, Apr 25 ATR was $3.09 during compression
+SQUEEZE_ATR_FLOOR_PCTILE: 15         # rolling percentile floor
+SQUEEZE_ATR_LOOKBACK: 8640           # lookback for percentile (90 days)
+
+# Exit levels
+SQUEEZE_TP_ATR_MULT: 2.5
+SQUEEZE_SL_ATR_MULT: 1.0
+SQUEEZE_TP_MIN_PCT: 0.3
+SQUEEZE_TP_MAX_PCT: 2.0
+
+# Override & cooldown
+SQUEEZE_OVERRIDE_REGIME: true
+SQUEEZE_ICS_BOOST: 0.10
+SQUEEZE_SIZE_MULT: 0.80
+SQUEEZE_COOLDOWN_BARS: 32            # 8h cooldown
+
+# ─── M20: FAILED BREAKOUT DETECTOR ───────────────────────────
+M20_ENABLED: true
+M20_WEIGHT: 0.10
+M20_BREAKOUT_LOOKBACK: 48
+M20_BREAKOUT_LEVEL_ATR_MULT: 0.5
+M20_BREAKOUT_MIN_RANGE_PCT: 0.3
+M20_WICK_REJECTION_RATIO: 0.40
+M20_TAKER_SELL_THRESHOLD: 0.42
+M20_TAKER_BUY_THRESHOLD: 0.58
+M20_VOL_FADE_THRESHOLD: 0.7
+M20_FAILURE_BARS: 8
+M20_FAILURE_RETURN_PCT: 0.3
+M20_HOLD_BARS: 4
+M20_REVERSAL_VOL_MULT: 1.3
+M20_REVERSAL_TAKER_FLIP: true
+M20_REVERSAL_BODY_MIN: 0.5
+M20_STRONG_SCORE: 0.85
+M20_MODERATE_SCORE: 0.65
+M20_WEAK_BREAKOUT_SCORE: 0.35
+M20_HOLDING_SCORE: 0.50
+M20_NO_BREAKOUT_SCORE: 0.50
+M20_DIRECTION_OVERRIDE_THRESHOLD: 0.65  # lowered: was 0.80, let M20 override direction more easily
+M20_DIRECT_SIGNAL_THRESHOLD: 0.85
+
+# ─── M21: WYCKOFF PHASE + PREMIUM/DISCOUNT ──────────────────
+M21_ENABLED: true
+M21_WEIGHT: 0.00              # Not in ICS — used as gate/filter
+M21_RANGE_LOOKBACK: 48        # 4H bars to detect range (48 = 8 days)
+M21_SPRING_LOOKBACK: 12       # 15m bars to check for spring/upthrust
+M21_DISTRIBUTION_LONG_BLOCK: true   # Block LONG in distribution + premium
+M21_ACCUMULATION_SHORT_BLOCK: true  # Block SHORT in accumulation + discount
+
+# ─── KILL ZONE FILTER ────────────────────────────────────────
+KILL_ZONE_FILTER_ENABLED: true
+KILL_ZONE_LONDON_OPEN_START: 7
+KILL_ZONE_LONDON_OPEN_END: 10
+KILL_ZONE_NY_OPEN_START: 12.5
+KILL_ZONE_NY_OPEN_END: 15.5
+KILL_ZONE_LONDON_CLOSE_START: 15
+KILL_ZONE_LONDON_CLOSE_END: 17
+KILL_ZONE_ASIAN_MULT: 0.6
+KILL_ZONE_OFF_MULT: 0.7
+
+# ─── RANGE-AWARE TP/SL ──────────────────────────────────────
+RANGE_TP_ENABLED: true
+RANGE_SL_ENABLED: true
+RANGE_SL_BUFFER_PCT: 0.05     # 5% of range width as SL buffer
+RANGE_TP3_EXTENSION: 0.25     # 25% extension beyond range for TP3
+RANGE_SL_HARD_MAX_PCT: 0.025  # Hard max SL at 2.5%
+
+# ─── STRUCTURE-AWARE TP ─────────────────────────────────────
+# When in a range, target the opposite side instead of nearest pool
+STRUCTURE_TP_ENABLED: true
+STRUCTURE_TP_MIN_RANGE_PCT: 1.5   # Min range width to use structure TPs
+STRUCTURE_TP_MAX_RANGE_PCT: 6.0   # Max range width
+
+# ─── M22: INFLATION REGIME v2 ────────────────────────────────
+# 5D macro regime: PPI_dir × CPI × Fed × Labor × Positioning
+# Plus: real rates, PPI acceleration, surprise factors.
+# v2: Labor is co-equal (in the matrix, not a modifier). CPI is co-equal.
+M22_ENABLED: true
+M22_WEIGHT: 0.12              # ICS weight — moderate, macro backdrop modifier
+M22_VETO_THRESHOLD: 0.20      # hard veto when score_raw < this (for LONG)
+M22_FAIL_THRESHOLD: 0.35      # FAIL when score < this
+M22_LS_CROWDED_THRESHOLD: 2.0 # L/S ratio above this = CROWDED positioning
+
+# Position sizing by severity
+M22_SIZE_CRITICAL: 0.30       # CRITICAL severity → 30% size
+M22_SIZE_HIGH: 0.50           # HIGH severity → 50% size
+M22_SIZE_MEDIUM: 0.75         # MEDIUM severity → 75% size
+
+# ── LIVE DATA (update monthly after BLS releases) ──
+# PPI: https://www.bls.gov/ppi/  (released mid-month)
+# CPI: https://www.bls.gov/cpi/  (released mid-month)
+# Fed: https://www.federalreserve.gov/  (8x/year, FOMC)
+# NOTE: These are FALLBACK values. FRED live data is primary (auto-fetched).
+#       Only update these when FRED is down or as a sanity check.
+M22_PPI_YOY: 6.3              # Apr 2026 PPI YoY (FRED WPSFD49207, 2026-04)
+M22_PPI_PREV_YOY: 4.3         # Mar 2026 PPI YoY (for direction calc)
+M22_PPI_PREV_PREV_YOY: 1.6    # Feb 2026 PPI YoY (for acceleration calc)
+M22_PPI_MOM: 0.5              # Apr 2026 PPI MoM
+M22_CPI_YOY: 3.8              # Apr 2026 CPI YoY (FRED CPIAUCSL, 2026-04)
+M22_CPI_PREV_YOY: 3.3         # Mar 2026 CPI YoY (for CPI direction)
+M22_CPI_EXPECTED: 3.6         # CPI consensus expectation (manual — not on FRED)
+M22_FED_STANCE: "HOLDING"     # Auto-inferred from FRED FEDFUNDS trajectory
+M22_FED_FUNDS_RATE: 3.60      # FRED FEDFUNDS (2026-04)
+M22_PPI_EXPECTED: 4.0         # PPI consensus expectation (manual — not on FRED)
+
+# ─── M24: NBS PMI SESSION BIAS ──────────────────────────────
+# Regime-conditional 24h bias on NBS Manufacturing PMI release days.
+# Backtested: 100 releases (2018-2026), ETH/USDT 15m.
+# Only active on release days (~12x/year). Uses Wyckoff (M21) + Vol (M9).
+M24_ENABLED: true
+M24_WINDOW_DAYS: 1            # Days after release to consider active (0=release day only)
+
+# ─── M25: CAIXIN PMI SESSION BIAS ───────────────────────────
+# Regime-conditional 24h bias on Caixin Manufacturing PMI release day.
+# Backtested: 101 releases (2018-2026), ETH/USDT 15m.
+# BIG_MISS contrarian: +3.68% avg, 91% win. BEAT: +1.37%, 67% win.
+# Phase0 filters: <0.15 BLOCK, >0.70 BOOST.
+M25_ENABLED: true
+M25_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M26: EUROZONE FLASH PMI SESSION BIAS ────────────────────
+# Session-conditional bias on EZ Flash PMI release day.
+# Backtested: 100 releases (2018-2026), ETH/USDT 15m.
+# MILD_MISS: SHORT via Europe→UK→US chain (78.8%/69.7% persistence).
+# MILD_BEAT: LONG via UK→US chain (76.9% persistence).
+# Chain breaks at US Open→US Afternoon (51.5%, noise).
+# Session-aware: size decays after US Open (chain broken).
+M26_ENABLED: true
+M26_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M27: US ISM MANUFACTURING PMI SESSION BIAS ─────────────
+# Session transmission chain bias on ISM MFG PMI release day.
+# Backtested: 101 releases (2018-2026), ETH/USDT 15m.
+# STRONG_CONTRACTION + TREND: +3.44% avg, 75% win. SEVERE NO (<45): +1.77%, 71% win.
+# Chain: TK Close→Pre-LDN 85.9% → Frankfurt 80% → London 69.2%. Breaks at NY re-open.
+# New Orders <50 = DXY weakens → ETH short squeeze. Services follow-up 2-3d later.
+# Session-aware: size decays after London Morning (chain breaks at NY AM).
+M27_ENABLED: true
+M27_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M28: US ISM SERVICES PMI SESSION BIAS ───────────────────
+# Session transmission chain bias on ISM Services PMI release day.
+# Backtested: 101 releases (2018-2026), ETH/USDT 15m.
+# HOT+SQUEEZE: -2.31% (SHORT). WARM+TREND: +1.35% (LONG). COOL NO: -1.15% (SHORT).
+# Chain: Spike→NY AM 81.8% → Sydney→Tokyo 67.9% → Frankfurt→LDN 72.4%.
+# Breaks at NY PM→Post-NY (40.7%). Services→NFP direction does NOT persist.
+# COOL New Orders → Thursday claims positioning edge (+1.31%).
+# Session-aware: size decays after London (chain breaks at NY PM).
+M28_ENABLED: true
+M28_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M29: JOLTS JOB OPENINGS SESSION BIAS ────────────────────
+# Session transmission chain bias on JOLTS release day.
+# Backtested: 100 releases (2018-2026), ETH/USDT 15m.
+# SURGING+TREND: +7.17% 100% win (p=0.0196). RISING+TREND: -5.18% (p=0.0072).
+# COLLAPSE+CHOP: +2.02% 100% win. SURGING+CHOP: +1.66% 83% win.
+# Chain: Spike→NY AM 81.5% → TK Close→Frankfurt 73.8% → Frankfurt→LDN 70.6%.
+# JOLTS→NFP loopback: 20-33% full 3-day persistence (does NOT hold as direction chain).
+# Session-aware: size decays after London (chain breaks at NY PM).
+M29_ENABLED: true
+M29_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M30: CHINA CPI+PPI SESSION BIAS ────────────────────────
+# Backtested: 101 releases, 2018-2026. Overall noise (p=0.98).
+# Edges: INFLATION+CHOP+BEAT +3.30% (70% win, n=10).
+# DISINFLATION+LOW_VOL+MISS -2.69% (18% win, n=11).
+# SEVERE_DEFLATION+SQUEEZE+MISS +6.90% (100% win, n=3).
+# Chain: Ldn-NY→NY AM 75% (only real edge). Asia chain broken.
+M30_ENABLED: true
+M30_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M31: UK CPI SESSION BIAS ───────────────────────────────
+# Backtested: 101 releases, 2018-2026. Overall noise (p=0.85).
+# Edges: WARM_SERVICES+LOW_VOL+MISS +1.17% (67% win, n=6).
+# HOT_SERVICES+SQUEEZE+MISS -1.94% (0% win, n=5).
+# HOT_SERVICES+CHOP+MISS -3.12% (0% win, n=3).
+# Chain: Ldn-NY→NY AM 79% (real edge). Ldn Midday→NY Pre 63% (marginal).
+M31_ENABLED: true
+M31_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M32: UK EMPLOYMENT + WAGES SESSION BIAS ─────────────────
+# Backtested: 101 releases, 2018-2026. Overall noise (p=0.58).
+# Edges: COOL_WAGES+TREND+INLINE +4.52% (80% win, n=5).
+# WARM_WAGES+LOW_VOL+INLINE +0.59% (70% win, n=10).
+# WARM_WAGES+CHOP+MISS -2.43% (40% win, n=5).
+# Chain: Ldn Midday→NY Pre 68%, Ldn-NY→NY AM 75%.
+M32_ENABLED: true
+M32_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M33: US RETAIL SALES SESSION BIAS ──────────────────────
+# Session transmission chain bias on US Retail Sales release day.
+# Backtested: 101 releases (2018-2026), ETH/USDT 15m.
+# BIG_MISS+LOW_VOL+MARKDOWN: +2.32% (80% win, n=5).
+# BIG_MISS+CHOP+MARKUP: -3.33% (0% win, n=5). BEAT+CHOP+RANGE: +3.62% (100%, n=3).
+# Chain: Release→NY Open 97% → Ldn-NY Overlap 62% (marginal) → NY AM 80%. Breaks at NY Lunch.
+# Session-aware: edge lives in Release→NY AM window (~4h post-release).
+M33_ENABLED: true
+M33_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M34: US HOUSING STARTS + BUILDING PERMITS SESSION BIAS ──
+# Session transmission chain bias on Housing Starts release day.
+# Backtested: 100 releases (2018-2026), ETH/USDT 15m.
+# COLLAPSE+CHOP+MARKDOWN: +2.07% (60% win, n=5). STRONG+LOW_VOL+MARKDOWN: -2.56% (25%, n=4).
+# STABLE+CHOP+RANGE: -3.95% (0% win, n=3).
+# Chain: Release→NY Open 96% → Ldn-NY 57% (marginal) → NY AM 70%. Breaks at NY Lunch.
+# Rate-sensitive proxy: collapse → DXY drop → ETH up (dovish bets).
+M34_ENABLED: true
+M34_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M35: PBOC LPR DECISION SESSION BIAS ────────────────────
+# Session transmission chain bias on PBoC LPR release day.
+# Backtested: 81 releases (2019-2026), ETH/USDT 15m.
+# HOLD+CHOP+MARKDOWN: +4.43% (87.5% win, n=8). HOLD+CHOP+MARKUP: -3.89% (14.3%, n=7).
+# HOLD+TREND+MARKDOWN: +3.33% (60% win, n=5).
+# Chain: Release→Tokyo Open 67% ✅. London-NY→NY AM 78% ✅.
+# CNY weakening → capital into alt assets. Most signals are HOLD (Wyckoff context dominates).
+M35_ENABLED: true
+M35_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M36: ADP EMPLOYMENT REPORT SESSION BIAS ────────────────
+# Session transmission chain bias on ADP release day.
+# Backtested: 101 releases (2018-2026), ETH/USDT 15m.
+# MISS+LOW_VOL+MARKDOWN: +2.61% (67% win, n=3). INLINE+CHOP+MARKUP: +1.32% (50%, n=6).
+# Chain: London-NY→NY AM 68% ✅. Rest breaks.
+# ⚠️ ADP frequently diverges from NFP — creates traps. Use cautiously.
+M36_ENABLED: true
+M36_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M37: US Non-Farm Payrolls Session Bias (regime-conditional) ───
+# NFP = most market-moving US employment report. First Friday of month, 08:30 ET.
+# Backtested: 101 releases (2018-2026), ETH/USDT 15m.
+# Key edges:
+#   RANGE + COMPRESSING + STRONG_BEAT: +1.13% avg, 63% win, n=19 → LONG
+#   RANGE + COMPRESSING + MISS:        -2.00% avg, 20% win, n=5  → SHORT
+#   RANGE + COMPRESSING + INLINE:      -0.70% avg, 33% win, n=12 → SHORT
+# Transmission chain: London Morning→Midday→NY Pre-Open→NY Open→Overlap→NY AM
+#   73.1% → 74.3% → 75.2% → 83.2% → 90.1% direction persistence ✅
+# MISS vs BEAT: t=-2.567, p=0.0122 ✅ statistically significant
+M37_ENABLED: true
+M37_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M38: Germany Ifo Business Climate Session Bias (regime-conditional) ───
+# Ifo = forward-looking survey of 9,000 German firms. ~4th Monday, 08:00 UTC.
+# Leads Eurozone GDP by ~6 weeks, Germany Factory Orders by 1-2 weeks.
+# Backtested: 100 releases (2018-2026), ETH/USDT 15m.
+# PRIMARY SIGNAL: TREND (change from prior) — more predictive than beat/miss.
+#   IMPROVING:     +0.656% avg, 55.2% win, n=29 → LONG
+#   DETERIORATING: -0.880% avg, 37.8% win, n=37 → SHORT
+# Transmission chain: Frankfurt→London→NY 78-88% direction persistence ✅
+# MISS vs BEAT: NOT significant (p=0.646) — use TREND, not surprise
+M38_ENABLED: true
+M38_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M39: Michigan Consumer Sentiment Session Bias (regime-conditional) ───
+# UMS released 2nd & 4th Friday, 10:00 ET (14:00 UTC). 193 releases backtested.
+# Key sub-index: 5-Year Inflation Expectations (drives Fed modeling).
+# Primary signal: Wyckoff × Vol × Inflation Expectations.
+#   MARKDOWN + LOW_VOL + INFL_STABLE: +1.43% avg, 67% win, n=18 → LONG
+#   RANGE + COMPRESSING + INFL_UP:    -1.13% avg, 44% win, n=9 → SHORT
+# Weekend crypto continuity: Fri Close → Mon Asia 68.2% same direction ✅
+# Session chain: NY AM→NY Lunch→NY PM→Fri Close→Sat→Sun→Mon: 73-94% persist
+# Conference Board loopback: UMS sets tone for following week's Consumer Confidence.
+M39_ENABLED: true
+M39_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M40: Germany CPI Session Bias (regime-conditional) ───
+# Destatis CPI released ~10th-20th each month, 07:00 UTC (08:00 CET). 101 releases backtested.
+# 24h aggregate: -0.113% avg, 42.6% win — NOT significant. Only specific combos have edge.
+# Key combos:
+#   MARKDOWN + NEUTRAL + INLINE: -5.608% avg, 14% win, n=7  → SHORT
+#   RANGE + NEUTRAL + BEAT:      -4.441% avg, 33% win, n=6  → SHORT
+#   RANGE + COMPRESSING + BEAT:  +1.823% avg, 33% win, n=6  → LONG
+#   MARKUP + NEUTRAL + BEAT:     +1.606% avg, 67% win, n=3  → LONG
+# Transmission chain: Asia 89-93% persist, breaks at Asia→Europe, restarts London→NY 77-89%
+# Loopback: Germany CPI → Eurozone CPI Flash (1-2 days later) → ECB rate decision
+M40_ENABLED: true
+M40_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M41: Eurozone CPI Flash Session Bias (regime-conditional) ───
+# Eurostat HICP flash released ~end of month, 09:00 UTC (10:00 CET / 18:00 MYT). 92 releases backtested.
+# 24h aggregate: +0.931% avg, 53.3% win, n=92 — STATISTICALLY SIGNIFICANT (p=0.013) ✅
+# One of the few macro events with overall 24h significance!
+# Key combos:
+#   MARKUP + NEUTRAL + INLINE:     +5.060% avg, 75% win, n=4  → LONG
+#   RANGE + NEUTRAL + STRONG_BEAT: +3.940% avg, 100% win, n=5 → LONG
+#   RANGE + NEUTRAL + BEAT:        +2.655% avg, 62% win, n=8  → LONG
+# Transmission chain: Asia 88-99%, Asia→Europe 98-100% (HOLDS!), London→NY 75-100%
+# Core sticky + INLINE: +3.676% avg, 75% win, n=4
+# Loopback: EZ CPI → US CPI (2 weeks) → Core PCE (4 weeks) → ECB decision
+M41_ENABLED: true
+M41_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M42: Eurozone GDP Flash Session Bias (regime-conditional) ───
+# Eurostat GDP flash released quarterly (~end of month), 09:00 UTC. 33 releases backtested.
+# 24h aggregate: -0.174% avg, 39.4% win, n=33 — NOT significant (small sample, quarterly)
+# Key combos:
+#   RANGE + COMPRESSING + BEAT:    +1.208% avg, 75% win, n=4  → LONG
+#   STRONG + ACCELERATING + BEAT:  +2.889% avg, 67% win, n=3  → LONG
+#   RECESSION + DECELERATING:      +2.579% avg, 50% win, n=2  → LONG (ECB cut hopes)
+#   STAGNANT + STABLE + INLINE:    -0.660% avg, 27% win, n=11 → SHORT
+# Transmission chain: Asia 81-100%, Asia→Europe 97-100%, London→NY 78-100%
+# Loopback: EZ GDP → US GDP Advance (~1 week) → ECB cut trajectory
+M42_ENABLED: true
+M42_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M43: US GDP Advance Estimate Session Bias (contrarian, regime-conditional) ───
+# BEA GDP advance released quarterly (~last Thu of month after quarter), 12:30 UTC. 33 releases backtested.
+# 24h aggregate: +0.449% avg, 57.6% win, n=33 — NOT significant (p=0.41)
+# CONTRARIAN SIGNAL — bad GDP is good for ETH (liquidity play):
+#   BEAT mean: -0.445% | MISS mean: +1.281% (inverted!)
+#   Weak GDP: +2.377% avg vs Strong GDP: +0.021% avg
+# Key combos:
+#   STRONG + DECELERATING:    +4.681% avg, 100% win, n=2 → LONG
+#   RECESSION + DECELERATING: +2.271% avg, 67% win, n=3  → LONG
+#   MODERATE + STABLE:        -0.686% avg, 42% win, n=12 → SHORT
+# Transmission chain: Asia→London 85-100%, breaks at NY Pre-Open
+# Loopback: US GDP → Corporate Earnings → FOMC pricing → Fed rate decision
+M43_ENABLED: true
+M43_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M44: US Durable Goods Orders Session Bias (regime-conditional) ───
+# Census Bureau durable goods released ~25th-27th of month, 12:30 UTC. 91 releases backtested.
+# 24h aggregate: -0.597% avg, 47.3% win, n=91 — NOT significant (p=0.18)
+# Negative bias overall. SELL THE STRONG BEAT pattern.
+# Key combos:
+#   ACCUMULATION + NEUTRAL + BIG_MISS:   +5.481% avg, 100% win, n=3  → LONG
+#   DISTRIBUTION + NEUTRAL + STRONG_BEAT: -3.228% avg, 0% win, n=3  → SHORT
+#   RANGE + NEUTRAL + STRONG_BEAT:       -2.448% avg, 40% win, n=10 → SHORT
+#   RANGE + COMPRESSING + BIG_MISS:      +0.671% avg, 75% win, n=4  → LONG
+#   GROWING + STABLE + STRONG_BEAT:      -1.235% avg, 40% win, n=15 → SHORT
+# Transmission chain: Asia 88-100%, breaks at London→NY (48.4%)
+# Loopback: Durable Goods → Factory Orders (1 week) → ISM Manufacturing PMI
+M44_ENABLED: true
+M44_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M45: Core PCE + Personal Spending Session Bias (regime-conditional) ───
+# BEA Core PCE released ~final Friday of month, 12:30 UTC. 91 releases backtested.
+# 24h aggregate: +0.148% avg, 56.0% win, n=91 — NOT significant (p=0.71)
+# Weekend return (Fri→Mon): +0.691% avg, 57.1% win — positive bias
+# Fed's preferred inflation gauge. Sets weekend crypto trend.
+# Key combos:
+#   RANGE + CHOP + INLINE:           -3.921% avg, 67% win, n=3  → SHORT
+#   RANGE + NEUTRAL + INLINE:        +1.388% avg, 50% win, n=14 → LONG
+#   MARKDOWN + NEUTRAL + INLINE:     +1.624% avg, 80% win, n=5  → LONG
+#   RUNAWAY + SURGING + INLINE:      +2.744% avg, 80% win, n=5  → LONG
+#   COOL + STRONG + INLINE:          +2.743% avg, 100% win, n=4 → LONG
+#   RANGE + COMPRESSING + MILD_MISS: -1.074% avg, 14% win, n=7  → SHORT
+# Transmission chain: Asia 92-100%, breaks at London→NY (51.6%)
+# Loopback: Core PCE → FOMC Rate Decision (primary metric)
+M45_ENABLED: true
+M45_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M46: Japan CPI (Tokyo Flash) Session Bias (regime-conditional) ───
+# Statistics Bureau Japan CPI released ~final Friday, 23:30 UTC (07:30 MYT). 91 releases backtested.
+# 24h aggregate: +0.204% avg, 48.4% win, n=91 — NOT significant (p=0.66)
+# Hot CPI ≥3%: -1.216% avg vs Cool CPI <2%: +0.800% avg (marginal, p=0.11)
+# Hawkish core ≥2%: -0.465% avg vs Dovish <2%: +0.622% avg
+# Key combos:
+#   RANGE + COMPRESSING + COOL_MISS: +2.836% avg, 57% win, n=7  → LONG
+#   RANGE + NEUTRAL + WARM_BEAT:     +1.859% avg, 50% win, n=8  → LONG
+#   RANGE + NEUTRAL + COOL_MISS:     -3.031% avg, 40% win, n=5  → SHORT
+#   DOVISH + WARM_BEAT:              +3.534% avg, 75% win, n=4  → LONG
+#   HAWKISH + INLINE:                -0.843% avg, 46% win, n=11 → SHORT
+# Transmission chain: Tokyo→London 67-100%, London→NY 89-100% (STRONG)
+# Loopback: Japan CPI → BoJ Rate Decision (primary metric)
+# Carry-trade mechanism: hot CPI → JPY strength → USD/JPY drop → ETH pressure
+M46_ENABLED: true
+M46_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M47: BoJ Rate Decision Session Bias (regime-conditional) ───
+# BoJ Monetary Policy Meeting announcements (~8/year, ~03:30 UTC = 11:30 MYT)
+# Backtested: 66 BoJ decisions, 2018-2026, ETH/USDT 15m
+# Key edges:
+#   HOLD + CHOP + MARKDOWN: +4.84% avg, 87.5% win, n=8 → LONG
+#   HOLD + CHOP + RANGE:    +2.55% avg, 66.7% win, n=3 → LONG
+# Transmission: Release→Asia Mid 70%, London-NY→NY AM 82%
+# Mechanism: carry-trade regime, YCC impact on global risk appetite
+M47_ENABLED: true
+M47_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M48: ECB Rate Decision + Lagarde Presser Session Bias (regime-conditional) ───
+# ECB Governing Council announcements (~8/year, 13:45 UTC = 20:15 MYT)
+# Backtested: 67 ECB decisions, 2018-2026, ETH/USDT 15m
+# Key edges:
+#   HOLD + LOW_VOL + MARKUP: -2.03% avg, 42.9% win, n=7 → SHORT
+#   HIKE + CHOP + MARKUP:    +4.90% avg, 100% win, n=2 → LONG (small n)
+#   DOVE + CHOP + MARKDOWN:  -1.42% avg, 33% win, n=3 → SHORT
+# Transmission: ECB Decision→NY Open 96%, Presser→Overlap 96%, Overlap→NY AM 69%
+# Mechanism: hawkish tone → EUR up → DXY down → ETH boost
+M48_ENABLED: true
+M48_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M49: BoE Rate Decision + MPC Vote Split Session Bias (regime-conditional) ───
+# BoE MPC announcements (~8/year, 12:00 UTC = 20:00 MYT)
+# Backtested: 68 BoE decisions, 2018-2026, ETH/USDT 15m
+# Key edges:
+#   NEUTRAL_HOLD (0-9-0) + CHOP + MARKUP: +3.15% avg, 66.7% win, n=6 → LONG
+#   NEUTRAL_HOLD + LOW_VOL + MARKDOWN:    +2.08% avg, 57.1% win, n=7 → LONG
+#   Unanimous hold (0-9-0):               +1.48% avg, 68% win, n=22 → LONG
+# Transmission: BoE→Midday 96%, Midday→NY Pre-Open 96%, Overlap→NY AM 78%
+# Mechanism: MPC vote split → GBP direction → DXY → ETH
+M49_ENABLED: true
+M49_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M50: CB Consumer Confidence Session Bias (regime-conditional) ───
+# Conference Board Consumer Confidence released last Tuesday, 10:00 ET (14:00 UTC).
+# Backtested: 100 releases, 2018-2026, ETH/USDT 15m.
+# 24h aggregate: +0.684% avg, 58% win, n=100 — NOT significant (p=0.11)
+# Contrarian: BIG_MISS overall +2.408% avg, 76.5% win, n=17 → LONG
+# Key combos:
+#   MARKUP + NEUTRAL + BIG_MISS:   +4.918% avg, 100% win, n=3  → LONG
+#   MARKDOWN + NEUTRAL + BIG_MISS: -1.992% avg, 75% win, n=4   → SHORT
+#   MARKUP + NEUTRAL + STRONG_BEAT: -1.200% avg, 20% win, n=5  → SHORT (contrarian)
+# No session chain holds (all <55%). Edge is release-driven, spike window.
+# Mechanism: bad confidence → dovish Fed repricing → ETH rallies
+M50_ENABLED: true
+M50_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M51: UK Monthly GDP Session Bias (regime-conditional) ───
+# ONS Monthly GDP released ~10-12th of month, 07:00 UTC (15:00 MYT).
+# Backtested: 90 releases, 2018-2026, ETH/USDT 15m.
+# 24h aggregate: -0.259% avg, 48.9% win — NOT significant (p=0.65)
+# Key edges:
+#   STRONG_BEAT overall:              +3.398% avg, 91.7% win, n=12 → LONG
+#   RECESSION level (YoY < -2%):      +1.241% avg, 61.5% win, n=13 → LONG (contrarian)
+#   ACCUMULATION + COMPRESSING + CONTRACTION: -5.466% avg, 0% win, n=3 → SHORT
+#   MARKDOWN + NEUTRAL + CONTRACTION: -4.369% avg, 33% win, n=3 → SHORT
+# Contrarian: recession → BoE cut cycle → yield compression → crypto positive
+# Chain: London Open→Morning 61.1% (marginal). Most breaks.
+# Loopback: UK GDP → UK Retail Sales → BoE rate decision
+M51_ENABLED: true
+M51_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M52: RBA Rate Decision Session Bias (regime-conditional) ───
+# RBA rate decision released ~11x/year, 03:30 UTC (11:30 MYT).
+# Backtested: 86 releases, 2018-2026, ETH/USDT 15m.
+# 24h aggregate: +0.899% avg, 53.5% win — NOT significant (p=0.11)
+# Key edges:
+#   CUT overall:                              +1.520% avg, 54.5% win, n=11 → LONG
+#   ACCUMULATION + COMPRESSING + NEUTRAL_HOLD: +2.085% avg, 67% win, n=6 → LONG
+#   MARKDOWN + CRISIS + NEUTRAL_HOLD:          +3.252% avg, 100% win, n=3 → LONG
+#   MARKUP + TREND + NEUTRAL_HOLD:             +2.882% avg, 67% win, n=3 → LONG
+#   MARKDOWN + TREND + NEUTRAL_HOLD:           -3.022% avg, 0% win, n=3 → SHORT
+# Chain: Sydney→Tokyo 57.6% (marginal). Most breaks.
+# Mechanism: Australia = global risk proxy. AUD strength → ETH bid density.
+M52_ENABLED: true
+M52_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M53: Australia Quarterly CPI Session Bias (regime-conditional) ───
+# ABS Quarterly CPI released ~4x/year, 00:30 UTC (08:30 MYT).
+# Backtested: 34 releases, 2018-2026, ETH/USDT 15m.
+# 24h aggregate: +0.875% avg, 58.8% win — NOT significant (p=0.21)
+# Small sample (quarterly). Signal-level edges:
+#   HOT (≥5%):     +2.829% avg, 100% win, n=5  → LONG
+#   COOL (1.5-2%): +1.847% avg, 63.6% win, n=11 → LONG
+#   COLD (<1.5%):  -2.186% avg, 50% win, n=4   → SHORT
+# Mechanism: hot CPI → AUD strength → crypto risk positive.
+# Loopback: CPI = primary input for RBA rate decision (M52).
+M53_ENABLED: true
+M53_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M54: China Quarterly GDP Session Bias (regime-conditional) ───
+# NBS China GDP released ~4x/year, 02:00 UTC (10:00 MYT).
+# Backtested: 34 releases, 2018-2026, ETH/USDT 15m.
+# 24h aggregate: +0.741% avg, 52.9% win — NOT significant (p=0.15)
+# Key edges:
+#   BEAT overall:  +1.313% avg, 66.7% win, n=9  → LONG
+#   MISS overall:  +1.370% avg, 75% win, n=4    → LONG (stimulus expectations)
+#   STRONG_BEAT:   -0.882% avg, 33% win, n=3    → SHORT (sell the news)
+# Chain: NY Close→Pre-Asia D2 67.6% ✅. Tokyo→Asia 64.7% ⚠️.
+# Mechanism: miss → PBoC stimulus expectations → V-bottom. Same day: Retail + Industrial.
+M54_ENABLED: true
+M54_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M55: US Treasury Auction Session Bias (regime-conditional) ───
+# US 10Y/30Y Treasury auctions ~2x/week, 17:00 UTC (01:00 MYT).
+# Backtested: 200 auctions, 2018-2026, ETH/USDT 15m.
+# 24h aggregate: +0.063% avg, 47.5% win — NOISE (p=0.87)
+# Key edges:
+#   WEAK_DEMAND:               -3.479% avg, 42.9% win, n=14 → SHORT
+#   MARKUP × CRISIS × GOOD:    +2.241% avg, 82% win, n=11  → LONG
+#   MARKUP × NEUTRAL × NORMAL: +1.905% avg, 67% win, n=9   → LONG
+#   MARKUP × TREND × NORMAL:   +3.025% avg, 67% win, n=6   → LONG
+# No session chain. Mechanism: weak auction → yield spike → ETH sell-off.
+M55_ENABLED: true
+M55_WINDOW_DAYS: 0            # Same-day only (weekly frequency)
+
+# ─── M56: US CPI Session Bias (regime-conditional) ───────────
+# BLS CPI ~10th-14th of month, 12:30 UTC (08:30 ET = 20:30 MYT).
+# Backtested: 89 releases, 2018-2026, ETH/USDT 15m.
+# Key edges:
+#   RANGE × NEUTRAL × BIG_MISS:         +2.150% avg, 67% win, n=6  → LONG
+#   RANGE × COMPRESSING × STRONG_BEAT:  -2.430% avg, 20% win, n=5  → SHORT
+#   RUNAWAY × NEUTRAL × INLINE:         -1.890% avg, 33% win, n=9  → SHORT
+#   HOT × NEUTRAL × MISS:               +1.950% avg, 67% win, n=6  → LONG
+#   DISTRIBUTION × HIGH_VOL × BEAT:     -2.810% avg, 20% win, n=5  → SHORT
+# Mechanism: hot CPI → hawkish Fed → yield surge → ETH sell-off.
+M56_ENABLED: true
+M56_WINDOW_DAYS: 0            # Same-day only (monthly frequency)
+
+# ─── M57: FOMC Rate Decision Session Bias (regime-conditional) ───
+# FOMC ~8x/year, 18:00 UTC (14:00 ET = 02:00 MYT+1). Presser 18:30 UTC.
+# Backtested: 60+ meetings, 2018-2026, ETH/USDT 15m.
+# Key edges:
+#   HAWKISH_SURPRISE:     -3.8% avg, 25% win, n=8  → SHORT
+#   DOVISH_SURPRISE:      +4.2% avg, 75% win, n=6  → LONG
+#   HAWKISH_DOT_PLOT:     -2.1% avg, 33% win, n=12 → SHORT
+#   DOVISH_DOT_PLOT:      +2.8% avg, 67% win, n=5  → LONG
+#   NEUTRAL (hold):       +0.3% avg, 55% win — NOISE
+# Mechanism: hawkish dot plot → yield surge → liquidations → ETH drops.
+# Presser→NY PM 70-80% persistence. Dot plot days carry 3x vol.
+M57_ENABLED: true
+M57_WINDOW_DAYS: 0            # Same-day only (8x/year)
+
+# ─── M58: Powell Press Conference Session Bias (regime-conditional) ───
+# FOMC presser ~8x/year, 18:30 UTC (14:30 ET = 02:30 MYT+1).
+# Backtested: 60+ pressers, 2018-2026, ETH/USDT 15m.
+# Key edges:
+#   REVERSAL_DOVISH (hawk stmt → dove presser): +4.2% avg, 75% win, n=6  → LONG
+#   AMPLIFY_HAWK:                               -3.8% avg, 25% win, n=10 → SHORT
+#   AMPLIFY_DOVE:                               +3.8% avg, 75% win, n=6  → LONG
+#   CONSISTENT_HAWK:                            -1.8% avg, 33% win, n=6  → SHORT
+# Mechanism: Powell tone vs statement = strongest signal. Reversals > amplifications.
+M58_ENABLED: true
+M58_WINDOW_DAYS: 0            # Same-day only (8x/year)
+
+# ─── M59: FOMC Meeting Minutes Session Bias (regime-conditional) ───
+# FOMC Minutes ~8x/year, 18:00 UTC (14:00 ET = 02:00 MYT+1), ~3 weeks lag.
+# Backtested: 60+ releases, 2018-2026, ETH/USDT 15m.
+# Key edges:
+#   HAWK_INFLATION (inflation anxiety):  -2.1% avg, 30% win, n=10 → SHORT
+#   DOVE_CUT (cut signal):               +1.8% avg, 67% win, n=6  → LONG
+#   DOVE_GROWTH (growth concern):        +1.5% avg, 60% win, n=5  → LONG
+# Mechanism: gradual repricing via FedWatch, not spike. Overnight drift.
+M59_ENABLED: true
+M59_WINDOW_DAYS: 0            # Same-day only (8x/year, 3-week lag)
+
+# ─── M60: US PPI SESSION BIAS ────────────────────────────────
+# BLS PPI Final Demand released ~mid-month, 08:30 ET (12:30 UTC). 100 releases backtested.
+# Overall: -0.31% avg, 48% win, p=0.54 — NOT significant (noise).
+# PPI confirms/denies CPI signal (released 1-2 days after CPI).
+# Edges in RANGE + COMPRESSING regime (consistently bearish across signals).
+M60_ENABLED: true
+M60_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M61: US WEEKLY JOBLESS CLAIMS SESSION BIAS ──────────────
+# Weekly claims released every Thursday, 08:30 ET (12:30 UTC). 437 releases backtested.
+# Claims are BACKGROUND CONTEXT — overall noise (p=0.47). Edges in specific regime combos:
+#   RANGE + COMPRESSING + CRISIS: +1.44% avg, 61% win, n=28 → LONG
+#   RANGE + COMPRESSING + ELEVATED: -2.01% avg, 25% win, n=16 → SHORT
+#   RANGE + COMPRESSING + SPIKE: +2.44% avg, 63% win, n=8 → LONG
+#   MARKUP + COMPRESSING + NORMAL: +1.38% avg, 75% win, n=8 → LONG
+#   MARKDOWN + COMPRESSING + LOW: +3.02% avg, 83% win, n=6 → LONG
+# Session chain: London Midday→NY PM 80-90% direction persistence.
+M61_ENABLED: true
+M61_WINDOW_DAYS: 0            # Same-day only (weekly frequency — every Thursday)
+
+# ─── M65: CHINA NBS MONTHLY ACTIVITY SESSION BIAS ─────────────
+# Session bias on China monthly activity data release day.
+# Backtested: 87 releases (2018-2026), ETH/USDT 15m.
+# 24h aggregate: +0.169% avg, 46% win — NOT significant (p=0.73).
+# Session transmission chain: BROKEN — every transition <55%.
+# Edges are regime-conditional only (Wyckoff × Vol × Signal):
+#   MARKUP + CRISIS + INLINE:        +8.02% avg, 75% win, n=4  → LONG
+#   MARKDOWN + COMPRESSING + INLINE: -5.86% avg, 33% win, n=3  → SHORT
+#   MARKDOWN + NEUTRAL + INLINE:     -2.30% avg, 14% win, n=7  → SHORT
+# Conservative: small ICS adj, size reduction on BIG_MISS.
+M65_ENABLED: true
+M65_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── M62: US UNEMPLOYMENT RATE SESSION BIAS ──────────────────
+# Released with NFP (first Friday, 08:30 ET). 101 releases backtested.
+# Key edges:
+#   RANGE + COMPRESSING + SURPRISE_BEAT: +1.00% avg, 67% win, n=15 → LONG
+#   RANGE + COMPRESSING + NEUTRAL: -0.56% avg, 35% win, n=17 → SHORT
+#   LEVEL_DANGER (>4.5%): +3.17% avg (contrarian) → LONG
+#   SAHM_TRIGGERED: -0.42% avg → SHORT
+# Mechanism: unemployment = Fed dual mandate metric. Rising = dovish pivot.
+M62_ENABLED: true
+M62_WINDOW_DAYS: 1            # Days after release to consider active
+
+# ─── DATA ────────────────────────────────────────────────────
+PAIR: "ETHUSDT"
+WARMUP_BARS_1H: 168
+
+# ─── ADAPTIVE TP ─────────────────────────────────────────────
+# Dynamic exit management: R:R milestones, vol adaptation, momentum decay
+ADAPTIVE_TP_ENABLED: true
+# R:R milestone partials
+ADAPTIVE_RR_MILESTONE_1: 1.0       # close partial at 1:1 R:R
+ADAPTIVE_RR_MILESTONE_2: 2.0       # close partial at 1:2 R:R
+ADAPTIVE_RR_CLOSE_1: 0.40          # close 40% at milestone 1
+ADAPTIVE_RR_CLOSE_2: 0.30          # close 30% at milestone 2
+# Realized volatility adaptation
+ADAPTIVE_VOL_ENABLED: true
+ADAPTIVE_VOL_LOOKBACK: 16          # bars to recalc ATR (4h on 15m)
+ADAPTIVE_VOL_EXPAND_MULT: 1.3      # widen TP if ATR grows 30%+
+ADAPTIVE_VOL_COMPRESS_MULT: 0.7    # tighten TP if ATR shrinks 30%+
+ADAPTIVE_VOL_TIGHTEN_FRAC: 0.5     # tighten to 50% of original distance
+# Momentum decay
+ADAPTIVE_MOMENTUM_ENABLED: true
+ADAPTIVE_MOM_BARS: 12              # bars to check momentum (3h)
+ADAPTIVE_MOM_MIN_MOVE: 0.001       # min 0.1% progress required
+ADAPTIVE_MOM_EXIT_AFTER: 24        # exit after 24 bars (6h) no progress
+
+# ═══════════════════════════════════════════════════════════════
+# TRADITIONAL FINANCE MACRO FILTERS (M66–M73)
+# Added 2026-05-18 based on realtime_signal_filters_analysis.txt
+# ═══════════════════════════════════════════════════════════════
+
+# ─── M66: USD/JPY CARRY TRADE ───────────────────────────────
+M66_ENABLED: true
+M66_WEIGHT: 0.08
+M66_ALERT_THRESH: -0.3       # % drop in 5m to trigger alert
+M66_CONFIRMED_THRESH: -0.8   # % drop in 15m = confirmed carry unwind
+M66_CARRY_ALERT_SCORE: 0.65
+M66_CARRY_CONFIRMED_SCORE: 0.80
+
+# ─── M67: DXY DIVERGENCE ────────────────────────────────────
+M67_ENABLED: true
+M67_WEIGHT: 0.06
+M67_DXY_THRESH: 0.2          # % DXY move in 15m to be significant
+M67_DIVERGENCE_ETH_THRESH: 0.05  # % ETH move to count as "moving"
+
+# ─── M68: 10Y YIELD + TIPS ──────────────────────────────────
+M68_ENABLED: true
+M68_WEIGHT: 0.10
+M68_ALERT_BPS: 5.0           # 5bps in 1h = significant
+M68_EXTREME_BPS: 10.0        # 10bps in 1h = extreme, suppress longs
+
+# ─── M69: VIX REGIME ────────────────────────────────────────
+M69_ENABLED: true
+M69_WEIGHT: 0.08
+M69_COMPLACENT_THRESH: 15.0
+M69_ELEVATED_THRESH: 20.0
+M69_FEAR_THRESH: 30.0
+M69_CRISIS_THRESH: 40.0
+M69_SPIKE_DELTA: 3.0         # 3-point single-session spike = risk-off
+
+# ─── M70: WTI CRUDE OIL ─────────────────────────────────────
+M70_ENABLED: true
+M70_WEIGHT: 0.05
+M70_ALERT_THRESH: 3.0        # % move in 4h to trigger
+
+# ─── M71: GOLD + DXY GEOPOLITICAL ───────────────────────────
+M71_ENABLED: true
+M71_WEIGHT: 0.06
+M71_ALERT_THRESH: 1.0        # % move in 4h to trigger
+
+# ─── M72: BTC DOMINANCE ─────────────────────────────────────
+M72_ENABLED: true
+M72_WEIGHT: 0.10
+M72_HIGH_THRESH: 55.0        # BTC.D > 55% = altcoin suppression
+M72_LOW_THRESH: 48.0         # BTC.D < 48% = altcoin season
+
+# ─── M73: STABLECOIN MINTS ──────────────────────────────────
+M73_ENABLED: true
+M73_WEIGHT: 0.05
+M73_LARGE_MINT_THRESH: 500000000    # $500M single-day mint
+M73_MEGA_MINT_THRESH: 1000000000    # $1B single-day mint
+M73_LARGE_BURN_THRESH: 500000000    # $500M burn
+# ─── M74: USDT DOMINANCE ────────────────────────────────
+M74_ENABLED: true
+M74_WEIGHT: 0.08
+M74_HIGH_THRESH: 4.0        # USDT.D > 4.0% = strong risk-off
+# ─── M75: TOXIC ORDER FLOW ────────────────────────────────
+M75_ENABLED: true
+M75_WEIGHT: 0.10
+M75_CVD_WINDOW: 20
+M75_TAKER_WINDOW: 8
+M75_OI_WINDOW: 10
+M75_FUNDING_WINDOW: 3
+M75_TAKER_PERSIST_THRESH: 0.62
+M75_CVD_DIV_THRESH: 0.015
+M75_OI_EXPAND_THRESH: 0.005
+M75_FUNDING_EXTREME: 0.0003
+M75_W_TAKER: 0.30
+M75_W_CVD: 0.35
+M75_W_OI: 0.20
+M75_W_FUNDING: 0.15
+M75_BULL_THRESHOLD: 0.35
+M75_BEAR_THRESHOLD: -0.35
+M74_LOW_THRESH: 2.5         # USDT.D < 2.5% = strong risk-on

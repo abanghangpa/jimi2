@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+"""
+Run scanner.py with caching to avoid repeated fetching.
+If a recent scan result exists (within CACHE_TTL), use it.
+Otherwise run scanner and cache the result.
+"""
+import os
+import sys
+import json
+import time
+import hashlib
+from pathlib import Path
+import subprocess
+
+CACHE_DIR = Path("/root/.openclaw/workspace/scanner_cache")
+CACHE_DIR.mkdir(exist_ok=True)
+CACHE_TTL = 300  # 5 minutes
+
+def _cache_key() -> str:
+    # Use fixed key for scanner; could include symbol/timeframe if needed
+    return "scanner_eth_usdt_15m"
+
+def _get_from_cache(key: str):
+    cache_file = CACHE_DIR / f"{key}.json"
+    if cache_file.exists():
+        try:
+            with open(cache_file, "r") as f:
+                entry = json.load(f)
+            if time.time() - entry["ts"] < CACHE_TTL:
+                return entry["data"]
+        except Exception:
+            pass
+    return None
+
+def _save_to_cache(key: str, data):
+    cache_file = CACHE_DIR / f"{key}.json"
+    try:
+        with open(cache_file, "w") as f:
+            json.dump({"ts": time.time(), "data": data}, f)
+    except Exception:
+        pass
+
+def main():
+    key = _cache_key()
+    cached = _get_from_cache(key)
+    if cached is not None:
+        print("Using cached scanner result")
+        print(cached)
+        return 0
+
+    # Run scanner with timeout
+    scanner_path = "/root/.openclaw/workspace/jimi_audit/scripts/scanner.py"
+    venv_python = "/root/.openclaw/workspace/jimi_audit/venv/bin/python"
+    cmd = [venv_python, scanner_path, "--json"]
+    try:
+        # Increase subprocess timeout to 300 seconds
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        if result.returncode != 0:
+            print(f"Scanner failed: {result.stderr}")
+            return result.returncode
+        output = result.stdout
+        # Extract JSON object from output (assume it's the last JSON object)
+        import re
+        # Find all potential JSON objects (simplified: from first { to last })
+        # But we want the last complete JSON object
+        # We'll search for the last occurrence of '}' and then find the matching '{' backwards
+        # This is not foolproof but works for our case.
+        last_brace = output.rfind('}')
+        if last_brace != -1:
+            # Find the matching opening brace by scanning backwards
+            # We'll just take the substring from the first '{' before that brace to the brace
+            first_brace = output.rfind('{', 0, last_brace+1)
+            if first_brace != -1:
+                json_str = output[first_brace:last_brace+1]
+                try:
+                    json.loads(json_str)  # validate
+                    data = json_str
+                except Exception:
+                    # If that fails, try to find any JSON object by looking for '{' and '}' pairs
+                    # We'll use a simple regex to find the outermost braces
+                    matches = re.findall(r'\{.*\}', output, re.DOTALL)
+                    if matches:
+                        # Take the last match
+                        json_str = matches[-1]
+                        try:
+                            json.loads(json_str)
+                            data = json_str
+                        except Exception:
+                            print(f"Error running scanner: Could not extract JSON from output")
+                            return 1
+                    else:
+                        print(f"Error running scanner: Could not extract JSON from output")
+                        return 1
+            else:
+                print(f"Error running scanner: Could not extract JSON from output")
+                return 1
+        else:
+            print(f"Error running scanner: Could not extract JSON from output")
+            return 1
+        # Optionally validate JSON
+        json.loads(data)  # will raise if invalid
+        _save_to_cache(key, data)
+        print(data)
+        return 0
+    except subprocess.TimeoutExpired:
+        print("Scanner timed out after 120 seconds")
+        return 1
+    except Exception as e:
+        print(f"Error running scanner: {e}")
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main())

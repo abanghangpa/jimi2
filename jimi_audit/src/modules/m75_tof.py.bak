@@ -1,0 +1,308 @@
+"""M75: Toxic Order Flow (TOF) Scorer — detects informed / directional order flow."""
+
+import numpy as np
+from collections import deque
+
+
+# ── Config ────────────────────────────────────────────────────────────────────
+
+TOF_CONFIG = {
+ # Lookback windows (bars @ 15m)
+ "cvd_window": 20, # CVD divergence lookback
+ "taker_window": 8, # taker ratio persistence lookback
+ "oi_window": 10, # OI trend lookback
+ "funding_window": 3, # funding smoothing bars (each = 15m, funding is 8h)
+
+ # Thresholds
+ "taker_persist_thresh": 0.62, # sustained ratio to count as directional
+ "cvd_div_thresh": 0.015, # min CVD vs price divergence (normalized)
+ "oi_expand_thresh": 0.005, # OI expansion per bar (0.5%)
+ "funding_extreme": 0.0003, # extreme funding threshold per 8h period
+
+ # Weights (must sum to 1.0)
+ "w_taker": 0.30,
+ "w_cvd": 0.35,
+ "w_oi": 0.20,
+ "w_funding": 0.15,
+
+ # Signal gates
+ "bull_threshold": 0.35,
+ "bear_threshold": -0.35,
+}
+
+
+# ── State (call init_tof() once, then update_tof() per bar) ──────────────────
+
+class TOFState:
+    def __init__(self, cfg=TOF_CONFIG):
+        self.cfg = cfg
+        w = max(cfg["cvd_window"], cfg["taker_window"],
+                cfg["oi_window"], cfg["funding_window"]) + 5
+
+        self.closes = deque(maxlen=w)
+        self.buy_vols = deque(maxlen=w)
+        self.sell_vols= deque(maxlen=w)
+        self.ois = deque(maxlen=w)
+        self.fundings = deque(maxlen=w)
+
+        self.cvd_cum = 0.0 # running CVD
+
+    def push(self, bar: dict):
+        """Feed one closed bar. Returns tof result dict."""
+        self.closes.append(bar["close"])
+        self.buy_vols.append(bar.get("buy_vol", bar["volume"] * 0.5))
+        self.sell_vols.append(bar.get("sell_vol", bar["volume"] * 0.5))
+        self.ois.append(bar.get("oi", 0.0))
+        self.fundings.append(bar.get("funding", 0.0))
+        self.cvd_cum += bar.get("buy_vol", 0) - bar.get("sell_vol", 0)
+
+        return self._score()
+
+    # ── Sub-scorers ───────────────────────────────────────────────────────────
+
+    def _score_taker(self) -> float:
+        """
+        Taker persistence score.
+        Counts how many of the last N bars had sustained directional taker ratio.
+        Returns [-1, +1].
+        """
+        cfg = self.cfg
+        n = cfg["taker_window"]
+        if len(self.buy_vols) < n:
+            return 0.0
+
+        buys = list(self.buy_vols)[-n:]
+        sells = list(self.sell_vols)[-n:]
+
+        bull_bars = 0
+        bear_bars = 0
+        thresh = cfg["taker_persist_thresh"]
+
+        for b, s in zip(buys, sells):
+            total = b + s
+            if total == 0:
+                continue
+            ratio = b / total
+            if ratio >= thresh:
+                bull_bars += 1
+            elif ratio <= (1 - thresh):
+                bear_bars += 1
+
+        score = (bull_bars - bear_bars) / n
+        return float(np.clip(score, -1.0, 1.0))
+
+    def _score_cvd(self) -> float:
+        """
+        CVD divergence score.
+        Compares price direction vs CVD direction over cvd_window bars.
+        Divergence = informed flow working against price.
+        Returns [-1, +1].
+        """
+        cfg = self.cfg
+        n = cfg["cvd_window"]
+        if len(self.closes) < n or len(self.buy_vols) < n:
+            return 0.0
+
+        closes = list(self.closes)[-n:]
+        buys = list(self.buy_vols)[-n:]
+        sells = list(self.sell_vols)[-n:]
+
+        # Rolling CVD over window
+        cvd_series = np.cumsum(np.array(buys) - np.array(sells))
+
+        price_change = (closes[-1] - closes[0]) / (closes[0] + 1e-9)
+        cvd_change = (cvd_series[-1] - cvd_series[0]) / (abs(cvd_series[0]) + 1.0)
+
+        div_thresh = cfg["cvd_div_thresh"]
+
+        # Same direction = no divergence, score neutral
+        if price_change * cvd_change >= 0:
+            return 0.0
+
+        # Divergence detected — score by CVD direction (informed)
+        # CVD up + price down = bullish informed absorption → +score
+        # CVD down + price up = bearish informed distribution → -score
+        magnitude = min(abs(cvd_change) / (div_thresh * 10), 1.0)
+        return float(np.sign(cvd_change) * magnitude)
+
+    def _score_oi(self) -> float:
+        """
+        OI vs price direction score.
+        OI expanding with falling price = shorts being added (bearish informed).
+        OI falling with falling price = deleveraging (neutral/near-end-of-move).
+        OI expanding with rising price = longs adding (bullish informed).
+        Returns [-1, +1].
+        """
+        cfg = self.cfg
+        n = cfg["oi_window"]
+        if len(self.ois) < n or len(self.closes) < n:
+            return 0.0
+
+        ois = list(self.ois)[-n:]
+        closes = list(self.closes)[-n:]
+
+        if ois[0] == 0:
+            return 0.0
+
+        oi_chg = (ois[-1] - ois[0]) / (ois[0] + 1e-9)
+        price_chg = (closes[-1] - closes[0]) / (closes[0] + 1e-9)
+
+        thresh = cfg["oi_expand_thresh"]
+
+        # OI expanding in same direction as price = confirming trend
+        if abs(oi_chg) < thresh:
+            return 0.0 # neutral — OI flat
+
+        score = np.sign(price_chg) * min(abs(oi_chg) / (thresh * 5), 1.0)
+        return float(np.clip(score, -1.0, 1.0))
+
+    def _score_funding(self) -> float:
+        """
+        Funding rate contrarian score.
+        Extreme negative funding = retail crowded short → bullish TOF setup.
+        Extreme positive funding = retail crowded long → bearish TOF setup.
+        Returns [-1, +1] — contrarian, so inverted vs funding sign.
+        """
+        cfg = self.cfg
+        n = cfg["funding_window"]
+        if len(self.fundings) < n:
+            return 0.0
+
+        recent = list(self.fundings)[-n:]
+        avg_funding = float(np.mean(recent))
+        extreme = cfg["funding_extreme"]
+
+        if abs(avg_funding) < extreme * 0.5:
+            return 0.0 # neutral funding, no signal
+
+        # Contrarian: extreme negative funding → bullish signal (+)
+        ratio = np.clip(avg_funding / extreme, -1.0, 1.0)
+        return float(-ratio) # inverted
+
+    # ── Composite ─────────────────────────────────────────────────────────────
+
+    def _score(self) -> dict:
+        cfg = self.cfg
+
+        s_taker = self._score_taker()
+        s_cvd = self._score_cvd()
+        s_oi = self._score_oi()
+        s_funding = self._score_funding()
+
+        tof_score = (
+            cfg["w_taker"] * s_taker +
+            cfg["w_cvd"] * s_cvd +
+            cfg["w_oi"] * s_oi +
+            cfg["w_funding"] * s_funding
+        )
+        tof_score = float(np.clip(tof_score, -1.0, 1.0))
+
+        if tof_score >= cfg["bull_threshold"]:
+            signal = "BULL_TOF"
+        elif tof_score <= cfg["bear_threshold"]:
+            signal = "BEAR_TOF"
+        else:
+            signal = "NEUTRAL"
+
+        return {
+            "tof_score": round(tof_score, 4),
+            "tof_signal": signal,
+            "tof_components": {
+                "taker_persist": round(s_taker, 4),
+                "cvd_divergence": round(s_cvd, 4),
+                "oi_direction": round(s_oi, 4),
+                "funding_contra": round(s_funding, 4),
+            }
+        }
+
+
+# ── JIMI Integration helper ───────────────────────────────────────────────────
+
+def run_tof_on_df(df, cfg=TOF_CONFIG):
+    """
+    Convenience wrapper: run TOF on a full OHLCV dataframe.
+
+    Required columns: close, buy_vol, sell_vol, oi, funding
+    Adds: tof_score, tof_signal, tof_taker, tof_cvd, tof_oi, tof_funding
+    """
+    import pandas as pd
+
+    state = TOFState(cfg)
+    results = []
+
+    for _, row in df.iterrows():
+        bar = row.to_dict()
+        res = state.push(bar)
+        results.append(res)
+
+    out = pd.DataFrame(results)
+    df = df.copy()
+    df["tof_score"] = out["tof_score"].values
+    df["tof_signal"] = out["tof_signal"].values
+    df["tof_taker"] = out["tof_components"].apply(lambda x: x["taker_persist"]).values
+    df["tof_cvd"] = out["tof_components"].apply(lambda x: x["cvd_divergence"]).values
+    df["tof_oi"] = out["tof_components"].apply(lambda x: x["oi_direction"]).values
+    df["tof_funding"] = out["tof_components"].apply(lambda x: x["funding_contra"]).values
+
+    return df
+
+
+# ── Gate function for JIMI Phase 0 / scanner ─────────────────────────────────
+
+def tof_gate(tof_result: dict, direction: str) -> bool:
+    """
+    Returns True if TOF confirms the intended trade direction.
+    direction: "long" or "short"
+    Used as an additional gate in JIMI Phase 0.
+    """
+    signal = tof_result.get("tof_signal", "NEUTRAL")
+    score = tof_result.get("tof_score", 0.0)
+
+    if direction == "long":
+        return signal == "BULL_TOF" or score > 0.20
+    elif direction == "short":
+        return signal == "BEAR_TOF" or score < -0.20
+    return False
+
+
+# ── Quick smoke test ──────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    import random, json
+    random.seed(42)
+
+    state = TOFState()
+    price = 2000.0
+
+    print("Bar | TOF Score | Signal | Taker | CVD | OI | Fund")
+    print("-" * 70)
+
+    for i in range(30):
+        # Simulate a bear dump: sustained sell taker, CVD falling
+        buy_ratio = 0.35 + random.gauss(0, 0.05)
+        vol = 1000 + random.uniform(-200, 200)
+        buy_vol = vol * buy_ratio
+        sell_vol = vol * (1 - buy_ratio)
+        price *= (1 + random.gauss(-0.002, 0.003))
+
+        bar = {
+            "close": round(price, 2),
+            "high": price * 1.001,
+            "low": price * 0.999,
+            "volume": vol,
+            "buy_vol": buy_vol,
+            "sell_vol": sell_vol,
+            "oi": 50000 + i * 200 + random.uniform(-100, 100),
+            "funding": -0.0002 - i * 0.000005,
+        }
+
+        res = state.push(bar)
+        c = res["tof_components"]
+        print(
+            f"{i+1:3d} | {res['tof_score']:+.4f} | "
+            f"{res['tof_signal']:<10} | "
+            f"{c['taker_persist']:+.3f} | "
+            f"{c['cvd_divergence']:+.3f} | "
+            f"{c['oi_direction']:+.3f} | "
+            f"{c['funding_contra']:+.3f}"
+        )

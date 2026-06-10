@@ -1,0 +1,66 @@
+# ═══════════════════════════════════════════════════════════════
+# JIMI Dual Strategy — Settings Override
+# ═══════════════════════════════════════════════════════════════
+# This file defines Strategy B (Momentum Rider) parameters.
+# Strategy A (Range Scalper) uses the main settings.yaml.
+# Both strategies share the same config base; this file overrides
+# only what Strategy B changes.
+
+# ── STRATEGY B: MOMENTUM RIDER ──────────────────────────────
+# Captures $50-$150 directional moves. Lower WR (~55%), bigger wins.
+
+# Entry: momentum breakout detection
+MOM_ENABLED: true
+MOM_MOVE_MIN_PCT: 0.012        # 1.2% move in 4h = momentum
+MOM_VOL_RATIO_MIN: 1.4         # volume must confirm
+MOM_TAKER_LONG: 0.55           # taker buy ratio for long breakout
+MOM_TAKER_SHORT: 0.45          # taker sell ratio for short breakdown
+MOM_LOOKBACK_BARS: 16          # 4h lookback for momentum check
+
+# ICS: lower threshold (momentum is self-confirming)
+MOM_ICS_THRESHOLD: 0.45
+MOM_ICS_FLOOR: 0.40
+
+# TP: ride the trend, target unswept liquidity
+MOM_TP1_ATR: 2.5               # wider TP1
+MOM_TP2_ATR: 4.0               # much wider TP2
+MOM_TP3_ATR: 6.0               # let it run
+MOM_TP1_CLOSE: 0.15            # take only 15% at TP1
+MOM_TP2_CLOSE: 0.25            # 25% at TP2
+MOM_SL_ATR: 1.8                # wider SL for breathing room
+
+# Trailing: aggressive trail after TP1
+MOM_TRAIL_ENABLED: true
+MOM_TRAIL_ATR: 1.2             # trail SL behind swing by 1.2 ATR
+
+# Sizing: smaller (wider stops = bigger risk per trade)
+MOM_SIZE_STD: 3.0              # vs 5.0 for scalp
+
+# Regime: only trade in these regimes
+MOM_ALLOWED_REGIMES:
+  - NEUTRAL
+  - TRENDING
+  - COMPRESSING
+  - CHOP_MILD_BULL
+  - CHOP_MILD_BEAR
+
+# Exit: time stop is longer (trends take time)
+MOM_TIME_STOP_BARS: 80         # vs 20 for scalp
+MOM_EARLY_EXIT_BARS: 32        # vs 24 for scalp
+
+# Cooldown: longer between entries (don't overtrade trends)
+MOM_COOLDOWN_BARS: 8           # vs 2 for scalp
+
+# ── PULLBACK ENTRY MODE ─────────────────────────────────────
+# Instead of entering on the ignition candle (tight stop, whipsaw risk),
+# wait for a pullback and enter on the retest. Gives tighter stops and
+# better R:R at the cost of fewer entries.
+MOM_PULLBACK_ENABLED: true
+MOM_PULLBACK_MODE: pullback    # 'ignition' = old behavior, 'pullback' = new
+MOM_PULLBACK_RETRACE_MIN: 0.30  # min 30% retracement of ignition move
+MOM_PULLBACK_RETRACE_MAX: 0.70  # max 70% (beyond this, momentum is dead)
+MOM_PULLBACK_MAX_BARS: 12       # max bars to wait for pullback (15m bars)
+MOM_PULLBACK_ENTRY_TOL: 0.002   # entry tolerance (0.2% from ignition level)
+MOM_PULLBACK_SL_ATR: 1.2        # tighter SL (below pullback extreme)
+MOM_PULLBACK_VOL_MIN: 0.8       # min volume on retest candle (vs avg)
+MOM_PULLBACK_RETEST_RATIO: 1.1  # retest candle range must be > 1.1x avg
