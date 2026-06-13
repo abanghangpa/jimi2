@@ -1,3 +1,4 @@
+import threading
 #!/usr/bin/env python3
 """
 JIMI Framework — Live Signal Scanner
@@ -126,53 +127,75 @@ from src.modules.m20_failed_breakout import score_m20, format_failed_breakout
 from src.dual_strategy import DualStrategy
 
 # ── M66-M73: Traditional Finance Macro Filters (TEMPORARY DISABLE) ──
-# from src.modules.m66_usdjpy import score_m66_usdjpy
-# from src.modules.m67_dxy import score_m67_dxy
-# from src.modules.m68_yield import score_m68_yield
-# from src.modules.m69_vix import score_m69_vix
-# from src.modules.m70_wti import score_m70_wti
-# from src.modules.m71_gold import score_m71_gold
-# from src.modules.m72_btcdom import score_m72_btcdom, fetch_btcdom
-# from src.modules.m73_stablecoin import score_m73_stablecoin, fetch_stablecoin_mints
-# from src.modules.m75_tof import score_mxx_usdt_d as score_m75_tof  # TOF scorer
+from src.modules.m66_usdjpy import score_m66_usdjpy
+from src.modules.m67_dxy import score_m67_dxy
+from src.modules.m68_yield import score_m68_yield
+from src.modules.m69_vix import score_m69_vix
+from src.modules.m70_wti import score_m70_wti
+from src.modules.m71_gold import score_m71_gold
+from src.modules.m72_btcdom import score_m72_btcdom, fetch_btcdom
+from src.modules.m73_stablecoin import score_m73_stablecoin, fetch_stablecoin_mints
+from src.modules.m75_tof import score_mxx_usdt_d as score_m75_tof  # TOF scorer
 
 
 def fetch_all_tradfi_data(config=None):
-    """Fetch all traditional-finance data (FX, commodities, VIX) using yfinance or the new utility.
+    """Fetch all traditional-finance data (FX, commodities, VIX) using yfinance with timeout protection.
 
     Returns dict of DataFrames keyed by signal name. Failed fetches return None for that key (non-fatal).
+    Each DataFrame has multi-bar history for ROC calculations.
     """
+    import threading
     cfg = config or {}
     data = {}
+    timeout = cfg.get('TRADFI_FETCH_TIMEOUT', 20)
 
-    # Use the new utility for faster, simplified fetching
-    print("  📊 Fetching TradFi data (DXY, 10Y, VIX, gold, WTI)...")
-    tradfi_data = fetch_tradfi_data()
-    
-    # Map the utility output to the expected format
-    if "dxy" in tradfi_data:
-        data["dxy"] = pd.DataFrame({"Close": [tradfi_data["dxy"]]})
-    if "10y_yield" in tradfi_data:
-        data["tnx"] = pd.DataFrame({"Close": [tradfi_data["10y_yield"]]})
-    if "vix" in tradfi_data:
-        data["vix"] = pd.DataFrame({"Close": [tradfi_data["vix"]]})
-    if "gold" in tradfi_data:
-        data["gold"] = pd.DataFrame({"Close": [tradfi_data["gold"]]})
-    if "wti" in tradfi_data:
-        data["wti"] = pd.DataFrame({"Close": [tradfi_data["wti"]]})
-    
-    # Fallback to yfinance for any missing data
-    try:
-        import yfinance as yf
-        if "usdjpy" not in data and cfg.get('M66_ENABLED', True):
-            df = yf.download("JPY=X", period="5d", interval="1m", progress=False)
-            if hasattr(df.columns, 'levels') and len(df.columns.levels) > 1:
-                df.columns = df.columns.droplevel(1)
-            if df is not None and len(df) > 0:
-                data["usdjpy"] = df
-    except ImportError:
-        print("  ⚠️  yfinance not installed — M66 skipped")
-    
+    # Tickers for batch download (15m bars, 5 days — enough for ROC)
+    tickers = {
+        "dxy": "DX-Y.NYB",
+        "tnx": "^TNX",
+        "vix": "^VIX",
+        "gold": "GC=F",
+        "wti": "CL=F",
+    }
+    if cfg.get('M66_ENABLED', True):
+        tickers["usdjpy"] = "JPY=X"
+
+    def _fetch_batch():
+        try:
+            import yfinance as yf
+            ticker_list = list(tickers.values())
+            data_raw = yf.download(ticker_list, period="5d", interval="15m", progress=False)
+            if isinstance(data_raw.columns, pd.MultiIndex):
+                for key, ticker in tickers.items():
+                    try:
+                        # Extract OHLCV for this ticker
+                        sub = data_raw.xs(ticker, level=1, axis=1).dropna(how='all')
+                        if len(sub) > 0:
+                            data[key] = sub
+                    except (KeyError, Exception):
+                        pass
+            elif len(data_raw) > 0:
+                # Single ticker returned
+                first_key = list(tickers.keys())[0]
+                data[first_key] = data_raw
+        except Exception as e:
+            print(f"  ⚠️  TradFi batch fetch failed: {e}")
+
+    print(f"  📊 Fetching TradFi data ({', '.join(tickers.keys())}) with {timeout}s timeout...")
+    thread = threading.Thread(target=_fetch_batch, daemon=True)
+    thread.start()
+    thread.join(timeout)
+
+    if thread.is_alive():
+        print(f"  ⏰  TradFi fetch timed out after {timeout}s — modules will SKIP")
+    else:
+        fetched = [k for k in tickers if k in data]
+        missing = [k for k in tickers if k not in data]
+        if fetched:
+            print(f"  ✅ TradFi fetched: {', '.join(fetched)} ({', '.join(f'{len(data[k])}bars' for k in fetched)})")
+        if missing:
+            print(f"  ⚠️  TradFi missing: {', '.join(missing)}")
+
     return data
 
 
@@ -356,13 +379,9 @@ def run_full_scan(config=None, df_1d_hist=None):
     df_15m, df_1h, df_2h, df_4h, df_1d = compute_indicators(df_15m, config=cfg, df_1d_hist=df_1d_hist)
     print("  [LOG] Step 3 Success: Indicators computed")
     
-    # The rest of the scan logic...
-    # (I will move the logic from the global scope to here)
-    
-    # [ALL THE MODULE SCORING LOGIC FROM THE ORIGINAL SCRIPT GOES HERE]
-    # I will perform this in a second edit because the script is too large for one edit.
-    
-    return result # The final results dictionary
+    # Run the scan signal pipeline
+    result = scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=cfg)
+    return result
 
 
 
@@ -2491,13 +2510,10 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m62'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── Fetch Traditional Finance Data (M66-M73) ──
-    print("  📊 DEBUG: BYPASSING TradFi data fetch for debugging...")
-    _tradfi_data = {} # Bypass to isolate hang
-    print("  ✅ DEBUG: TradFi bypass active.")
+    _tradfi_data = fetch_all_tradfi_data(config=cfg)
     _dxy_df = _tradfi_data.get('dxy')
 
     # ── M66: USD/JPY Carry Trade Proxy ──
-    print("  🔍 DEBUG: Scoring M66...")
     m66_score = 0.5
     m66_status = 'SKIP'
     if cfg.get('M66_ENABLED', True):
@@ -2505,12 +2521,9 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
             _usdjpy_df = _tradfi_data.get('usdjpy')
             m66_status, m66_score, m66_details = score_m66_usdjpy(
                 _usdjpy_df, _dxy_df, direction, config=cfg)
-            if m66_status == 'PASS':
-                result['m66'] = {'status': m66_status, 'score': round(float(m66_score), 3),
-                                 'details': m66_details}
+            result['m66'] = {'status': m66_status, 'score': round(float(m66_score), 3), 'details': m66_details}
         except Exception as e:
             result['m66'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
-    print("  ✅ DEBUG: M66 done.")
 
     # ── M67: DXY Divergence ──
     m67_score = 0.5
@@ -2521,9 +2534,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
             eth_prev = float(df_15m['Close'].iloc[max(0, idx - 1)])
             m67_status, m67_score, m67_details = score_m67_dxy(
                 _dxy_df, eth_now, eth_prev, direction, config=cfg)
-            if m67_status == 'PASS':
-                result['m67'] = {'status': m67_status, 'score': round(float(m67_score), 3),
-                                 'details': m67_details}
+            result['m67'] = {'status': m67_status, 'score': round(float(m67_score), 3), 'details': m67_details}
         except Exception as e:
             result['m67'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
 
@@ -2541,9 +2552,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
                 pass
             m68_status, m68_score, m68_details = score_m68_yield(
                 _tnx_df, _tips_df, direction, config=cfg)
-            if m68_status == 'PASS':
-                result['m68'] = {'status': m68_status, 'score': round(float(m68_score), 3),
-                                 'details': m68_details}
+            result['m68'] = {'status': m68_status, 'score': round(float(m68_score), 3), 'details': m68_details}
         except Exception as e:
             result['m68'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
 
@@ -2555,9 +2564,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
             _vix_df = _tradfi_data.get('vix')
             m69_status, m69_score, m69_details = score_m69_vix(
                 _vix_df, direction, config=cfg, df_dxy=_dxy_df)
-            if m69_status == 'PASS':
-                result['m69'] = {'status': m69_status, 'score': round(float(m69_score), 3),
-                                 'details': m69_details}
+            result['m69'] = {'status': m69_status, 'score': round(float(m69_score), 3), 'details': m69_details}
         except Exception as e:
             result['m69'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
 
@@ -2569,9 +2576,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
             _wti_df = _tradfi_data.get('wti')
             m70_status, m70_score, m70_details = score_m70_wti(
                 _wti_df, _dxy_df, direction, config=cfg)
-            if m70_status == 'PASS':
-                result['m70'] = {'status': m70_status, 'score': round(float(m70_score), 3),
-                                 'details': m70_details}
+            result['m70'] = {'status': m70_status, 'score': round(float(m70_score), 3), 'details': m70_details}
         except Exception as e:
             result['m70'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
 
@@ -2583,9 +2588,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
             _gold_df = _tradfi_data.get('gold')
             m71_status, m71_score, m71_details = score_m71_gold(
                 _gold_df, _dxy_df, direction, config=cfg)
-            if m71_status == 'PASS':
-                result['m71'] = {'status': m71_status, 'score': round(float(m71_score), 3),
-                                 'details': m71_details}
+            result['m71'] = {'status': m71_status, 'score': round(float(m71_score), 3), 'details': m71_details}
         except Exception as e:
             result['m71'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
 
@@ -2594,12 +2597,23 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
     m72_status = 'SKIP'
     if cfg.get('M72_ENABLED', True):
         try:
-            _btcdom = fetch_btcdom()
+            _btcdom = None
+            try:
+                _btcdom_result = [None]
+                def _fetch_m72():
+                    _btcdom_result[0] = fetch_btcdom()
+                _t72 = threading.Thread(target=_fetch_m72, daemon=True)
+                _t72.start()
+                _t72.join(15)
+                if _t72.is_alive():
+                    print("  ⏰  M72 fetch_btcdom timed out (15s)")
+                else:
+                    _btcdom = _btcdom_result[0]
+            except Exception:
+                pass
             m72_status, m72_score, m72_details = score_m72_btcdom(
                 _btcdom, direction, config=cfg)
-            if m72_status == 'PASS':
-                result['m72'] = {'status': m72_status, 'score': round(float(m72_score), 3),
-                                 'details': m72_details}
+            result['m72'] = {'status': m72_status, 'score': round(float(m72_score), 3), 'details': m72_details}
         except Exception as e:
             result['m72'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
 
@@ -2608,12 +2622,23 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
     m73_status = 'SKIP'
     if cfg.get('M73_ENABLED', True):
         try:
-            _mint_data = fetch_stablecoin_mints()
+            _mint_data = None
+            try:
+                _m73_result = [None]
+                def _fetch_m73():
+                    _m73_result[0] = fetch_stablecoin_mints()
+                _t73 = threading.Thread(target=_fetch_m73, daemon=True)
+                _t73.start()
+                _t73.join(15)
+                if _t73.is_alive():
+                    print("  ⏰  M73 fetch_stablecoin_mints timed out (15s)")
+                else:
+                    _mint_data = _m73_result[0]
+            except Exception:
+                pass
             m73_status, m73_score, m73_details = score_m73_stablecoin(
                 _mint_data, direction, config=cfg)
-            if m73_status == 'PASS':
-                result['m73'] = {'status': m73_status, 'score': round(float(m73_score), 3),
-                                 'details': m73_details}
+            result['m73'] = {'status': m73_status, 'score': round(float(m73_score), 3), 'details': m73_details}
         except Exception as e:
             result['m73'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
     # ── M75: Toxic Order Flow (TOF) ────────────────────────────────
@@ -2874,7 +2899,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
 
     # M5
     m5_status, m5_score, m5_details = score_m5(df_15m, idx, direction, cfg,
-        n_bins=cfg['M5_VP_BINS'], lookback=cfg['M5_VP_LOOKBACK'])
+        n_bins=cfg['M5_VP_BINS'], lookback=cfg['M5_VP_LOOKBACK'], m13_details=m13_details)
     result['m5'] = {'status': m5_status, 'score': round(float(m5_score), 3)}
 
     # M5 Regime Gate — neutralize M5 in unfavorable regimes (forensic P1)
@@ -5342,12 +5367,12 @@ def main():
         print("Use the legacy scanner for dashboard mode.")
         return
 
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     # Timeframe scaling: lookback bars are tuned for 15m, scale for other TFs
     tf_multipliers = {'1m': 15, '5m': 3, '15m': 1, '1h': 0.25}
     tf_mult = tf_multipliers[args.tf]
-    bars_map = {'1m': 10, '5m': 10, '15m': 10, '1h': 10}
+    bars_map = {'1m': 2000, '5m': 2000, '15m': 2000, '1h': 500}
     bars = bars_map[args.tf]
 
     # Scale config lookbacks for the selected timeframe
@@ -5473,6 +5498,9 @@ def main():
     macro_alert_active = False
     cache_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'macro_cache.json')
     
+    # Ensure today_str is defined (it should be, but redefine just in case)
+    today_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    
     try:
         from src.modules.macro_utils import is_macro_release_day
         if is_macro_release_day(today_str):
@@ -5519,14 +5547,14 @@ def main():
     scan_file = os.path.join(scan_dir, f'scan_{ts}.json')
     with open(scan_file, 'w') as f:
         json.dump(result, f, indent=2, default=str)
-    print(f"\n  💾 Saved: {scan_file}")
+    # print(f"\n  💾 Saved: {scan_file}")  # hidden per user request
 
     # Mirror to workspace root for Agent access
     try:
         workspace_root = '/root/.openclaw/workspace'
         latest_scan_path = os.path.join(workspace_root, 'latest_scan.json')
         shutil.copy2(scan_file, latest_scan_path)
-        print(f"  ✅ Mirrored to: {latest_scan_path}")
+        # print(f"  ✅ Mirrored to: {latest_scan_path}")  # hidden per user request
     except Exception as e:
         print(f"  ❌ Mirroring Critical Error: {e}")
 
