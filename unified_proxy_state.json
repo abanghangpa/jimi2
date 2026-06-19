@@ -1,0 +1,3691 @@
+{
+  "openai/gpt-5.5": {
+    "sk-G51twqjFZ8l6B5tvM": {
+      "failures": 1,
+      "last_fail": 1781283809.2740743,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283839.2740743
+    },
+    "sk-lwshGyAxp5P7r2f4C": {
+      "failures": 2,
+      "last_fail": 1781310379.6780753,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310499.6780753
+    },
+    "sk-c1kIHdkvl9FtfnYBF": {
+      "failures": 2,
+      "last_fail": 1781530203.4259853,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530323.4259853
+    },
+    "sk-5UzmLyjts618TXfgY": {
+      "failures": 2,
+      "last_fail": 1781641805.7104828,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.7104828
+    },
+    "sk-w3zOZg4YYu7rOGq0R": {
+      "failures": 2,
+      "last_fail": 1781735403.3324392,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735523.3324392
+    },
+    "sk-C98KY7udvH7PTPkXI": {
+      "failures": 2,
+      "last_fail": 1781818202.4316597,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.4316597
+    }
+  },
+  "gemini-2.5-flash": {
+    "sk-seEjLRwdEGl5NdVAK": {
+      "failures": 2,
+      "last_fail": 1781269563.0581768,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269683.0581768
+    },
+    "sk-EEsI11kF40bM1z0VK": {
+      "failures": 2,
+      "last_fail": 1781269558.877033,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269678.877033
+    },
+    "sk-gr6ZxY6iPPJYHanon": {
+      "failures": 2,
+      "last_fail": 1781269554.9863765,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269674.9863765
+    },
+    "sk-kozkUQanFpTiMuEK1": {
+      "failures": 2,
+      "last_fail": 1781269561.476619,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269681.476619
+    },
+    "sk-TP1SZ708cVIslUDSs": {
+      "failures": 2,
+      "last_fail": 1781269560.295752,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269680.295752
+    },
+    "sk-w4WgUPlhQsX2eUirL": {
+      "failures": 2,
+      "last_fail": 1781269557.0046055,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269677.0046055
+    },
+    "sk-HUtjXlHh8rucHCgri": {
+      "failures": 2,
+      "last_fail": 1781310289.2599542,
+      "state": "COOLDOWN",
+      "last_used": 1781309766.7141752,
+      "cooldown_until": 1781310409.2599542
+    },
+    "sk-YMiH9cKY3PepELs8Z": {
+      "failures": 2,
+      "last_fail": 1781310323.8827558,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310443.8827558
+    },
+    "sk-KAll7amtqMSmGkkHC": {
+      "failures": 2,
+      "last_fail": 1781310379.6763196,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310499.6763196
+    },
+    "sk-tWXco929P2wqNMbwZ": {
+      "failures": 2,
+      "last_fail": 1781310335.5163615,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310455.5163615
+    },
+    "sk-YsZ4W1nK28kyJyBm7": {
+      "failures": 2,
+      "last_fail": 1781310377.0543344,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310497.0543344
+    },
+    "sk-mZWtTTJqQAzMncouW": {
+      "failures": 2,
+      "last_fail": 1781310382.8860097,
+      "state": "COOLDOWN",
+      "last_used": 1781309201.025393,
+      "cooldown_until": 1781310502.8860097
+    },
+    "sk-CytwCeM6tmAyAoPjk": {
+      "failures": 1,
+      "last_fail": 1781627443.4740546,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781627473.4740546
+    },
+    "sk-vpT4LhSjkJHnlqiNU": {
+      "failures": 0,
+      "last_fail": 1781625614.9811394,
+      "state": "ACTIVE",
+      "cooldown_until": 1781625644.9811394
+    },
+    "sk-m1pmqqkO60FNQiEvb": {
+      "failures": 0,
+      "last_fail": 1781625898.5530827,
+      "state": "ACTIVE",
+      "cooldown_until": 1781625928.5530827
+    },
+    "sk-CS4zrotEUJfLS79kA": {
+      "failures": 1,
+      "last_fail": 1781627424.7664082,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781627454.7664082
+    },
+    "sk-MsLMVROXmo9ut4byG": {
+      "failures": 0,
+      "last_fail": 1781609512.9663997,
+      "state": "ACTIVE",
+      "cooldown_until": 1781609632.9663997
+    },
+    "sk-BprJAZV5qlXKl1cPu": {
+      "failures": 1,
+      "last_fail": 1781629235.154145,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781629265.154145
+    },
+    "sk-yhJ9t2zqM2HhilTDL": {
+      "failures": 2,
+      "last_fail": 1781807406.5065234,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781807526.5065234
+    },
+    "sk-CAcPFMZBPvs6jVfDy": {
+      "failures": 1,
+      "last_fail": 1781809246.2229898,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781809276.2229898
+    },
+    "sk-hiJeO2hMofqqwFehS": {
+      "failures": 0,
+      "last_fail": 1781803834.3821354,
+      "state": "ACTIVE",
+      "cooldown_until": 1781803954.3821354
+    },
+    "sk-pjEOm20ynHn2LYgUX": {
+      "failures": 2,
+      "last_fail": 1781807454.3886678,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781807574.3886678
+    },
+    "sk-R3YlvPqOgyWml6qOz": {
+      "failures": 0,
+      "last_fail": 1781803847.7033997,
+      "state": "ACTIVE",
+      "cooldown_until": 1781803967.7033997
+    },
+    "sk-w3pBlHrBVr9QsTkSW": {
+      "failures": 0,
+      "last_fail": 1781796635.7107863,
+      "state": "ACTIVE",
+      "cooldown_until": 1781796755.7107863
+    },
+    "sk-MR60tokIdDDY407RM": {
+      "failures": 2,
+      "last_fail": 1781818251.55908,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818371.55908
+    },
+    "sk-Em5LrhWxqFMwzPRVn": {
+      "failures": 0,
+      "last_fail": 1781817320.3824656,
+      "state": "ACTIVE",
+      "cooldown_until": 1781817440.3824656
+    },
+    "sk-AncmOhO1lhNArL6w5": {
+      "failures": 2,
+      "last_fail": 1781819814.2688656,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781819934.2688656
+    },
+    "sk-L87c1hPv6LjaeFzWz": {
+      "failures": 2,
+      "last_fail": 1781818235.3313565,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818355.3313565
+    }
+  },
+  "kimi-k2.5": {
+    "sk-QwaOKdSdEfcCTBsng": {
+      "failures": 2,
+      "last_fail": 1781237009.7857776,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781237129.7857776
+    },
+    "sk-WQY6dXyj6cpmb0LRx": {
+      "failures": 2,
+      "last_fail": 1781255011.592972,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781255131.592972
+    },
+    "sk-mmJNWfbzZkiEG41qb": {
+      "failures": 2,
+      "last_fail": 1781255009.6878524,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781255129.6878524
+    },
+    "sk-1z0Dd3dO2EO24BU30": {
+      "failures": 2,
+      "last_fail": 1781255013.303701,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781255133.303701
+    },
+    "sk-oFteq9yNmckpw4ruJ": {
+      "failures": 2,
+      "last_fail": 1781276614.9613695,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781276734.9613695
+    },
+    "sk-8RYqnatMofvCXXKBf": {
+      "failures": 2,
+      "last_fail": 1781262214.7697594,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781262334.7697594
+    },
+    "sk-JxWg2BmQ8XcsGf5ul": {
+      "failures": 2,
+      "last_fail": 1781262211.620057,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781262331.620057
+    },
+    "sk-nM79XomNzeiA8P6gy": {
+      "failures": 2,
+      "last_fail": 1781276609.3245938,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781276729.3245938
+    },
+    "sk-EgSBpjizK1FE3fIl7": {
+      "failures": 2,
+      "last_fail": 1781273011.898193,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781273131.898193
+    },
+    "sk-0M8gIsrO2okEo8KhG": {
+      "failures": 2,
+      "last_fail": 1781283816.4726915,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283936.4726915
+    },
+    "sk-iSjuGoUBU8ZqUqvek": {
+      "failures": 2,
+      "last_fail": 1781283814.5507722,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283934.5507722
+    },
+    "sk-iuecCauTql8SQx3sh": {
+      "failures": 2,
+      "last_fail": 1781276613.0792992,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781276733.0792992
+    },
+    "sk-7k6dGDf2LOWHkT6fc": {
+      "failures": 2,
+      "last_fail": 1781283810.1397092,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283930.1397092
+    },
+    "sk-97soqEB9bOiedKvX9": {
+      "failures": 2,
+      "last_fail": 1781291013.0716684,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781291133.0716684
+    },
+    "sk-nAMaKvbImox2QgYM9": {
+      "failures": 2,
+      "last_fail": 1781310377.056511,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310497.056511
+    },
+    "sk-9EvPfq5swXEKtJi43": {
+      "failures": 2,
+      "last_fail": 1781291014.3566973,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781291134.3566973
+    },
+    "sk-rC3PLKPrEpsMWsiob": {
+      "failures": 2,
+      "last_fail": 1781291009.3600137,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781291129.3600137
+    },
+    "sk-v18fvKJkVbFzd6fZN": {
+      "failures": 2,
+      "last_fail": 1781301811.7904649,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781301931.7904649
+    },
+    "sk-mTvtyTu6Dq13oC3AN": {
+      "failures": 2,
+      "last_fail": 1781310323.8848348,
+      "state": "COOLDOWN",
+      "last_used": 1781309173.447008,
+      "cooldown_until": 1781310443.8848348
+    },
+    "sk-kCqaa2l368I6f4XML": {
+      "failures": 2,
+      "last_fail": 1781298209.3554492,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781298329.3554492
+    },
+    "sk-ozEk7hH9sXI68s5yw": {
+      "failures": 2,
+      "last_fail": 1781298211.2876444,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781298331.2876444
+    },
+    "sk-X54eSpOwm9s6jcJNR": {
+      "failures": 2,
+      "last_fail": 1781310335.5180256,
+      "state": "COOLDOWN",
+      "last_used": 1781310322.4272218,
+      "cooldown_until": 1781310455.5180256
+    },
+    "sk-eTwWcAkdSw4n7tUIm": {
+      "failures": 2,
+      "last_fail": 1781310289.2610323,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310409.2610323
+    },
+    "sk-9GOlK05iEoAsnvv4S": {
+      "failures": 2,
+      "last_fail": 1781530206.9549356,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530326.9549356
+    },
+    "sk-zIME61C4r5Gxcc1kS": {
+      "failures": 2,
+      "last_fail": 1781518063.3870876,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781518183.3870876
+    },
+    "sk-a9PM5ZBJwzB07WIio": {
+      "failures": 2,
+      "last_fail": 1781515804.4737737,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781515924.4737737
+    },
+    "sk-aOuwTZTjlpcYmQiOJ": {
+      "failures": 2,
+      "last_fail": 1781526634.885845,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781526754.885845
+    },
+    "sk-hoyO8sbXA4qWDgVtF": {
+      "failures": 2,
+      "last_fail": 1781529301.4180157,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781529421.4180157
+    },
+    "sk-6BOsg1cP7K3NOeb8X": {
+      "failures": 2,
+      "last_fail": 1781530205.7193177,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530325.7193177
+    },
+    "sk-d4RigUFnxc74NlrEr": {
+      "failures": 2,
+      "last_fail": 1781530204.6369762,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530324.6369762
+    },
+    "sk-nkPhqtfP8sk4D4Iab": {
+      "failures": 2,
+      "last_fail": 1781530201.7591612,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530321.7591612
+    },
+    "sk-SOuSV28QPszBSV4XY": {
+      "failures": 2,
+      "last_fail": 1781578457.383511,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781578577.383511
+    },
+    "sk-owdppsAa7DV1UxVPY": {
+      "failures": 1,
+      "last_fail": 1781583993.6628342,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781584023.6628342
+    },
+    "sk-9pk2fUbmMDZM9Iijb": {
+      "failures": 1,
+      "last_fail": 1781584357.0879426,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781584387.0879426
+    },
+    "sk-7eUcIZCTMv1kq13dF": {
+      "failures": 2,
+      "last_fail": 1781587836.0302353,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781587956.0302353
+    },
+    "sk-Puw46Hbs3Dv0OWkDp": {
+      "failures": 1,
+      "last_fail": 1781583986.6002848,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781584016.6002848
+    },
+    "sk-LEGl5XVwMadxrcCsr": {
+      "failures": 0,
+      "last_fail": 1781598636.9706624,
+      "state": "ACTIVE",
+      "cooldown_until": 1781598666.9706624
+    },
+    "sk-bQ4q47NDL2GR2HAUs": {
+      "failures": 1,
+      "last_fail": 1781604216.9905462,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781604246.9905462
+    },
+    "sk-DJ1fBtulUuXTrBaHr": {
+      "failures": 2,
+      "last_fail": 1781607603.8660557,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781607723.8660557
+    },
+    "sk-fTtuqbSF5bkY9nNyu": {
+      "failures": 2,
+      "last_fail": 1781600612.9958181,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781600732.9958181
+    },
+    "sk-Gri56vtb3eM2Wlk9n": {
+      "failures": 1,
+      "last_fail": 1781613041.1513267,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781613071.1513267
+    },
+    "sk-EwoMeb44T2neEu47b": {
+      "failures": 0,
+      "last_fail": 1781611465.9766326,
+      "state": "ACTIVE",
+      "cooldown_until": 1781611495.9766326
+    },
+    "sk-pdvjVtd36HbW1uKyt": {
+      "failures": 2,
+      "last_fail": 1781620226.7301621,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781620346.7301621
+    },
+    "sk-vrv1MN0qeERZybO4M": {
+      "failures": 0,
+      "last_fail": 1781612806.1728497,
+      "state": "ACTIVE",
+      "cooldown_until": 1781612836.1728497
+    },
+    "sk-xw8zATmB4FjVkC6gj": {
+      "failures": 1,
+      "last_fail": 1781616643.0159628,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781616673.0159628
+    },
+    "sk-fBRQsqQOB0u48KlML": {
+      "failures": 2,
+      "last_fail": 1781618402.9328284,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781618522.9328284
+    },
+    "sk-d1VBuOj14SFgS1XwJ": {
+      "failures": 1,
+      "last_fail": 1781618671.7483618,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781618701.7483618
+    },
+    "sk-7lNj3emYYCJUaZwxp": {
+      "failures": 0,
+      "last_fail": 1781618612.54499,
+      "state": "ACTIVE",
+      "cooldown_until": 1781618642.54499
+    },
+    "sk-aNtIe0YRkl27AGupa": {
+      "failures": 0,
+      "last_fail": 1781622213.2155027,
+      "state": "ACTIVE",
+      "cooldown_until": 1781622243.2155027
+    },
+    "sk-hWT846HAC0xcW8vIX": {
+      "failures": 1,
+      "last_fail": 1781623835.3804784,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781623865.3804784
+    },
+    "sk-HYrMfWagV0JtHupUq": {
+      "failures": 1,
+      "last_fail": 1781622286.1934326,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781622316.1934326
+    },
+    "sk-IS3Sa50tlcwnOQp1B": {
+      "failures": 0,
+      "last_fail": 1781629412.9028876,
+      "state": "ACTIVE",
+      "cooldown_until": 1781629442.9028876
+    },
+    "sk-G0Imv2dGtIJBAsN4z": {
+      "failures": 1,
+      "last_fail": 1781634631.243049,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781634661.243049
+    },
+    "sk-esGqzsH0pAHTuXSLq": {
+      "failures": 0,
+      "last_fail": 1781633700.8913236,
+      "state": "ACTIVE",
+      "cooldown_until": 1781633730.8913236
+    },
+    "sk-rDGUPsze1VMqcz7XP": {
+      "failures": 1,
+      "last_fail": 1781632853.2758284,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781632883.2758284
+    },
+    "sk-wCsRmdxdoRp6C8gFw": {
+      "failures": 2,
+      "last_fail": 1781638201.758051,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781638321.758051
+    },
+    "sk-0TQkcXVNFaslZK0aL": {
+      "failures": 2,
+      "last_fail": 1781638233.4629748,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781638353.4629748
+    },
+    "sk-s4Qthh48v7BcJCs8V": {
+      "failures": 2,
+      "last_fail": 1781641828.514757,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641948.514757
+    },
+    "sk-qDli4vF82IkyNZmwM": {
+      "failures": 1,
+      "last_fail": 1781649001.0920603,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781649031.0920603
+    },
+    "sk-Uvvq4EOTPCjO3EPXJ": {
+      "failures": 2,
+      "last_fail": 1781641845.0672376,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641965.0672376
+    },
+    "sk-325Ld8qivYZlXRGv2": {
+      "failures": 2,
+      "last_fail": 1781652601.1398792,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781652721.1398792
+    },
+    "sk-NJD5awA0Tr1xMCrQG": {
+      "failures": 0,
+      "last_fail": 1781647429.2076824,
+      "state": "ACTIVE",
+      "cooldown_until": 1781647459.2076824
+    },
+    "sk-KaYqETFKAvidCeAN1": {
+      "failures": 0,
+      "last_fail": 1781646490.3052928,
+      "state": "ACTIVE",
+      "cooldown_until": 1781646520.3052928
+    },
+    "sk-g4OFO2aOxgSxl0P7l": {
+      "failures": 2,
+      "last_fail": 1781652621.8199923,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781652741.8199923
+    },
+    "sk-kxn3dsb3ggV3ppsQN": {
+      "failures": 0,
+      "last_fail": 1781651013.2054179,
+      "state": "ACTIVE",
+      "cooldown_until": 1781651133.2054179
+    },
+    "sk-91soSQh2nkFeMCxaN": {
+      "failures": 2,
+      "last_fail": 1781654401.5362897,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781654521.5362897
+    },
+    "sk-AE4foq131WlsAoZa4": {
+      "failures": 2,
+      "last_fail": 1781656282.995779,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781656402.995779
+    },
+    "sk-33UmkBlKnzd0khGx8": {
+      "failures": 1,
+      "last_fail": 1781663432.2323399,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781663462.2323399
+    },
+    "sk-gnkvrWpmvrqQHW6if": {
+      "failures": 2,
+      "last_fail": 1781667045.490921,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781667165.490921
+    },
+    "sk-YAN8Ksey2CSGEC85W": {
+      "failures": 2,
+      "last_fail": 1781674201.386581,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781674321.386581
+    },
+    "sk-p2lT4AbFg4gLHVNBz": {
+      "failures": 0,
+      "last_fail": 1781663401.0189931,
+      "state": "ACTIVE",
+      "cooldown_until": 1781663431.0189931
+    },
+    "sk-YfsHwmWDsVcMtWKgq": {
+      "failures": 2,
+      "last_fail": 1781683201.5170007,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781683321.5170007
+    },
+    "sk-0hypOYiPmfeXrzFip": {
+      "failures": 2,
+      "last_fail": 1781688601.4687407,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781688721.4687407
+    },
+    "sk-u9fklHk4FdWB5kUPp": {
+      "failures": 2,
+      "last_fail": 1781668801.7787719,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781668921.7787719
+    },
+    "sk-n97AuOavPkjncDNuX": {
+      "failures": 1,
+      "last_fail": 1781719248.7893996,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781719278.7893996
+    },
+    "sk-QUbgL7miZFLVd0eYd": {
+      "failures": 2,
+      "last_fail": 1781713867.3298001,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781713987.3298001
+    },
+    "sk-DG1MNZvsFZPDVZ3pq": {
+      "failures": 1,
+      "last_fail": 1781704905.9443042,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781704935.9443042
+    },
+    "sk-xpTi7NTXlwwRNfmNS": {
+      "failures": 2,
+      "last_fail": 1781699401.9669552,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781699521.9669552
+    },
+    "sk-EQzoUXISOz0bplXTy": {
+      "failures": 2,
+      "last_fail": 1781701324.8626332,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781701444.8626332
+    },
+    "sk-mTqhSdrz6DnmN2ZAc": {
+      "failures": 0,
+      "last_fail": 1781703932.696851,
+      "state": "ACTIVE",
+      "cooldown_until": 1781703962.696851
+    },
+    "sk-xslNNR1yxJN0Sppta": {
+      "failures": 1,
+      "last_fail": 1781728238.1562057,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781728268.1562057
+    },
+    "sk-aFLmysQsIWRaeQltj": {
+      "failures": 2,
+      "last_fail": 1781717429.544414,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781717549.544414
+    },
+    "sk-AQqviAUnDR8EuraUC": {
+      "failures": 2,
+      "last_fail": 1781717401.0879662,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781717521.0879662
+    },
+    "sk-USNjnA8HfMJA3WBp5": {
+      "failures": 2,
+      "last_fail": 1781717447.004885,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781717567.004885
+    },
+    "sk-WKGt7Heijn5vjhOcJ": {
+      "failures": 1,
+      "last_fail": 1781730820.524574,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781730850.524574
+    },
+    "sk-UskChhE2f6OZoVkf1": {
+      "failures": 2,
+      "last_fail": 1781746209.6478052,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781746329.6478052
+    },
+    "sk-RTwzxHNWcDtwjgZuI": {
+      "failures": 1,
+      "last_fail": 1781770412.8040817,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781770442.8040817
+    },
+    "sk-d8kgF54ViZbQosIe6": {
+      "failures": 0,
+      "last_fail": 1781734552.7834458,
+      "state": "ACTIVE",
+      "cooldown_until": 1781734582.7834458
+    },
+    "sk-hJrgD7xcQGsiGfY3B": {
+      "failures": 2,
+      "last_fail": 1781744477.9684284,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781744597.9684284
+    },
+    "sk-3NNAnlsbjb8Y8fGvs": {
+      "failures": 2,
+      "last_fail": 1781742601.8317266,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781742721.8317266
+    },
+    "sk-741F2Iv6VDbTlbuPI": {
+      "failures": 1,
+      "last_fail": 1781758859.1896505,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781758889.1896505
+    },
+    "sk-vBO41o84z6edV9WDD": {
+      "failures": 1,
+      "last_fail": 1781767834.1642528,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781767864.1642528
+    },
+    "sk-8pWMdL0ZdqQnUPpw5": {
+      "failures": 1,
+      "last_fail": 1781757049.6511302,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781757079.6511302
+    },
+    "sk-QpVVEStiAeK22iiGb": {
+      "failures": 2,
+      "last_fail": 1781769653.8431463,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781769773.8431463
+    },
+    "sk-K4ViA4my0qEfwip2O": {
+      "failures": 1,
+      "last_fail": 1781770415.9146805,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781770445.9146805
+    },
+    "sk-oKArqa7oxXhlX6fgC": {
+      "failures": 2,
+      "last_fail": 1781773203.8244712,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781773323.8244712
+    },
+    "sk-nB92Yz0Qzmr3f86YK": {
+      "failures": 1,
+      "last_fail": 1781771437.983566,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781771467.983566
+    },
+    "sk-DYnX9NgNjqx6mGFCv": {
+      "failures": 2,
+      "last_fail": 1781775012.4498005,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781775132.4498005
+    },
+    "sk-9Ip4HheQAuy6HVB6s": {
+      "failures": 0,
+      "last_fail": 1781777765.6611986,
+      "state": "ACTIVE",
+      "cooldown_until": 1781777795.6611986
+    },
+    "sk-yMSRZGNhaNCs87wir": {
+      "failures": 1,
+      "last_fail": 1781778621.1523337,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781778651.1523337
+    },
+    "sk-qOj7zJWhA5vMPg6vx": {
+      "failures": 1,
+      "last_fail": 1781778601.008124,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781778631.008124
+    },
+    "sk-Ov3mkPT6QUWAbBnUd": {
+      "failures": 1,
+      "last_fail": 1781777612.5226927,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781777642.5226927
+    },
+    "sk-LLOkIpvHuKX3571dd": {
+      "failures": 2,
+      "last_fail": 1781787603.8669171,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781787723.8669171
+    },
+    "sk-AnEmiAQQtTrEgRIkh": {
+      "failures": 2,
+      "last_fail": 1781785801.537293,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781785921.537293
+    },
+    "sk-19UJ1mXJvQpcqyJqU": {
+      "failures": 1,
+      "last_fail": 1781784052.0186982,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781784082.0186982
+    },
+    "sk-ElQMtSGYN2jj3V1Y3": {
+      "failures": 2,
+      "last_fail": 1781789416.7129107,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781789536.7129107
+    },
+    "sk-MEVbpaGMryhCMlP50": {
+      "failures": 2,
+      "last_fail": 1781785805.6668537,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781785925.6668537
+    },
+    "sk-yQjSGFA5IprwWxKwn": {
+      "failures": 2,
+      "last_fail": 1781785826.4729333,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781785946.4729333
+    },
+    "sk-uTVlRQdN8XcjIbY9v": {
+      "failures": 2,
+      "last_fail": 1781794803.0213861,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781794923.0213861
+    },
+    "sk-Y810b7hmzO8w4xtAQ": {
+      "failures": 2,
+      "last_fail": 1781803834.4066427,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781803954.4066427
+    },
+    "sk-YbGUT5NlLoIwl7IRh": {
+      "failures": 2,
+      "last_fail": 1781803803.4647186,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781803923.4647186
+    },
+    "sk-miTMLgKqVccsHFoTR": {
+      "failures": 1,
+      "last_fail": 1781800261.6624055,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781800291.6624055
+    },
+    "sk-pJTdHJto8TxyGEtxD": {
+      "failures": 2,
+      "last_fail": 1781796601.018761,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781796721.018761
+    },
+    "sk-8SUwXTDd47aRhoONg": {
+      "failures": 2,
+      "last_fail": 1781803847.7292938,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781803967.7292938
+    },
+    "sk-gCnaUUCExxHdiwqii": {
+      "failures": 2,
+      "last_fail": 1781805604.2311964,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781805724.2311964
+    },
+    "sk-iBUWHq6Y3lTqjYeRW": {
+      "failures": 2,
+      "last_fail": 1781809204.4439998,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781809324.4439998
+    },
+    "sk-jd6XQczdQ8nIrjli5": {
+      "failures": 2,
+      "last_fail": 1781818235.347834,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818355.347834
+    },
+    "sk-T7KsIzWxVla3Im0KI": {
+      "failures": 2,
+      "last_fail": 1781818201.3938572,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818321.3938572
+    },
+    "sk-7kSz4dfO5A5p0ZTq0": {
+      "failures": 2,
+      "last_fail": 1781818251.5659492,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818371.5659492
+    },
+    "sk-ha4htCkGmVEu8SMyB": {
+      "failures": 0,
+      "last_fail": 1781817337.0418403,
+      "state": "ACTIVE",
+      "cooldown_until": 1781817457.0418403
+    },
+    "sk-niPuBrECWVrOsvaXP": {
+      "failures": 2,
+      "last_fail": 1781816401.7245893,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781816521.7245893
+    },
+    "sk-BqEoe4lOH9i8rfOrw": {
+      "failures": 2,
+      "last_fail": 1781819814.2850232,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781819934.2850232
+    }
+  },
+  "text-embedding-3-small": {
+    "sk-MHBvRFwy8sEYYcPqY": {
+      "failures": 2,
+      "last_fail": 1781269557.0052774,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269677.0052774
+    },
+    "sk-IPtYedhW1pgeVJlPU": {
+      "failures": 2,
+      "last_fail": 1781269554.98726,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269674.98726
+    },
+    "sk-nG0HrT3D6HgnCxpQL": {
+      "failures": 2,
+      "last_fail": 1781269558.877703,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781269678.877703
+    },
+    "sk-V9O4mI6WvMbpGphji": {
+      "failures": 2,
+      "last_fail": 1781310377.0591857,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310497.0591857
+    },
+    "sk-UJ7D0v6jp0XxHt9Ad": {
+      "failures": 2,
+      "last_fail": 1781310323.8873966,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310443.8873966
+    },
+    "sk-XWhJ1WEtUALeIExBT": {
+      "failures": 2,
+      "last_fail": 1781310289.264,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310409.264
+    },
+    "sk-OJDNZeiBPKvdqZxIa": {
+      "failures": 2,
+      "last_fail": 1781627444.019974,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781627564.019974
+    },
+    "sk-oLJIiPS8ZoWoAoEMY": {
+      "failures": 2,
+      "last_fail": 1781627426.1472614,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781627546.1472614
+    },
+    "sk-ZmZkSjnWcczHpf4bh": {
+      "failures": 2,
+      "last_fail": 1781627401.7478979,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781627521.7478979
+    },
+    "sk-3WeHViMotVAmrfAV6": {
+      "failures": 2,
+      "last_fail": 1781807437.7439547,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781807557.7439547
+    },
+    "sk-6NVjhUpsfcqaSsdxH": {
+      "failures": 2,
+      "last_fail": 1781807406.524515,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781807526.524515
+    },
+    "sk-L26MymoAPot4ONkxo": {
+      "failures": 2,
+      "last_fail": 1781807454.4050503,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781807574.4050503
+    },
+    "sk-ZXh8kEnvP0GyB5A4N": {
+      "failures": 2,
+      "last_fail": 1781818251.5846753,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818371.5846753
+    },
+    "sk-b4Z7tdLhjxuKIVZUs": {
+      "failures": 2,
+      "last_fail": 1781818235.3563545,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818355.3563545
+    },
+    "sk-exqX7k7eHZO2L7RW0": {
+      "failures": 2,
+      "last_fail": 1781818201.4108737,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818321.4108737
+    }
+  },
+  "qwen/qwen3.6-flash": {
+    "sk-hX9hisFWtbZMsB2LP": {
+      "failures": 2,
+      "last_fail": 1781305409.366912,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781305529.366912
+    },
+    "sk-08Z6bLXHe0in2oPe3": {
+      "failures": 2,
+      "last_fail": 1781585834.3802962,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781585954.3802962
+    },
+    "sk-QKUZKe85F2i8j4mLf": {
+      "failures": 2,
+      "last_fail": 1781677804.1554258,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781677924.1554258
+    },
+    "sk-QzvzrTaDFbHG2ywrb": {
+      "failures": 2,
+      "last_fail": 1781771404.117045,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781771524.117045
+    },
+    "sk-3lp6nn7pZQpEz7lwV": {
+      "failures": 2,
+      "last_fail": 1781818202.422993,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.422993
+    }
+  },
+  "poolside/laguna-m.1:free": {
+    "sk-XWrMf1AhpyqEbQOkO": {
+      "failures": 2,
+      "last_fail": 1781251409.9318368,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781251529.9318368
+    },
+    "sk-agZpb8Blds2PvqKYV": {
+      "failures": 2,
+      "last_fail": 1781283810.1442347,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283930.1442347
+    },
+    "sk-4yO4tijegrWw4v9sw": {
+      "failures": 2,
+      "last_fail": 1781310377.063088,
+      "state": "COOLDOWN",
+      "last_used": 1781309694.6791759,
+      "cooldown_until": 1781310497.063088
+    },
+    "sk-Y8gLaOFVjN9ildptw": {
+      "failures": 2,
+      "last_fail": 1781532837.8352287,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532957.8352287
+    },
+    "sk-Rv1vg17ap1l0aPtKR": {
+      "failures": 2,
+      "last_fail": 1781580467.2196596,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781580587.2196596
+    },
+    "sk-Eqle8dpz0frwjVD3f": {
+      "failures": 2,
+      "last_fail": 1781613002.2177017,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781613122.2177017
+    },
+    "sk-HHo3SU7sqLpn1lXlL": {
+      "failures": 2,
+      "last_fail": 1781701324.8583055,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781701444.8583055
+    },
+    "sk-yPTjZTLg5sFvH41yE": {
+      "failures": 2,
+      "last_fail": 1781769653.86618,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781769773.86618
+    },
+    "sk-Uj53RcaHuXZl89U9B": {
+      "failures": 2,
+      "last_fail": 1781778601.960267,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781778721.960267
+    },
+    "sk-YiFBMx7pJsJoGqHeM": {
+      "failures": 2,
+      "last_fail": 1781818202.8647852,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.8647852
+    }
+  },
+  "qwen/qwen3.6-max-preview": {
+    "sk-IXp0DdgmOS2RVxZ0f": {
+      "failures": 2,
+      "last_fail": 1781283812.257754,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.257754
+    },
+    "sk-fWwK4TO0vIncuDYuT": {
+      "failures": 2,
+      "last_fail": 1781310291.732539,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310411.732539
+    },
+    "sk-XF8vt6kr8AetedjCf": {
+      "failures": 2,
+      "last_fail": 1781530203.8130949,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530323.8130949
+    },
+    "sk-FXZDDgRrYPFZ68oyt": {
+      "failures": 2,
+      "last_fail": 1781641805.918166,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.918166
+    },
+    "sk-xVp2EynvQWuCQI5Gn": {
+      "failures": 2,
+      "last_fail": 1781735402.775667,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735522.775667
+    },
+    "sk-6it3jUztSEAzeyxGb": {
+      "failures": 2,
+      "last_fail": 1781818202.8486373,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.8486373
+    }
+  },
+  "ibm-granite/granite-4.1-8b": {
+    "sk-RwDVMswWyo5w325QI": {
+      "failures": 2,
+      "last_fail": 1781283810.9899206,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283930.9899206
+    },
+    "sk-wdiJaUgmKbzlNMyfh": {
+      "failures": 2,
+      "last_fail": 1781310293.0540555,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310413.0540555
+    },
+    "sk-19BNcKDqezpM3U2Gx": {
+      "failures": 2,
+      "last_fail": 1781532089.2289813,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532209.2289813
+    },
+    "sk-TomdGV4mBs9nr0tDb": {
+      "failures": 2,
+      "last_fail": 1781595009.8948145,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781595129.8948145
+    },
+    "sk-EuIIYUNlkK1UUMid0": {
+      "failures": 2,
+      "last_fail": 1781634608.0063217,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781634728.0063217
+    },
+    "sk-gNwV3fnDMPH3RpgYa": {
+      "failures": 2,
+      "last_fail": 1781710207.193392,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781710327.193392
+    },
+    "sk-FaLFR9Ly1F7o7xvIR": {
+      "failures": 2,
+      "last_fail": 1781763213.378864,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781763333.378864
+    },
+    "sk-UGYN2xREOFMCOVCnG": {
+      "failures": 2,
+      "last_fail": 1781818202.4144862,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.4144862
+    }
+  },
+  "x-ai/grok-4.3": {
+    "sk-XoS5DhSKn8ZLLFdt1": {
+      "failures": 2,
+      "last_fail": 1781283812.1535306,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.1535306
+    },
+    "sk-jnP4MQduf34ezNOm6": {
+      "failures": 2,
+      "last_fail": 1781310296.7168758,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310416.7168758
+    },
+    "sk-K3h6HThH6ESMPAJAu": {
+      "failures": 2,
+      "last_fail": 1781532089.2224102,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532209.2224102
+    },
+    "sk-25xrCXxh0DZaY9Bil": {
+      "failures": 2,
+      "last_fail": 1781613003.590185,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781613123.590185
+    },
+    "sk-vsJ2v2co592AwTwxC": {
+      "failures": 0,
+      "last_fail": 1781620237.4722164,
+      "state": "ACTIVE"
+    },
+    "sk-NqAYyywrsoE0cQXIM": {
+      "failures": 2,
+      "last_fail": 1781663401.5229213,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781663521.5229213
+    },
+    "sk-CSBlNBBnZ1LfVnVEu": {
+      "failures": 2,
+      "last_fail": 1781677803.468299,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781677923.468299
+    },
+    "sk-LD2uCu3ogMIQA7AfP": {
+      "failures": 2,
+      "last_fail": 1781724606.1147187,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781724726.1147187
+    },
+    "sk-l4j9dsjgMEOIvtfvR": {
+      "failures": 2,
+      "last_fail": 1781814602.2754142,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781814722.2754142
+    }
+  },
+  "inclusionai/ring-2.6-1t": {
+    "sk-BWv8gALyJr2IXoSzq": {
+      "failures": 2,
+      "last_fail": 1781283812.2607117,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.2607117
+    },
+    "sk-3rbv9GFdGU5nwxVeg": {
+      "failures": 2,
+      "last_fail": 1781310293.049967,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310413.049967
+    },
+    "sk-GRnDtaeDaIWBCX7U6": {
+      "failures": 2,
+      "last_fail": 1781532090.1568713,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532210.1568713
+    },
+    "sk-XI3vk3LZf7OirGbZY": {
+      "failures": 2,
+      "last_fail": 1781605803.4478056,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781605923.4478056
+    },
+    "sk-S1b0FTrZ3i3lvaUAq": {
+      "failures": 2,
+      "last_fail": 1781616603.6838121,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781616723.6838121
+    },
+    "sk-TwaM6aysi0BiLvzGC": {
+      "failures": 2,
+      "last_fail": 1781625601.574161,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781625721.574161
+    },
+    "sk-1n8eL1XvDfQFaXYgo": {
+      "failures": 2,
+      "last_fail": 1781641802.2968976,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641922.2968976
+    },
+    "sk-tGXxQofKcGxMOJIen": {
+      "failures": 2,
+      "last_fail": 1781681404.712858,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781681524.712858
+    },
+    "sk-GKnqcsRNz3k39xw9K": {
+      "failures": 2,
+      "last_fail": 1781722803.428913,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781722923.428913
+    },
+    "sk-q7J6nfcnSRV0HEWXM": {
+      "failures": 2,
+      "last_fail": 1781814602.5739934,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781814722.5739934
+    }
+  },
+  "openai/gpt-5.5-pro": {
+    "sk-CLjuifDFKWjirv2Lw": {
+      "failures": 2,
+      "last_fail": 1781283810.1412876,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283930.1412876
+    },
+    "sk-xiazJsUZf5LGSUBlz": {
+      "failures": 2,
+      "last_fail": 1781310289.2680933,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310409.2680933
+    },
+    "sk-1miTpanAfPgkH42nn": {
+      "failures": 2,
+      "last_fail": 1781530202.1852407,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530322.1852407
+    },
+    "sk-6oM57RtTdX3yoVIgN": {
+      "failures": 2,
+      "last_fail": 1781641805.2996662,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.2996662
+    },
+    "sk-l344QZ81N1BJ8RzkV": {
+      "failures": 2,
+      "last_fail": 1781735402.2506337,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735522.2506337
+    },
+    "sk-xYZAkpJRDcUlbYzv7": {
+      "failures": 2,
+      "last_fail": 1781818203.30757,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818323.30757
+    }
+  },
+  "poolside/laguna-xs.2:free": {
+    "sk-7lOnklMYfFyGSbDP2": {
+      "failures": 2,
+      "last_fail": 1781262210.0318696,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781262330.0318696
+    },
+    "sk-X5WQGH13yKN5PBm3V": {
+      "failures": 2,
+      "last_fail": 1781276610.1949039,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781276730.1949039
+    },
+    "sk-TBd1zwFs6KDRXeyCB": {
+      "failures": 2,
+      "last_fail": 1781310296.7192862,
+      "state": "COOLDOWN",
+      "last_used": 1781309681.7149532,
+      "cooldown_until": 1781310416.7192862
+    },
+    "sk-wiTFQV2fsmhISFVr5": {
+      "failures": 2,
+      "last_fail": 1781530202.1947703,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530322.1947703
+    },
+    "sk-7LkfCpoTd2d2nu094": {
+      "failures": 2,
+      "last_fail": 1781596801.4546041,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781596921.4546041
+    },
+    "sk-Ca1PmBkDTFAcXdfFk": {
+      "failures": 0,
+      "last_fail": 1781620231.1169865,
+      "state": "ACTIVE"
+    },
+    "sk-J4xzfd0k0SOomdrZk": {
+      "failures": 1,
+      "last_fail": 1781712145.2673633,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781712175.2673633
+    },
+    "sk-1agyDOV5ymBUpUf6v": {
+      "failures": 2,
+      "last_fail": 1781762403.153053,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781762523.153053
+    },
+    "sk-J4yRR9Oc5o9KhQkpN": {
+      "failures": 2,
+      "last_fail": 1781775005.9228284,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781775125.9228284
+    },
+    "sk-eNuClaUWxNhUCcGt7": {
+      "failures": 2,
+      "last_fail": 1781789420.98409,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781789540.98409
+    },
+    "sk-g7RHcsPm4AaWK3POB": {
+      "failures": 2,
+      "last_fail": 1781818203.289215,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818323.289215
+    }
+  },
+  "qwen/qwen3.5-plus-20260420": {
+    "sk-joHrjKUWtm8U9HUSG": {
+      "failures": 2,
+      "last_fail": 1781283812.2567053,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.2567053
+    },
+    "sk-wTQldfHeT0eeRjyit": {
+      "failures": 2,
+      "last_fail": 1781310297.6477714,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310417.6477714
+    },
+    "sk-WkGJ5iJ18mXgA9NeF": {
+      "failures": 2,
+      "last_fail": 1781530203.815436,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530323.815436
+    },
+    "sk-fL2ExEm85iHvNFQbB": {
+      "failures": 2,
+      "last_fail": 1781641805.3044608,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.3044608
+    },
+    "sk-zM1lRd04B1CwDljRx": {
+      "failures": 2,
+      "last_fail": 1781735402.768467,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735522.768467
+    },
+    "sk-X6prl4QPNJuUOXk0W": {
+      "failures": 2,
+      "last_fail": 1781818201.9153047,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818321.9153047
+    }
+  },
+  "google/gemini-3.1-flash-lite": {
+    "sk-Inl50af0eb0Ry6qB9": {
+      "failures": 2,
+      "last_fail": 1781283810.9839725,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283930.9839725
+    },
+    "sk-kkwdnIpoOA75sohrz": {
+      "failures": 2,
+      "last_fail": 1781310291.7390096,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310411.7390096
+    },
+    "sk-pvoZKpvxhvfKrLRXg": {
+      "failures": 2,
+      "last_fail": 1781532837.8374438,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532957.8374438
+    },
+    "sk-jCcfH8tdiNm28pvcb": {
+      "failures": 2,
+      "last_fail": 1781609536.4035192,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781609656.4035192
+    },
+    "sk-tNBIpK6aluwEzrkxX": {
+      "failures": 2,
+      "last_fail": 1781615641.92272,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781615761.92272
+    },
+    "sk-vN9RuEvB7JfsmBSEp": {
+      "failures": 2,
+      "last_fail": 1781622215.2888308,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781622335.2888308
+    },
+    "sk-CH4SnKxYGus5Eb3Ih": {
+      "failures": 1,
+      "last_fail": 1781695871.1163664,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781695901.1163664
+    },
+    "sk-imSWYrcbyWl4JctrT": {
+      "failures": 2,
+      "last_fail": 1781710209.9948044,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781710329.9948044
+    },
+    "sk-WGcYmBI2fHgMSX9cS": {
+      "failures": 1,
+      "last_fail": 1781721050.2015152,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781721080.2015152
+    },
+    "sk-2ufj3uOXr1q2oX0O2": {
+      "failures": 2,
+      "last_fail": 1781807406.9644253,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781807526.9644253
+    },
+    "sk-rEMyJyIYHq5mLkKsZ": {
+      "failures": 2,
+      "last_fail": 1781818201.9257877,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818321.9257877
+    }
+  },
+  "inclusionai/ling-2.6-1t:free": {
+    "sk-bK1v3RLqZBxsnJZy8": {
+      "failures": 2,
+      "last_fail": 1781283812.1569889,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.1569889
+    },
+    "sk-Qsysn71qZ9fmqedFG": {
+      "failures": 2,
+      "last_fail": 1781310291.7350197,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310411.7350197
+    },
+    "sk-fL6Ret5PaFGDrJA02": {
+      "failures": 2,
+      "last_fail": 1781530202.198951,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530322.198951
+    },
+    "sk-eeoikA3BefECtIIdE": {
+      "failures": 2,
+      "last_fail": 1781641805.91081,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.91081
+    },
+    "sk-ojBr5XrYkPKdFmtUb": {
+      "failures": 2,
+      "last_fail": 1781735401.7160554,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735521.7160554
+    },
+    "sk-lm3Ki4RcTMB43UvgY": {
+      "failures": 2,
+      "last_fail": 1781818201.4319792,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818321.4319792
+    }
+  },
+  "openai/gpt-chat-latest": {
+    "sk-NrsL856DKk6Q3fBa1": {
+      "failures": 2,
+      "last_fail": 1781283810.9879167,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283930.9879167
+    },
+    "sk-TYfBvRYnAgevSAkhd": {
+      "failures": 2,
+      "last_fail": 1781310289.2658796,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310409.2658796
+    },
+    "sk-PnYhZEpLdRHjvn7p5": {
+      "failures": 2,
+      "last_fail": 1781530203.2039618,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530323.2039618
+    },
+    "sk-mnYCe9cBTyWMUiTNZ": {
+      "failures": 2,
+      "last_fail": 1781595008.7057545,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781595128.7057545
+    },
+    "sk-1K3juWII9uT4ZQqHL": {
+      "failures": 2,
+      "last_fail": 1781616601.4776325,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781616721.4776325
+    },
+    "sk-nILFxapd1Y5fARDA7": {
+      "failures": 2,
+      "last_fail": 1781623805.7100031,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781623925.7100031
+    },
+    "sk-YBjBSlsycHLe3WQXl": {
+      "failures": 2,
+      "last_fail": 1781713804.361844,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781713924.361844
+    },
+    "sk-OsTN1NPZWZsIrDA6S": {
+      "failures": 2,
+      "last_fail": 1781807406.9720886,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781807526.9720886
+    },
+    "sk-XCYrjtQEdLAJmTdG4": {
+      "failures": 2,
+      "last_fail": 1781818206.3225896,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818326.3225896
+    }
+  },
+  "baidu/cobuddy:free": {
+    "sk-7g5PYJptBUiudU8SA": {
+      "failures": 2,
+      "last_fail": 1781283812.3391595,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.3391595
+    },
+    "sk-5Gu05TC6lnqTJPLi5": {
+      "failures": 2,
+      "last_fail": 1781310293.0520382,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310413.0520382
+    },
+    "sk-BY8D5fc6F3fnZxS0Z": {
+      "failures": 2,
+      "last_fail": 1781530202.1898737,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530322.1898737
+    },
+    "sk-2E4BY8JqeOdDZBDPB": {
+      "failures": 2,
+      "last_fail": 1781641802.3008919,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641922.3008919
+    },
+    "sk-8PimQ6VfCW6gQXmXw": {
+      "failures": 2,
+      "last_fail": 1781735402.256966,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735522.256966
+    },
+    "sk-l0E4Y3DJOsUJs64ZC": {
+      "failures": 2,
+      "last_fail": 1781818203.3158712,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818323.3158712
+    }
+  },
+  "qwen/qwen3.6-35b-a3b": {
+    "sk-M5gZD823VQO1GqflL": {
+      "failures": 2,
+      "last_fail": 1781266503.228697,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781266623.228697
+    },
+    "sk-mzaJ3jB7j41OVO4b0": {
+      "failures": 2,
+      "last_fail": 1781310291.7408333,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310411.7408333
+    },
+    "sk-QoANAS519QqztPmkA": {
+      "failures": 2,
+      "last_fail": 1781530203.4217904,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530323.4217904
+    },
+    "sk-8Mh3G8pyhvafDOHwV": {
+      "failures": 2,
+      "last_fail": 1781634608.7080255,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781634728.7080255
+    },
+    "sk-UfvQStWTHXFitwOZI": {
+      "failures": 2,
+      "last_fail": 1781728202.2799358,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781728322.2799358
+    },
+    "sk-q1dWhY2rrpSyNeQ8f": {
+      "failures": 2,
+      "last_fail": 1781818201.9405694,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818321.9405694
+    }
+  },
+  "deepseek/deepseek-v4-flash": {
+    "sk-J8X4wIFNhXEb49Ga6": {
+      "failures": 2,
+      "last_fail": 1781283812.2628198,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.2628198
+    },
+    "sk-XCf6uOAqKgVlg1vJR": {
+      "failures": 2,
+      "last_fail": 1781310296.7230568,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310416.7230568
+    },
+    "sk-QPGn51XRj0wEREJMq": {
+      "failures": 2,
+      "last_fail": 1781530202.6553855,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530322.6553855
+    },
+    "sk-9avSlC5wSBeME0B4e": {
+      "failures": 2,
+      "last_fail": 1781641805.3096673,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.3096673
+    },
+    "sk-uBrxlnWPQgpqrsh2B": {
+      "failures": 2,
+      "last_fail": 1781735402.2413576,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735522.2413576
+    },
+    "sk-fsJRcTfe6tS9kG8RG": {
+      "failures": 2,
+      "last_fail": 1781818202.4042675,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.4042675
+    }
+  },
+  "qwen/qwen3.6-27b": {
+    "sk-zXElBN8R9XoQuMHij": {
+      "failures": 2,
+      "last_fail": 1781283812.1547556,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.1547556
+    },
+    "sk-ViW01P9tu7Eqvb4sj": {
+      "failures": 2,
+      "last_fail": 1781310293.0489895,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310413.0489895
+    },
+    "sk-fOUJUNOZlUfXRRSPT": {
+      "failures": 2,
+      "last_fail": 1781530201.7662926,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530321.7662926
+    },
+    "sk-1PyzEkU7LG4K3odWb": {
+      "failures": 2,
+      "last_fail": 1781641801.829148,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641921.829148
+    },
+    "sk-JHze3WEhWMu9ewB23": {
+      "failures": 2,
+      "last_fail": 1781735402.7834802,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735522.7834802
+    },
+    "sk-sqQat4qJkXaTLeJaq": {
+      "failures": 2,
+      "last_fail": 1781789416.6914911,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781789536.6914911
+    },
+    "sk-i8Do6rwZ3S6ihB4X9": {
+      "failures": 1,
+      "last_fail": 1781819852.706532,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781819882.706532
+    }
+  },
+  "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
+    "sk-rfPWT561MKwqMcJPs": {
+      "failures": 2,
+      "last_fail": 1781276611.4219484,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781276731.4219484
+    },
+    "sk-DSmMY4a1VAYXNZKD0": {
+      "failures": 2,
+      "last_fail": 1781310293.0559123,
+      "state": "COOLDOWN",
+      "last_used": 1781309557.6226358,
+      "cooldown_until": 1781310413.0559123
+    },
+    "sk-6qQdueWqFDWSrX6qb": {
+      "failures": 2,
+      "last_fail": 1781530202.6530375,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530322.6530375
+    },
+    "sk-51x7Oi5eAYnXwCWA5": {
+      "failures": 2,
+      "last_fail": 1781583987.0715306,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781584107.0715306
+    },
+    "sk-Wli5BnbzOAM6JyUNi": {
+      "failures": 2,
+      "last_fail": 1781616603.690574,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781616723.690574
+    },
+    "sk-95Ssg5bapLTUW3jEp": {
+      "failures": 2,
+      "last_fail": 1781632801.8356519,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781632921.8356519
+    },
+    "sk-GhzmVr1e0NgyRRt1i": {
+      "failures": 2,
+      "last_fail": 1781703002.8123188,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781703122.8123188
+    },
+    "sk-k4N27RG9xMqvZk6Cs": {
+      "failures": 2,
+      "last_fail": 1781710210.9837494,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781710330.9837494
+    },
+    "sk-qMZx3C6cbVFWJHjYR": {
+      "failures": 2,
+      "last_fail": 1781767803.867125,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781767923.867125
+    },
+    "sk-AEGC37QwmJe1sxBJj": {
+      "failures": 2,
+      "last_fail": 1781775001.5649397,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781775121.5649397
+    },
+    "sk-NQ1HnjF13EDji1GTB": {
+      "failures": 2,
+      "last_fail": 1781795614.0819476,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781795734.0819476
+    },
+    "sk-yjrNa2abH0f8DzpLW": {
+      "failures": 2,
+      "last_fail": 1781818206.33047,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818326.33047
+    }
+  },
+  "deepseek/deepseek-v4-pro": {
+    "sk-WEkHQukRzAaGIbHmc": {
+      "failures": 2,
+      "last_fail": 1781283812.158011,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.158011
+    },
+    "sk-Bp51qAGSkd4aycH9l": {
+      "failures": 2,
+      "last_fail": 1781310296.7249622,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310416.7249622
+    },
+    "sk-F8GJxwMMe0iyeDNbJ": {
+      "failures": 2,
+      "last_fail": 1781530203.2023654,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530323.2023654
+    },
+    "sk-cpxDY7jGmf4w8yzE0": {
+      "failures": 2,
+      "last_fail": 1781641805.715358,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.715358
+    },
+    "sk-9ENCqI4KMAadRtfBb": {
+      "failures": 2,
+      "last_fail": 1781735403.3067102,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735523.3067102
+    },
+    "sk-mONYTmrsx87y7UXCK": {
+      "failures": 2,
+      "last_fail": 1781818201.906638,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818321.906638
+    }
+  },
+  "inclusionai/ring-2.6-1t:free": {
+    "sk-0kqUHz1G9nzFJRlJ5": {
+      "failures": 2,
+      "last_fail": 1781283810.9847043,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283930.9847043
+    },
+    "sk-8JwkzTGJz6gK1xY52": {
+      "failures": 2,
+      "last_fail": 1781310377.0610118,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310497.0610118
+    },
+    "sk-3QxsHDZWxZk2Owpku": {
+      "failures": 2,
+      "last_fail": 1781530203.4239542,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530323.4239542
+    },
+    "sk-BUWdzBODdT7mdI8Ug": {
+      "failures": 2,
+      "last_fail": 1781641805.7019734,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.7019734
+    },
+    "sk-xHwvwAzyQ1TNNBFgg": {
+      "failures": 2,
+      "last_fail": 1781818203.2974465,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818323.2974465
+    }
+  },
+  "mistralai/mistral-medium-3-5": {
+    "sk-fzo0TrDNpyYjdBO4Y": {
+      "failures": 2,
+      "last_fail": 1781283812.33985,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283932.33985
+    },
+    "sk-smpDM7yheHySfn0Aj": {
+      "failures": 2,
+      "last_fail": 1781310291.7369945,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310411.7369945
+    },
+    "sk-89jJehbiRM1JS9Khr": {
+      "failures": 2,
+      "last_fail": 1781532837.8451827,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532957.8451827
+    },
+    "sk-fZQFRBzpTK6UqwUSl": {
+      "failures": 2,
+      "last_fail": 1781613003.1328058,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781613123.1328058
+    },
+    "sk-PB7aGikOvjBEMsaIo": {
+      "failures": 2,
+      "last_fail": 1781623805.715777,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781623925.715777
+    },
+    "sk-UPr27hJAVAmGVt2He": {
+      "failures": 2,
+      "last_fail": 1781695805.5234969,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781695925.5234969
+    },
+    "sk-tfyANZMaWuMoRy9O2": {
+      "failures": 2,
+      "last_fail": 1781785802.1249847,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781785922.1249847
+    },
+    "sk-0bvQFEhwPZHi6A4qy": {
+      "failures": 2,
+      "last_fail": 1781818203.2798033,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818323.2798033
+    }
+  },
+  "perceptron/perceptron-mk1": {
+    "sk-9Dv49w5r8xtOQPoPs": {
+      "failures": 2,
+      "last_fail": 1781283810.9868102,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781283930.9868102
+    },
+    "sk-YQ8Qsv7MdpGxo7oxd": {
+      "failures": 2,
+      "last_fail": 1781310296.7210224,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781310416.7210224
+    },
+    "sk-NRmS7dQL3zfWMMGFV": {
+      "failures": 2,
+      "last_fail": 1781532838.5804718,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532958.5804718
+    },
+    "sk-ItpVveTdZWiM3ksXK": {
+      "failures": 2,
+      "last_fail": 1781641805.6969886,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641925.6969886
+    },
+    "sk-B7SYL7VODbU3LclFO": {
+      "failures": 2,
+      "last_fail": 1781735403.8283865,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735523.8283865
+    },
+    "sk-Iph8Be9gPMyVdagud": {
+      "failures": 2,
+      "last_fail": 1781818202.855481,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.855481
+    }
+  },
+  "smart-chat": {
+    "sk-BNHE9GhMWCDSFVx6n": {
+      "failures": 2,
+      "last_fail": 1781244209.3457901,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781244329.3457901
+    },
+    "sk-Ijo19q3cKHhdUoAW8": {
+      "failures": 2,
+      "last_fail": 1781244211.405694,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781244331.405694
+    },
+    "sk-Hyk6eVyvUJd0Jr9NX": {
+      "failures": 2,
+      "last_fail": 1781244214.4979913,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781244334.4979913
+    },
+    "sk-tM6JNm6NtuROZWjRS": {
+      "failures": 2,
+      "last_fail": 1781244213.1946964,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781244333.1946964
+    },
+    "sk-cwVHCfIWcxqbtH9Xa": {
+      "failures": 2,
+      "last_fail": 1781240611.4656522,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781240731.4656522
+    },
+    "sk-4PWpgTnVIBUT770Kv": {
+      "failures": 2,
+      "last_fail": 1781244215.5367486,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781244335.5367486
+    },
+    "sk-qyoMS4cXHyrrKHz0j": {
+      "failures": 2,
+      "last_fail": 1781251409.6677814,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781251529.6677814
+    },
+    "sk-wkwndZ72KCCYmm9wO": {
+      "failures": 2,
+      "last_fail": 1781251411.950953,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781251531.950953
+    },
+    "sk-4u5Yv9vNhRq3CuP9E": {
+      "failures": 2,
+      "last_fail": 1781251413.9818194,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781251533.9818194
+    },
+    "sk-7ZkqAyX0GUZNedraM": {
+      "failures": 2,
+      "last_fail": 1781258614.9066463,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781258734.9066463
+    },
+    "sk-CV6bpMFiVPt8pGUwn": {
+      "failures": 2,
+      "last_fail": 1781258611.7095375,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781258731.7095375
+    },
+    "sk-5zqNq3Wjkj48GAtc0": {
+      "failures": 2,
+      "last_fail": 1781258609.705083,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781258729.705083
+    },
+    "sk-ksaH7ExXvFCbCTxjE": {
+      "failures": 2,
+      "last_fail": 1781258613.6170497,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781258733.6170497
+    },
+    "sk-Y5okNwitfywloRqgt": {
+      "failures": 2,
+      "last_fail": 1781258616.0025818,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781258736.0025818
+    },
+    "sk-7XrOTSqPRQBUxxCES": {
+      "failures": 2,
+      "last_fail": 1781266503.3246918,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781266623.3246918
+    },
+    "sk-a0vjEw1msPfvlCMwf": {
+      "failures": 2,
+      "last_fail": 1781280334.7529144,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781280454.7529144
+    },
+    "sk-4BBiqpDhXRqaCaswi": {
+      "failures": 2,
+      "last_fail": 1781280339.3857536,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781280459.3857536
+    },
+    "sk-opolsYeS5TH3ZD6CQ": {
+      "failures": 2,
+      "last_fail": 1781280341.959825,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781280461.959825
+    },
+    "sk-sLES5vmIFDcRLU5hP": {
+      "failures": 2,
+      "last_fail": 1781294742.2258675,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781294862.2258675
+    },
+    "sk-qTsZPZAmUm3isulAA": {
+      "failures": 2,
+      "last_fail": 1781294744.3414996,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781294864.3414996
+    },
+    "sk-VKOWR6CebEyjjAlKa": {
+      "failures": 2,
+      "last_fail": 1781294746.1199925,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781294866.1199925
+    },
+    "sk-5n9xDeAOkPT8PBvfF": {
+      "failures": 2,
+      "last_fail": 1781301809.6938398,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781301929.6938398
+    },
+    "sk-RI2ue9fpx25TV83U3": {
+      "failures": 2,
+      "last_fail": 1781301811.7878945,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781301931.7878945
+    },
+    "sk-gmJJwcUlWfuSSe9dH": {
+      "failures": 2,
+      "last_fail": 1781301813.6668916,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781301933.6668916
+    },
+    "sk-4zBrRpH254H5CMmB5": {
+      "failures": 2,
+      "last_fail": 1781301814.98709,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781301934.98709
+    },
+    "sk-4kpRDxOtf9tkC5osl": {
+      "failures": 2,
+      "last_fail": 1781301816.0976686,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781301936.0976686
+    },
+    "sk-rpULSdaMlI26WLBj5": {
+      "failures": 2,
+      "last_fail": 1781514900.331878,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781515020.331878
+    },
+    "sk-y4SsVJzYoXjdpquYW": {
+      "failures": 2,
+      "last_fail": 1781514898.4598222,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781515018.4598222
+    },
+    "sk-rtHFfFd67nJs4aban": {
+      "failures": 2,
+      "last_fail": 1781514899.207238,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781515019.207238
+    },
+    "sk-G8Doh1NFlUhG256qn": {
+      "failures": 2,
+      "last_fail": 1781514883.1306694,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781515003.1306694
+    },
+    "sk-e102z06OZ4TLXNb8J": {
+      "failures": 2,
+      "last_fail": 1781514885.6222901,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781515005.6222901
+    },
+    "sk-AX8RRuOcFNkwTnpXo": {
+      "failures": 0,
+      "last_fail": 1781528645.7713082,
+      "state": "ACTIVE",
+      "cooldown_until": 1781528765.7713082
+    },
+    "sk-xZv0NnZGiAcJ3995O": {
+      "failures": 1,
+      "last_fail": 1781529300.9547217,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781529330.9547217
+    },
+    "sk-vojLUIyRS6rAJQwi0": {
+      "failures": 0,
+      "last_fail": 1781528650.6992009,
+      "state": "ACTIVE",
+      "cooldown_until": 1781528770.6992009
+    },
+    "sk-DCNypP5EzHM7wpFMB": {
+      "failures": 0,
+      "last_fail": 1781528620.9462378,
+      "state": "ACTIVE",
+      "cooldown_until": 1781528740.9462378
+    },
+    "sk-csvS4k5g3J4353Cs8": {
+      "failures": 1,
+      "last_fail": 1781529302.2735598,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781529332.2735598
+    },
+    "sk-B3jEkKkenLd2CB63e": {
+      "failures": 1,
+      "last_fail": 1781580263.175796,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781580293.175796
+    },
+    "sk-ILlIpHV6cLdCoeitY": {
+      "failures": 1,
+      "last_fail": 1781580260.067348,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781580290.067348
+    },
+    "sk-aNnKJRtCDNsNQR7ud": {
+      "failures": 0,
+      "last_fail": 1781586419.3224401,
+      "state": "ACTIVE",
+      "cooldown_until": 1781586449.3224401
+    },
+    "sk-BsqmXfd6H94uQlReA": {
+      "failures": 1,
+      "last_fail": 1781586766.5655644,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781586796.5655644
+    },
+    "sk-6sGWP4iUQpeBM13EI": {
+      "failures": 0,
+      "last_fail": 1781586243.3609943,
+      "state": "ACTIVE",
+      "cooldown_until": 1781586273.3609943
+    },
+    "sk-Xw9wn1vzi61ByejLN": {
+      "failures": 1,
+      "last_fail": 1781587863.526541,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781587923.526541
+    },
+    "sk-KUP7M1Wzr2GlLPnCh": {
+      "failures": 0,
+      "last_fail": 1781585678.2050195,
+      "state": "ACTIVE",
+      "cooldown_until": 1781585798.2050195
+    },
+    "sk-pYGyw39HdWAJI5Dpb": {
+      "failures": 0,
+      "last_fail": 1781586217.36903,
+      "state": "ACTIVE",
+      "cooldown_until": 1781586247.36903
+    },
+    "sk-1I1xcbiiCNksDU4KY": {
+      "failures": 1,
+      "last_fail": 1781593418.77472,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781593448.77472
+    },
+    "sk-uAhNhEnZZL3yWFGOl": {
+      "failures": 1,
+      "last_fail": 1781593412.7764719,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781593442.7764719
+    },
+    "sk-vUizW24GdFukIOwj6": {
+      "failures": 2,
+      "last_fail": 1781593224.353926,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781593344.353926
+    },
+    "sk-t1XI0QNV05wflpN8D": {
+      "failures": 1,
+      "last_fail": 1781593438.2873206,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781593468.2873206
+    },
+    "sk-0JOwE3YKOnd9K8Rbc": {
+      "failures": 1,
+      "last_fail": 1781600612.5648177,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781600642.5648177
+    },
+    "sk-YpF43M19O0bsFaqra": {
+      "failures": 1,
+      "last_fail": 1781600626.6674404,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781600656.6674404
+    },
+    "sk-mi51EAsLsgzLIMYRS": {
+      "failures": 0,
+      "last_fail": 1781608524.2434132,
+      "state": "ACTIVE",
+      "cooldown_until": 1781608554.2434132
+    },
+    "sk-uo5Z6PZTCDR2ys658": {
+      "failures": 1,
+      "last_fail": 1781608560.1147647,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781608590.1147647
+    },
+    "sk-n61lA8ASW6kJTLQVd": {
+      "failures": 2,
+      "last_fail": 1781615641.9197896,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781615761.9197896
+    },
+    "sk-B7soYzUFZXyK8Apx3": {
+      "failures": 2,
+      "last_fail": 1781629413.3061533,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781629533.3061533
+    },
+    "sk-s6jBCm8UKATvDNvOL": {
+      "failures": 2,
+      "last_fail": 1781629435.341891,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781629555.341891
+    },
+    "sk-CxKYxgUpX3gqwKypt": {
+      "failures": 2,
+      "last_fail": 1781636618.705608,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781636738.705608
+    },
+    "sk-vpGkb2iVKAm2Wg20T": {
+      "failures": 1,
+      "last_fail": 1781643954.8555837,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781643984.8555837
+    },
+    "sk-IUCFWPQAHVZ3W0DGb": {
+      "failures": 0,
+      "last_fail": 1781643884.6211925,
+      "state": "ACTIVE",
+      "cooldown_until": 1781643914.6211925
+    },
+    "sk-tDIdwebHjUbmGVRZW": {
+      "failures": 0,
+      "last_fail": 1781643904.7371285,
+      "state": "ACTIVE",
+      "cooldown_until": 1781643934.7371285
+    },
+    "sk-TaZRqT1au5LY4hznj": {
+      "failures": 1,
+      "last_fail": 1781651610.2416968,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781651640.2416968
+    },
+    "sk-t84LFjObIlq27qCwq": {
+      "failures": 0,
+      "last_fail": 1781651093.4448335,
+      "state": "ACTIVE",
+      "cooldown_until": 1781651123.4448335
+    },
+    "sk-Cs2cTqzZnnkGnUU13": {
+      "failures": 0,
+      "last_fail": 1781651072.427595,
+      "state": "ACTIVE",
+      "cooldown_until": 1781651102.427595
+    },
+    "sk-ThYgdq3hjWLTXL17n": {
+      "failures": 1,
+      "last_fail": 1781658212.9433787,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781658242.9433787
+    },
+    "sk-kRRzFl2D09iR1QQn4": {
+      "failures": 1,
+      "last_fail": 1781658236.0504181,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781658266.0504181
+    },
+    "sk-cTxI4mM4sRhxHCBGG": {
+      "failures": 2,
+      "last_fail": 1781665413.0556786,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781665533.0556786
+    },
+    "sk-BReSDR0EXoDFrDbgD": {
+      "failures": 0,
+      "last_fail": 1781673130.2020175,
+      "state": "ACTIVE",
+      "cooldown_until": 1781673160.2020175
+    },
+    "sk-h1bVHWqIECKd3j3s6": {
+      "failures": 1,
+      "last_fail": 1781673243.2450526,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781673273.2450526
+    },
+    "sk-JlLUMEgODdLpfkdGm": {
+      "failures": 0,
+      "last_fail": 1781680079.339157,
+      "state": "ACTIVE",
+      "cooldown_until": 1781680109.339157
+    },
+    "sk-l43IcMjXbSLcUo0EN": {
+      "failures": 1,
+      "last_fail": 1781680288.4740114,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781680318.4740114
+    },
+    "sk-IaCTuN4BICTYDe6eW": {
+      "failures": 1,
+      "last_fail": 1781680291.450796,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781680321.450796
+    },
+    "sk-nfP5yBHr3aiAQx8sC": {
+      "failures": 1,
+      "last_fail": 1781680297.4323924,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781680327.4323924
+    },
+    "sk-QDhKBVTScqaVuWQsN": {
+      "failures": 1,
+      "last_fail": 1781687612.8802783,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781687642.8802783
+    },
+    "sk-u9aDHQzGdf7r3jGAJ": {
+      "failures": 1,
+      "last_fail": 1781687627.8017206,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781687657.8017206
+    },
+    "sk-Y9NpFSH6huDl9Mu6x": {
+      "failures": 2,
+      "last_fail": 1781694815.0751429,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781694935.0751429
+    },
+    "sk-jvDG9OqwvZSTshgyF": {
+      "failures": 1,
+      "last_fail": 1781702012.786131,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781702042.786131
+    },
+    "sk-9aWgVsIOmfZ5Dr7hR": {
+      "failures": 1,
+      "last_fail": 1781702023.6256332,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781702053.6256332
+    },
+    "sk-SAEVMzz4nMRPgvhX8": {
+      "failures": 1,
+      "last_fail": 1781709212.697395,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781709242.697395
+    },
+    "sk-NrxsQXsQPBreVLJQh": {
+      "failures": 1,
+      "last_fail": 1781716412.471627,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781716442.471627
+    },
+    "sk-8Wi49o4QHA2kjH41N": {
+      "failures": 1,
+      "last_fail": 1781716429.1308396,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781716459.1308396
+    },
+    "sk-9ZtEDnQsPn8brdNPK": {
+      "failures": 1,
+      "last_fail": 1781723612.7822094,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781723642.7822094
+    },
+    "sk-7ZFPPsdeiXdkX6ScZ": {
+      "failures": 1,
+      "last_fail": 1781723628.2970915,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781723658.2970915
+    },
+    "sk-itcU02Z9J3O7EIoSH": {
+      "failures": 2,
+      "last_fail": 1781738013.047072,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781738133.047072
+    },
+    "sk-Lf6aDdfuARelBCXy0": {
+      "failures": 1,
+      "last_fail": 1781752412.750648,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781752442.750648
+    },
+    "sk-yh3RFxja62BGTpDkH": {
+      "failures": 1,
+      "last_fail": 1781752425.7415583,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781752455.7415583
+    },
+    "sk-XzG3LeX48dV6alcyv": {
+      "failures": 1,
+      "last_fail": 1781773200.797782,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781773230.797782
+    },
+    "sk-64o09ZRO9Rw2Lshlp": {
+      "failures": 1,
+      "last_fail": 1781773207.2654428,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781773237.2654428
+    },
+    "sk-0vV2nLd8eOqe47MFK": {
+      "failures": 1,
+      "last_fail": 1781774012.790484,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781774042.790484
+    },
+    "sk-DN0vchlJNVPPrIlUF": {
+      "failures": 1,
+      "last_fail": 1781774017.5181403,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781774047.5181403
+    },
+    "sk-VkYyS1yooqVrRHb9N": {
+      "failures": 1,
+      "last_fail": 1781789400.926256,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781789430.926256
+    },
+    "sk-2e7xxWiQXUUJLeq74": {
+      "failures": 1,
+      "last_fail": 1781788429.3513181,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781788459.3513181
+    },
+    "sk-mc7CBrO0DI363wfYG": {
+      "failures": 1,
+      "last_fail": 1781789414.773547,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781789444.773547
+    },
+    "sk-6vc4u61yohiquxwuF": {
+      "failures": 1,
+      "last_fail": 1781789430.1723828,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781789490.1723828
+    },
+    "sk-xnN01acfkL3FFSSOI": {
+      "failures": 1,
+      "last_fail": 1781795621.2220423,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781795651.2220423
+    },
+    "sk-ZbjSm19WJ4lQHm1Xd": {
+      "failures": 0,
+      "last_fail": 1781795505.7512577,
+      "state": "ACTIVE",
+      "cooldown_until": 1781795535.7512577
+    },
+    "sk-VbnlnZrqAnSnQI7Me": {
+      "failures": 1,
+      "last_fail": 1781795612.9482274,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781795642.9482274
+    },
+    "sk-H6Nqwpz93S9clCmLP": {
+      "failures": 0,
+      "last_fail": 1781802945.1872635,
+      "state": "ACTIVE",
+      "cooldown_until": 1781802975.1872635
+    },
+    "sk-5DnH96V5u1J5f4o3t": {
+      "failures": 1,
+      "last_fail": 1781803846.9004493,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781803876.9004493
+    },
+    "sk-J1t2yRziC7b0Fun4e": {
+      "failures": 1,
+      "last_fail": 1781803834.0841358,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781803864.0841358
+    },
+    "sk-VxM4VyvUeAO0Ou2dA": {
+      "failures": 0,
+      "last_fail": 1781810124.6512802,
+      "state": "ACTIVE",
+      "cooldown_until": 1781810154.6512802
+    },
+    "sk-LmkVcOyGNEzdFH3DR": {
+      "failures": 2,
+      "last_fail": 1781812804.1758049,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781812924.1758049
+    },
+    "sk-6dc6XNZ5UAqMdZus9": {
+      "failures": 1,
+      "last_fail": 1781817212.6887262,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781817242.6887262
+    },
+    "sk-W1YhLDPRCLp3N1mSw": {
+      "failures": 1,
+      "last_fail": 1781817224.4536548,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781817254.4536548
+    }
+  },
+  "deepseek-v4-flash": {
+    "sk-MIFJWj9kN9aAKJUuo": {
+      "failures": 2,
+      "last_fail": 1781244209.618378,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781244329.618378
+    },
+    "sk-Czxuzgtja62T98L6b": {
+      "failures": 2,
+      "last_fail": 1781251409.8409367,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781251529.8409367
+    },
+    "sk-wNOZ4En67QbMJ1mP8": {
+      "failures": 2,
+      "last_fail": 1781258609.8895743,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781258729.8895743
+    },
+    "sk-LSfCalAtfFievsYQs": {
+      "failures": 2,
+      "last_fail": 1781280334.8989308,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781280454.8989308
+    },
+    "sk-xd5tLYV3uUUPTQbGX": {
+      "failures": 2,
+      "last_fail": 1781294742.5777287,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781294862.5777287
+    },
+    "sk-h5pRDkemEJMnGlzYN": {
+      "failures": 2,
+      "last_fail": 1781301810.0556436,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781301930.0556436
+    },
+    "sk-aqZPsLiqScuAjLHOz": {
+      "failures": 2,
+      "last_fail": 1781514867.999042,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781514987.999042
+    },
+    "sk-vOHeeG8nYHRj1f2fq": {
+      "failures": 2,
+      "last_fail": 1781522131.2604918,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781522251.2604918
+    },
+    "sk-ZzjGB2FGtVKSnPnm8": {
+      "failures": 2,
+      "last_fail": 1781532837.8423417,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532957.8423417
+    },
+    "sk-n7cCptincsA7x0aXD": {
+      "failures": 2,
+      "last_fail": 1781576091.7559867,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781576211.7559867
+    },
+    "sk-PIzamlWCjmSxLlVL8": {
+      "failures": 2,
+      "last_fail": 1781580260.4573786,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781580380.4573786
+    },
+    "sk-zFU4NAdOUyxWns1ut": {
+      "failures": 2,
+      "last_fail": 1781586767.0731835,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781586887.0731835
+    },
+    "sk-EuxQf2LlimjHqVC6U": {
+      "failures": 2,
+      "last_fail": 1781596801.44866,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781596921.44866
+    },
+    "sk-KuAl3Eg4ZOs0OfXSE": {
+      "failures": 2,
+      "last_fail": 1781604004.1231122,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781604124.1231122
+    },
+    "sk-KUgt06D1MpHHoLLoi": {
+      "failures": 2,
+      "last_fail": 1781613003.5790892,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781613123.5790892
+    },
+    "sk-PxFYUmFN7KLjIhmJw": {
+      "failures": 2,
+      "last_fail": 1781632801.8256807,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781632921.8256807
+    },
+    "sk-gbI3vj4YImb26Gs5p": {
+      "failures": 2,
+      "last_fail": 1781643956.843964,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781644076.843964
+    },
+    "sk-FVT5sI4oEy4SM7hhr": {
+      "failures": 2,
+      "last_fail": 1781652601.6807628,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781652721.6807628
+    },
+    "sk-CjMDAVAYQ60xKRzXg": {
+      "failures": 2,
+      "last_fail": 1781665413.568921,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781665533.568921
+    },
+    "sk-59tdjzd9lQKXQ94dM": {
+      "failures": 2,
+      "last_fail": 1781677802.3425775,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781677922.3425775
+    },
+    "sk-R5Hjgu3kHMdCpm6U2": {
+      "failures": 2,
+      "last_fail": 1781681405.2322426,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781681525.2322426
+    },
+    "sk-npcrWkzVpjDe9kQcI": {
+      "failures": 2,
+      "last_fail": 1781692201.990529,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781692321.990529
+    },
+    "sk-8IkMf3lqPQyObjRQy": {
+      "failures": 2,
+      "last_fail": 1781706602.3056822,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781706722.3056822
+    },
+    "sk-t1TTk3NrjChBTiUIg": {
+      "failures": 2,
+      "last_fail": 1781712002.5420754,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781712122.5420754
+    },
+    "sk-DXPEnZbX2aqRX3TKh": {
+      "failures": 2,
+      "last_fail": 1781717403.541573,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781717523.541573
+    },
+    "sk-TM9rtbVsIhGhUQRBE": {
+      "failures": 2,
+      "last_fail": 1781723613.7584157,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781723733.7584157
+    },
+    "sk-aFmeSI4x4aMrL2aMN": {
+      "failures": 2,
+      "last_fail": 1781735402.7960842,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735522.7960842
+    },
+    "sk-agx6klexYi4W3QHm5": {
+      "failures": 2,
+      "last_fail": 1781738013.0254693,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781738133.0254693
+    },
+    "sk-VjadzJgj5RFfvDMT9": {
+      "failures": 2,
+      "last_fail": 1781752413.1587315,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781752533.1587315
+    },
+    "sk-38VWtZFI4xUW2iwzg": {
+      "failures": 2,
+      "last_fail": 1781760601.7379863,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781760721.7379863
+    },
+    "sk-QCPHQXcnbZbXuwGbe": {
+      "failures": 2,
+      "last_fail": 1781767802.726647,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781767922.726647
+    },
+    "sk-R8buGbqGfHbod1RFe": {
+      "failures": 2,
+      "last_fail": 1781773203.8005385,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781773323.8005385
+    },
+    "sk-thp86LMQyMwTSQQgn": {
+      "failures": 2,
+      "last_fail": 1781787603.8583753,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781787723.8583753
+    },
+    "sk-yuI4l8Rwt0DtJYe0Q": {
+      "failures": 2,
+      "last_fail": 1781798402.3737984,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781798522.3737984
+    },
+    "sk-RAGyO8TYyiXx1kX23": {
+      "failures": 2,
+      "last_fail": 1781803804.8221257,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781803924.8221257
+    },
+    "sk-2540gtNXVOlBnFiU0": {
+      "failures": 2,
+      "last_fail": 1781811007.6872492,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781811127.6872492
+    },
+    "sk-uGeZACVO4GRjOR51d": {
+      "failures": 2,
+      "last_fail": 1781819814.277931,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781819934.277931
+    }
+  },
+  "openrouter/owl-alpha": {
+    "sk-1VQYmYi4aoCJ0bYaJ": {
+      "failures": 2,
+      "last_fail": 1781247899.2113724,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781248019.2113724
+    },
+    "sk-noz9HEoUULLS1z9fY": {
+      "failures": 2,
+      "last_fail": 1781251410.096954,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781251530.096954
+    },
+    "sk-aAr96UEP0vMQZbuWT": {
+      "failures": 2,
+      "last_fail": 1781258610.1416657,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781258730.1416657
+    },
+    "sk-k2g4lRRbTI4bUZGog": {
+      "failures": 2,
+      "last_fail": 1781280334.9899766,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781280454.9899766
+    },
+    "sk-ujk08fqMcuLJS2DnM": {
+      "failures": 2,
+      "last_fail": 1781305409.7436383,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781305529.7436383
+    },
+    "sk-xcZsjZtiWZ2UG3i43": {
+      "failures": 2,
+      "last_fail": 1781519403.5850713,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781519523.5850713
+    },
+    "sk-7BnbrWz44wYoT917y": {
+      "failures": 2,
+      "last_fail": 1781532837.8397365,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781532957.8397365
+    },
+    "sk-FMC5zQ9CY8s5CCss0": {
+      "failures": 2,
+      "last_fail": 1781580465.5069613,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781580585.5069613
+    },
+    "sk-NJ1Yyk5wqm4uZ7taj": {
+      "failures": 2,
+      "last_fail": 1781593413.2298555,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781593533.2298555
+    },
+    "sk-ahdOb3GjNETyXsbdZ": {
+      "failures": 2,
+      "last_fail": 1781609537.2819343,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781609657.2819343
+    },
+    "sk-PAhq81e9C68QUWAET": {
+      "failures": 2,
+      "last_fail": 1781616601.4640963,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781616721.4640963
+    },
+    "sk-0gQjKopjGpB03U7Rk": {
+      "failures": 2,
+      "last_fail": 1781641801.3717754,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641921.3717754
+    },
+    "sk-nspTVLYPLYQQLSD3B": {
+      "failures": 2,
+      "last_fail": 1781667002.7649632,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781667122.7649632
+    },
+    "sk-iBypkTkrITf2MHLMe": {
+      "failures": 2,
+      "last_fail": 1781685003.0820885,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781685123.0820885
+    },
+    "sk-zBGsT5ud2JUtx5oCS": {
+      "failures": 2,
+      "last_fail": 1781703003.8857462,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781703123.8857462
+    },
+    "sk-l7UvZBKWGaMaGbTKy": {
+      "failures": 2,
+      "last_fail": 1781715602.7469444,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781715722.7469444
+    },
+    "sk-tc6txPu35kS99JuVn": {
+      "failures": 2,
+      "last_fail": 1781728202.7227912,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781728322.7227912
+    },
+    "sk-Q1cOzXYM5olF9m2EZ": {
+      "failures": 2,
+      "last_fail": 1781756016.5258012,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781756136.5258012
+    },
+    "sk-V9vpIdAeiuZ96DX0l": {
+      "failures": 2,
+      "last_fail": 1781764202.1204276,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781764322.1204276
+    },
+    "sk-CKFIIP8DIezmXSAD3": {
+      "failures": 2,
+      "last_fail": 1781789417.2432227,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781789537.2432227
+    },
+    "sk-zaIqvnuZLRObMmxqi": {
+      "failures": 2,
+      "last_fail": 1781796608.1026385,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781796728.1026385
+    },
+    "sk-XPKRaRiBb5lTH7NQQ": {
+      "failures": 2,
+      "last_fail": 1781803804.8140013,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781803924.8140013
+    },
+    "sk-H0p8nr2g8nulWOGu1": {
+      "failures": 2,
+      "last_fail": 1781818202.8832371,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.8832371
+    }
+  },
+  "deepseek-v4-pro": {
+    "sk-Ro2EEx6nOSV4bOWG5": {
+      "failures": 2,
+      "last_fail": 1781240609.5179343,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781240729.5179343
+    },
+    "sk-6gUR2OGQadwlqnG3R": {
+      "failures": 2,
+      "last_fail": 1781251409.838567,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781251529.838567
+    },
+    "sk-9bbCwNbBMH5djPr6j": {
+      "failures": 2,
+      "last_fail": 1781258609.7915494,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781258729.7915494
+    },
+    "sk-9AueVkkX9Zv92vW2j": {
+      "failures": 2,
+      "last_fail": 1781280335.877931,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781280455.877931
+    },
+    "sk-Tx6jBzP3cxBeipL8p": {
+      "failures": 2,
+      "last_fail": 1781287560.6413898,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781287680.6413898
+    },
+    "sk-r0tHqFX03HfooFhPv": {
+      "failures": 2,
+      "last_fail": 1781294742.650611,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781294862.650611
+    },
+    "sk-MgTQSUQbg49TocxW1": {
+      "failures": 2,
+      "last_fail": 1781515804.8753173,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781515924.8753173
+    },
+    "sk-BNRPvHHoLXKFesgGO": {
+      "failures": 2,
+      "last_fail": 1781529301.4211648,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781529421.4211648
+    },
+    "sk-mFqoQecqsqa82zndJ": {
+      "failures": 2,
+      "last_fail": 1781576061.3111339,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781576181.3111339
+    },
+    "sk-ucpEHh3WSdHvSIDrf": {
+      "failures": 2,
+      "last_fail": 1781580260.4533424,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781580380.4533424
+    },
+    "sk-Biu0t2PYVjdD3r6UZ": {
+      "failures": 2,
+      "last_fail": 1781586767.0825448,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781586887.0825448
+    },
+    "sk-mfJP2udWQYbR6Txgc": {
+      "failures": 2,
+      "last_fail": 1781593220.243928,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781593340.243928
+    },
+    "sk-kddDEbGuffOhVTnDj": {
+      "failures": 2,
+      "last_fail": 1781602202.358068,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781602322.358068
+    },
+    "sk-J8yd6kYPRfVbSrpNI": {
+      "failures": 2,
+      "last_fail": 1781611201.7321765,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781611321.7321765
+    },
+    "sk-g15JFgpP715ioSXvi": {
+      "failures": 2,
+      "last_fail": 1781615640.3905265,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781615760.3905265
+    },
+    "sk-aES5ZwVHuksuKFQYV": {
+      "failures": 2,
+      "last_fail": 1781629414.3452759,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781629534.3452759
+    },
+    "sk-9zMEP5GoTNrRBi0Bt": {
+      "failures": 2,
+      "last_fail": 1781636615.460913,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781636735.460913
+    },
+    "sk-Upa8JFOVswa4rYSpO": {
+      "failures": 2,
+      "last_fail": 1781643956.4444594,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781644076.4444594
+    },
+    "sk-0DVEmVPQLIXEvL4Vy": {
+      "failures": 2,
+      "last_fail": 1781652602.6577628,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781652722.6577628
+    },
+    "sk-cvXXIpcgBpXP5aaj2": {
+      "failures": 2,
+      "last_fail": 1781665413.5757406,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781665533.5757406
+    },
+    "sk-m95KhnzQVcAGW1XWs": {
+      "failures": 2,
+      "last_fail": 1781676002.3586833,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781676122.3586833
+    },
+    "sk-Edf9DnkayhChAIYyL": {
+      "failures": 2,
+      "last_fail": 1781683201.5410974,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781683321.5410974
+    },
+    "sk-ex5RIDHBdgjM386Ty": {
+      "failures": 2,
+      "last_fail": 1781692201.9843342,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781692321.9843342
+    },
+    "sk-p30en8nu7FcsTVZMd": {
+      "failures": 2,
+      "last_fail": 1781701324.8677897,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781701444.8677897
+    },
+    "sk-w5azTSkwKyDquf0rU": {
+      "failures": 2,
+      "last_fail": 1781710209.9834533,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781710329.9834533
+    },
+    "sk-1qHKJPgXzGlBOH4TQ": {
+      "failures": 2,
+      "last_fail": 1781719203.231071,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781719323.231071
+    },
+    "sk-SHReprqI69CAFyNt7": {
+      "failures": 2,
+      "last_fail": 1781726401.2872164,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781726521.2872164
+    },
+    "sk-AAEHFGSixYJbJcd0i": {
+      "failures": 2,
+      "last_fail": 1781738013.5945563,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781738133.5945563
+    },
+    "sk-9u6CdDekmgbb9k6u6": {
+      "failures": 2,
+      "last_fail": 1781751604.5370343,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781751724.5370343
+    },
+    "sk-3LBzhbpYDm0TeUNmq": {
+      "failures": 2,
+      "last_fail": 1781760601.7615285,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781760721.7615285
+    },
+    "sk-HUvpEGeHqgzkuweNo": {
+      "failures": 2,
+      "last_fail": 1781767801.6981928,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781767921.6981928
+    },
+    "sk-50oYEZRofExWlB7ow": {
+      "failures": 2,
+      "last_fail": 1781773203.794571,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781773323.794571
+    },
+    "sk-lBsZE4rh4xcvXJuIc": {
+      "failures": 2,
+      "last_fail": 1781795614.1067197,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781795734.1067197
+    },
+    "sk-OBfEq1mnVqXV9m8xl": {
+      "failures": 2,
+      "last_fail": 1781803805.8018496,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781803925.8018496
+    },
+    "sk-kVK1AYT2H3DYNz2Y8": {
+      "failures": 2,
+      "last_fail": 1781819814.2618897,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781819934.2618897
+    }
+  },
+  "claude-opus-4-7": {
+    "sk-JkiiprXLy3Wmebpzk": {
+      "failures": 2,
+      "last_fail": 1781530204.6323228,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530324.6323228
+    },
+    "sk-LDphiR7aRY48qFFb1": {
+      "failures": 2,
+      "last_fail": 1781530207.8646042,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530327.8646042
+    },
+    "sk-uhatHVsCGeYUtOS6K": {
+      "failures": 2,
+      "last_fail": 1781530201.755358,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530321.755358
+    },
+    "sk-F5QAJNWmmpTaGIo4f": {
+      "failures": 2,
+      "last_fail": 1781530217.5919304,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530337.5919304
+    },
+    "sk-g3EjiJfOZIlNlnkxa": {
+      "failures": 2,
+      "last_fail": 1781530205.7166772,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530325.7166772
+    },
+    "sk-QXHqpne6Xz4wYR328": {
+      "failures": 2,
+      "last_fail": 1781530206.952658,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781530326.952658
+    },
+    "sk-r2U9eBeefc2bozPLK": {
+      "failures": 0,
+      "last_fail": 1781756157.1083288,
+      "state": "ACTIVE",
+      "cooldown_until": 1781756277.1083288
+    },
+    "sk-Nu2nXxu3seOaq4qNX": {
+      "failures": 0,
+      "last_fail": 1781616159.7307477,
+      "state": "ACTIVE",
+      "cooldown_until": 1781616279.7307477
+    },
+    "sk-l1y11wVV1t1Bo1bHi": {
+      "failures": 0,
+      "last_fail": 1781753482.1210911,
+      "state": "ACTIVE",
+      "cooldown_until": 1781753602.1210911
+    },
+    "sk-6QKd19iDga9wevkxA": {
+      "failures": 2,
+      "last_fail": 1781652642.8305497,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781652762.8305497
+    },
+    "sk-FFeCdCNr0q87U3KxL": {
+      "failures": 2,
+      "last_fail": 1781757052.631882,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781757172.631882
+    },
+    "sk-FdL9Ej9GoPAtISe7F": {
+      "failures": 2,
+      "last_fail": 1781757001.533838,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781757121.533838
+    },
+    "sk-Ko41fbaY8RWa1F5Cs": {
+      "failures": 0,
+      "last_fail": 1781789415.707828,
+      "state": "ACTIVE",
+      "cooldown_until": 1781789535.707828
+    },
+    "sk-jzKBe16W1IEwf8cRn": {
+      "failures": 2,
+      "last_fail": 1781817213.4944522,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781817333.4944522
+    },
+    "sk-9pTkAV4j6diRV9pnz": {
+      "failures": 2,
+      "last_fail": 1781818251.5757625,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818371.5757625
+    },
+    "sk-XpwguGryO9IGGyk7Y": {
+      "failures": 0,
+      "last_fail": 1781817337.0490813,
+      "state": "ACTIVE",
+      "cooldown_until": 1781817457.0490813
+    },
+    "sk-bnlAkstgJxbOnkcjw": {
+      "failures": 2,
+      "last_fail": 1781818235.337899,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818355.337899
+    },
+    "sk-5eIya7iH5eNNxVGDs": {
+      "failures": 2,
+      "last_fail": 1781818201.3769014,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818321.3769014
+    },
+    "sk-GzdBRSjLa7tCa27N0": {
+      "failures": 2,
+      "last_fail": 1781817224.8547044,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781817344.8547044
+    }
+  },
+  "moonshotai/kimi-k2.7-code": {
+    "sk-CCuCtS1ggXFN4uwFW": {
+      "failures": 2,
+      "last_fail": 1781622215.2976208,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781622335.2976208
+    },
+    "sk-Ny0dclLUrVblv5CKJ": {
+      "failures": 2,
+      "last_fail": 1781640904.1783054,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641024.1783054
+    },
+    "sk-WOTpeIamoMwnYtRJy": {
+      "failures": 2,
+      "last_fail": 1781647201.4308667,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781647321.4308667
+    },
+    "sk-maPkKi2K2W9c25LCF": {
+      "failures": 2,
+      "last_fail": 1781661604.1199076,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781661724.1199076
+    },
+    "sk-clGbVQEo2pTtSf0Ua": {
+      "failures": 2,
+      "last_fail": 1781669016.1325986,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781669136.1325986
+    },
+    "sk-8mBOK3YSy3hGTKz8N": {
+      "failures": 2,
+      "last_fail": 1781680217.0214612,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781680337.0214612
+    },
+    "sk-LxMtDhTU4QBQwp2SH": {
+      "failures": 2,
+      "last_fail": 1781692201.977504,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781692321.977504
+    },
+    "sk-OhyxhE7KM9QHH57Pr": {
+      "failures": 2,
+      "last_fail": 1781702013.986498,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781702133.986498
+    },
+    "sk-e6jfDREFDkh5Jp4Ap": {
+      "failures": 2,
+      "last_fail": 1781721004.621475,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781721124.621475
+    },
+    "sk-16zadRM8HfOMSuYxC": {
+      "failures": 2,
+      "last_fail": 1781726401.7341578,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781726521.7341578
+    },
+    "sk-1nDihpKKHxX5PDJsX": {
+      "failures": 2,
+      "last_fail": 1781748001.8293154,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781748121.8293154
+    },
+    "sk-vHR3ADkNkNTjOjCL5": {
+      "failures": 2,
+      "last_fail": 1781773204.1005228,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781773324.1005228
+    }
+  },
+  "nvidia/nemotron-3.5-content-safety:free": {
+    "sk-TQGZmEiDTuoG84uAP": {
+      "failures": 2,
+      "last_fail": 1781703003.8912392,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781703123.8912392
+    },
+    "sk-qi94GMBXM50IQayEP": {
+      "failures": 2,
+      "last_fail": 1781780401.8428204,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781780521.8428204
+    }
+  },
+  "nex-agi/nex-n2-pro:free": {
+    "sk-0obltispjja2sUEai": {
+      "failures": 2,
+      "last_fail": 1781708403.3112967,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781708523.3112967
+    },
+    "sk-FENr7dweV53wwwzKz": {
+      "failures": 2,
+      "last_fail": 1781724604.159581,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781724724.159581
+    },
+    "sk-YznLPqdVko4xkKKmp": {
+      "failures": 2,
+      "last_fail": 1781756016.5080886,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781756136.5080886
+    },
+    "sk-IP7lB8PONixQVe2CC": {
+      "failures": 2,
+      "last_fail": 1781762403.158968,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781762523.158968
+    },
+    "sk-VyATSo4u59Hfc5nun": {
+      "failures": 2,
+      "last_fail": 1781767802.248681,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781767922.248681
+    },
+    "sk-KWw8BiANHWanjatOm": {
+      "failures": 2,
+      "last_fail": 1781775001.5947857,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781775121.5947857
+    }
+  },
+  "nvidia/nemotron-3-ultra-550b-a55b": {
+    "sk-Eson1TZm472svw79H": {
+      "failures": 2,
+      "last_fail": 1781632801.3544528,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781632921.3544528
+    },
+    "sk-cMXbkzOhPlMEOcTRj": {
+      "failures": 2,
+      "last_fail": 1781643604.3979874,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781643724.3979874
+    },
+    "sk-zLEYVJFjwURql2nhO": {
+      "failures": 2,
+      "last_fail": 1781658216.078224,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781658336.078224
+    },
+    "sk-YFzPe7YarxPcyfAnP": {
+      "failures": 2,
+      "last_fail": 1781665413.0419781,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781665533.0419781
+    },
+    "sk-wjSFng3pRRdwpjqTz": {
+      "failures": 2,
+      "last_fail": 1781676001.8486269,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781676121.8486269
+    },
+    "sk-OXdywpBrCKrqwGgz3": {
+      "failures": 2,
+      "last_fail": 1781684165.9535513,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781684285.9535513
+    },
+    "sk-vDWjHm6kVtfiE8EUb": {
+      "failures": 2,
+      "last_fail": 1781694001.6445103,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781694121.6445103
+    },
+    "sk-2u8dEtWXEwUv3K8hz": {
+      "failures": 2,
+      "last_fail": 1781706602.3218966,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781706722.3218966
+    },
+    "sk-wBbpU2wvtVZCGZuRJ": {
+      "failures": 2,
+      "last_fail": 1781712003.4148905,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781712123.4148905
+    },
+    "sk-uDxiXpmluRG08aT6Z": {
+      "failures": 2,
+      "last_fail": 1781721004.6087463,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781721124.6087463
+    },
+    "sk-g5sc4UbX6OOOVDWbA": {
+      "failures": 2,
+      "last_fail": 1781728202.2557185,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781728322.2557185
+    },
+    "sk-1JA3t0Y7hO9P8R7LS": {
+      "failures": 2,
+      "last_fail": 1781741616.3083653,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781741736.3083653
+    },
+    "sk-mmOkdIZIEnEuuSaMa": {
+      "failures": 2,
+      "last_fail": 1781748813.7021637,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781748933.7021637
+    },
+    "sk-fePTCetruhlBo8us8": {
+      "failures": 2,
+      "last_fail": 1781775005.596457,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781775125.596457
+    }
+  },
+  "google/gemini-3.5-flash": {
+    "sk-QMhvIxYYDxhKGeAXr": {
+      "failures": 2,
+      "last_fail": 1781641801.8338985,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781641921.8338985
+    },
+    "sk-ztGqKoijxLoMGKcHT": {
+      "failures": 2,
+      "last_fail": 1781658001.413476,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781658121.413476
+    },
+    "sk-UKriFiY1jxpCfDwMU": {
+      "failures": 2,
+      "last_fail": 1781668801.517753,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781668921.517753
+    },
+    "sk-UiI7KdJQqIacWLUz6": {
+      "failures": 2,
+      "last_fail": 1781680217.5336428,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781680337.5336428
+    },
+    "sk-wZgIhEmIjscsCJv3W": {
+      "failures": 2,
+      "last_fail": 1781688602.500709,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781688722.500709
+    },
+    "sk-4bKeLbdZ6PttNl9qM": {
+      "failures": 2,
+      "last_fail": 1781701324.3232775,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781701444.3232775
+    },
+    "sk-oudb0yAiyUMF456nA": {
+      "failures": 2,
+      "last_fail": 1781715602.7294424,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781715722.7294424
+    },
+    "sk-tEu9zzzr7wrCyKiCo": {
+      "failures": 2,
+      "last_fail": 1781728202.7099738,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781728322.7099738
+    },
+    "sk-wMj8gscpLJO4W1EKf": {
+      "failures": 2,
+      "last_fail": 1781735401.7333856,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781735521.7333856
+    },
+    "sk-yDc7rD0ZN4YdQ6zMR": {
+      "failures": 2,
+      "last_fail": 1781748813.7170873,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781748933.7170873
+    },
+    "sk-7fNvQOAhDpU9xuOoT": {
+      "failures": 2,
+      "last_fail": 1781818202.4405339,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781818322.4405339
+    }
+  },
+  "minimax/minimax-m3": {
+    "sk-D9inEubyQbuhoDJKa": {
+      "failures": 2,
+      "last_fail": 1781638203.3237016,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781638323.3237016
+    },
+    "sk-zQ0Kmh7jWi7C5RaDL": {
+      "failures": 2,
+      "last_fail": 1781658001.401869,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781658121.401869
+    },
+    "sk-TDCaJI3QDrvtuC51N": {
+      "failures": 2,
+      "last_fail": 1781668801.5346205,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781668921.5346205
+    },
+    "sk-Xa7w0ICkkVDDonb7P": {
+      "failures": 2,
+      "last_fail": 1781681404.6950557,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781681524.6950557
+    },
+    "sk-imgkC6QlfMF20GzSx": {
+      "failures": 2,
+      "last_fail": 1781690402.7893202,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781690522.7893202
+    },
+    "sk-YBShQjtEAi7k0A6KT": {
+      "failures": 2,
+      "last_fail": 1781706602.2993448,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781706722.2993448
+    },
+    "sk-iPVrNhQEmX3bJiWtZ": {
+      "failures": 2,
+      "last_fail": 1781712815.0937076,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781712935.0937076
+    },
+    "sk-HeF22eDOGKtyoemy1": {
+      "failures": 2,
+      "last_fail": 1781722803.4424644,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781722923.4424644
+    },
+    "sk-aZpUjakrYGeuCGZnh": {
+      "failures": 2,
+      "last_fail": 1781733604.4640079,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781733724.4640079
+    },
+    "sk-JP8V51ObIwzRhrp1c": {
+      "failures": 2,
+      "last_fail": 1781749805.886947,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781749925.886947
+    },
+    "sk-8YcSytsWS7hx06eLA": {
+      "failures": 2,
+      "last_fail": 1781774013.3308723,
+      "state": "COOLDOWN",
+      "cooldown_until": 1781774133.3308723
+    }
+  }
+}
