@@ -53,6 +53,7 @@ from src.modules.m68_yield import score_m68_yield
 from src.modules.m69_vix import score_m69_vix
 from src.modules.m70_wti import score_m70_wti
 from src.modules.m71_gold import score_m71_gold
+from src.modules.m72_btcdom import fetch_btcdom, score_m72_btcdom
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -80,7 +81,8 @@ class Trade:
                  m68_score=0.5, m68_status='SKIP',
                  m69_score=0.5, m69_status='SKIP',
                  m70_score=0.5, m70_status='SKIP',
-                 m71_score=0.5, m71_status='SKIP'):
+                 m71_score=0.5, m71_status='SKIP',
+                 m72_score=0.5, m72_status='SKIP'):
         self.entry_time = entry_time
         self.direction = direction
         self.entry_price = entry_price
@@ -141,6 +143,7 @@ class Trade:
         self.m69_score = m69_score; self.m69_status = m69_status
         self.m70_score = m70_score; self.m70_status = m70_status
         self.m71_score = m71_score; self.m71_status = m71_status
+        self.m72_score = m72_score; self.m72_status = m72_status
         # Lifecycle
         self.remaining = 1.0
         self.tp1_hit = False
@@ -725,6 +728,7 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
         'm69_pass', 'm69_skip',
         'm70_pass', 'm70_skip',
         'm71_pass', 'm71_skip',
+        'm72_pass', 'm72_skip',
     ]}
 
     adaptive_tracker = None
@@ -744,6 +748,9 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
     squeeze_compression_history = []  # list of (range48, vol_ratio, bar_range, taker_ratio)
     last_squeeze_bar = -999
     squeeze_last_squeeze_bar = -999  # squeeze-specific cooldown
+
+    # M72 cache: BTC.D doesn't change per-bar; re-fetch every M72_CACHE_BARS bars
+    _m72_cache = {'last_bar': -999, 'value': None}
 
     for idx in range(len(df_15m)):
         row = df_15m.iloc[idx]
@@ -1772,6 +1779,24 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
                     except Exception:
                         pass
 
+        # M72: BTC Dominance (CoinGecko API — independent of tradfi data)
+        m72_score = 0.5; m72_status = 'SKIP'; use_m72 = False
+        if cfg.get('M72_ENABLED', False):
+            try:
+                _m72_cache_bars = cfg.get('M72_CACHE_BARS', 96)  # 96 bars = 24h at 15m
+                if (idx - _m72_cache['last_bar']) >= _m72_cache_bars or _m72_cache['value'] is None:
+                    _m72_cache['value'] = fetch_btcdom()
+                    _m72_cache['last_bar'] = idx
+                m72_status, m72_score, _m72_details = score_m72_btcdom(
+                    _m72_cache['value'], direction, config=cfg)
+                use_m72 = m72_status == 'PASS'
+                if m72_status == 'PASS':
+                    stats['m72_pass'] = stats.get('m72_pass', 0) + 1
+                else:
+                    stats['m72_skip'] = stats.get('m72_skip', 0) + 1
+            except Exception:
+                stats['m72_skip'] = stats.get('m72_skip', 0) + 1
+
         # TAKER: Taker flow momentum + regime scoring
         taker_score = 0.5
         use_taker = False
@@ -1819,6 +1844,7 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
                                         m69_score=m69_score, use_m69=use_m69,
                                         m70_score=m70_score, use_m70=use_m70,
                                         m71_score=m71_score, use_m71=use_m71,
+                                        m72_score=m72_score, use_m72=use_m72,
                                         config=cfg)
         ics += gatekeeper.ics_boost
 
@@ -2221,7 +2247,8 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
                       m68_score=m68_score, m68_status=m68_status,
                       m69_score=m69_score, m69_status=m69_status,
                       m70_score=m70_score, m70_status=m70_status,
-                      m71_score=m71_score, m71_status=m71_status)
+                      m71_score=m71_score, m71_status=m71_status,
+                      m72_score=m72_score, m72_status=m72_status)
         trade.dir_size_mult = dir_size_mult
         open_trades.append(trade); trades.append(trade)
         daily_trades[today] += 1; stats['entries'] += 1
