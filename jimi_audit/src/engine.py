@@ -54,6 +54,7 @@ from src.modules.m69_vix import score_m69_vix
 from src.modules.m70_wti import score_m70_wti
 from src.modules.m71_gold import score_m71_gold
 from src.modules.m72_btcdom import fetch_btcdom, score_m72_btcdom
+from src.modules.m73_stablecoin import fetch_stablecoin_mints, score_m73_stablecoin
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -751,6 +752,8 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
 
     # M72 cache: BTC.D doesn't change per-bar; re-fetch every M72_CACHE_BARS bars
     _m72_cache = {'last_bar': -999, 'value': None}
+    # M73 cache: stablecoin supply doesn't change per-bar; re-fetch every M73_CACHE_BARS bars
+    _m73_cache = {'last_bar': -999, 'value': None}
 
     for idx in range(len(df_15m)):
         row = df_15m.iloc[idx]
@@ -1795,7 +1798,25 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
                 else:
                     stats['m72_skip'] = stats.get('m72_skip', 0) + 1
             except Exception:
-                stats['m72_skip'] = stats.get('m72_skip', 0) + 1
+                pass
+
+        # M73: Stablecoin Mint Flows (DeFiLlama API — independent of tradfi data)
+        m73_score = 0.5; m73_status = 'SKIP'; use_m73 = False
+        if cfg.get('M73_ENABLED', False):
+            try:
+                _m73_cache_bars = cfg.get('M73_CACHE_BARS', 96)  # 96 bars = 24h at 15m
+                if (idx - _m73_cache['last_bar']) >= _m73_cache_bars or _m73_cache['value'] is None:
+                    _m73_cache['value'] = fetch_stablecoin_mints()
+                    _m73_cache['last_bar'] = idx
+                m73_status, m73_score, _m73_details = score_m73_stablecoin(
+                    _m73_cache['value'], direction, config=cfg)
+                use_m73 = m73_status == 'PASS'
+                if m73_status == 'PASS':
+                    stats['m73_pass'] = stats.get('m73_pass', 0) + 1
+                else:
+                    stats['m73_skip'] = stats.get('m73_skip', 0) + 1
+            except Exception:
+                stats['m73_skip'] = stats.get('m73_skip', 0) + 1
 
         # TAKER: Taker flow momentum + regime scoring
         taker_score = 0.5
@@ -1819,6 +1840,7 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
                         taker_score = 0.5
                         use_taker = True  # still include, just neutral
             except Exception:
+                pass
                 taker_score = 0.5
 
         # ICS — single gate with all modules (aligned with scanner)
@@ -1845,6 +1867,7 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
                                         m70_score=m70_score, use_m70=use_m70,
                                         m71_score=m71_score, use_m71=use_m71,
                                         m72_score=m72_score, use_m72=use_m72,
+                                        m73_score=m73_score, use_m73=use_m73,
                                         config=cfg)
         ics += gatekeeper.ics_boost
 

@@ -730,10 +730,10 @@ _DEFAULTS = {
     "M69_ENABLED": False,
     "M70_ENABLED": False,
     "M71_ENABLED": False,
-    "M72_ENABLED": False,
+    "M72_ENABLED": True,
     "M72_WEIGHT": 0.10,
     "M72_CACHE_BARS": 96,  # re-fetch BTC.D every 24h (96 x 15m)
-    "M73_ENABLED": False,
+    "M73_ENABLED": True,
     "M73_LARGE_MINT_THRESH": 500_000_000,
     "M73_MEGA_MINT_THRESH": 1_000_000_000,
     "M73_LARGE_BURN_THRESH": 500_000_000,
