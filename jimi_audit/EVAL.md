@@ -295,7 +295,7 @@ After M66–M73 triage is complete, use this for individual module deep evaluati
 
 | Module | Phase | Issue | Status |
 |--------|-------|-------|--------|
-| M73 vs M75 | 4 | Potential double-count of stablecoin dominance signal | 🔴 Critical — check first |
+| M73 vs M75 | 4 | ~~Potential double-count~~ → No overlap. M73=stablecoin supply (DeFiLlama), M75=toxic order flow (taker/CVD/OI/funding). M75 was dead code, now wired into engine. | ✅ Resolved 2026-06-24 |
 | M66 | 4 | Newly enabled — signal direction unvalidated | 🔴 Triage required |
 | M67 | 4 | Newly enabled — DXY/USD/JPY overlap risk with M66 | 🔴 Triage required |
 | M68 | 4 | Newly enabled — yield metric (10Y vs spread) unspecified | 🔴 Triage required |
@@ -305,7 +305,7 @@ After M66–M73 triage is complete, use this for individual module deep evaluati
 | M72 | 4 | Newly enabled — BTC.D direction logic unconfirmed | 🔴 Triage required |
 | M73 | 4 | Newly enabled — stablecoin metric unspecified, overlap with M75 | 🔴 Triage required |
 | M22 | 4 | Placeholder — real logic is M23–M65 aggregate | 🔴 Clarify |
-| M75 | 4 | TOF/USDT.D — CVD tick-volume method unverified | 🟡 Review |
+| M75 | 4 | TOF wired into engine (TOFState, 4 sub-scorers). OI=0 in backtest (not per-bar). Needs live validation. | 🟡 Needs live test |
 | ICS | 4 | EARLY_EXIT — historical win rate 0% | 🔴 Disable |
 | ICS | 4 | M2 NEUTRAL signals degrading win rate | 🟡 Review |
 | M7 | 2 | CHoCH reclassification propagation unconfirmed | 🟡 Review |

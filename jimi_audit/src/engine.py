@@ -55,6 +55,7 @@ from src.modules.m70_wti import score_m70_wti
 from src.modules.m71_gold import score_m71_gold
 from src.modules.m72_btcdom import fetch_btcdom, score_m72_btcdom
 from src.modules.m73_stablecoin import fetch_stablecoin_mints, score_m73_stablecoin
+from src.modules.m75_tof import TOFState
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -217,6 +218,7 @@ def calc_ics(m1_score, m2_score, m3_score, m4_score, m4_status, m5_score=0.5,
              m71_score=0.5, use_m71=False,
              m72_score=0.5, use_m72=False,
              m73_score=0.5, use_m73=False,
+             m75_score=0.5, use_m75=False,
              config=None):
     cfg = config or CONFIG
     m4_contrib = m4_score if m4_status == 'PASS' else 0.5
@@ -269,9 +271,6 @@ def calc_ics(m1_score, m2_score, m3_score, m4_score, m4_status, m5_score=0.5,
     use_m74 = cfg.get('M74_ENABLED', False)
     if use_m74 and cfg.get('M74_ENABLED', False):
         extra_modules.append(('M74', m74_score, cfg.get('M74_WEIGHT', 0.08)))
-    # Ensure use_m75 is defined for the ICS calculation
-    use_m75 = cfg.get('M75_ENABLED', False)
-    m75_score = 0.5
     if use_m75 and cfg.get('M75_ENABLED', False):
         extra_modules.append(('M75', m75_score, cfg.get('M75_WEIGHT', 0.10)))
 
@@ -754,6 +753,8 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
     _m72_cache = {'last_bar': -999, 'value': None}
     # M73 cache: stablecoin supply doesn't change per-bar; re-fetch every M73_CACHE_BARS bars
     _m73_cache = {'last_bar': -999, 'value': None}
+    # M75 Toxic Order Flow state (persistent across bars)
+    _tof_state = TOFState() if cfg.get("M75_ENABLED", False) else None
 
     for idx in range(len(df_15m)):
         row = df_15m.iloc[idx]
@@ -1818,6 +1819,32 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
             except Exception:
                 stats['m73_skip'] = stats.get('m73_skip', 0) + 1
 
+        # M75: Toxic Order Flow (taker persistence + CVD divergence + OI + funding)
+        m75_score = 0.5; m75_status = 'SKIP'; use_m75 = False
+        if cfg.get('M75_ENABLED', False) and _tof_state is not None:
+            try:
+                _buy_vol = float(row.get('Taker buy base asset volume', row['Volume'] * 0.5))
+                _sell_vol = float(row['Volume']) - _buy_vol
+                _m75_bar = {
+                    'close': float(row['Close']),
+                    'buy_vol': _buy_vol,
+                    'sell_vol': _sell_vol,
+                    'oi': 0.0,
+                    'funding': cached_funding_rate or 0.0,
+                }
+                _m75_result = _tof_state.push(_m75_bar)
+                _m75_raw = _m75_result.get('tof_score', 0.0)
+                m75_score = max(0.0, min(1.0, 0.5 + _m75_raw * 0.5))
+                _m75_signal = _m75_result.get('tof_signal', 'NEUTRAL')
+                m75_status = 'PASS' if _m75_signal != 'NEUTRAL' else 'NEUTRAL'
+                use_m75 = m75_status == 'PASS'
+                if m75_status == 'PASS':
+                    stats['m75_pass'] = stats.get('m75_pass', 0) + 1
+                else:
+                    stats['m75_skip'] = stats.get('m75_skip', 0) + 1
+            except Exception:
+                stats['m75_skip'] = stats.get('m75_skip', 0) + 1
+
         # TAKER: Taker flow momentum + regime scoring
         taker_score = 0.5
         use_taker = False
@@ -1868,6 +1895,7 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
                                         m71_score=m71_score, use_m71=use_m71,
                                         m72_score=m72_score, use_m72=use_m72,
                                         m73_score=m73_score, use_m73=use_m73,
+                                        m75_score=m75_score, use_m75=use_m75,
                                         config=cfg)
         ics += gatekeeper.ics_boost
 
