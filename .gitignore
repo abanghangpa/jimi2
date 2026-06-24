@@ -21,3 +21,13 @@ rotation.log
 unified_proxy.log
 tail.pid
 summary.md
+
+# Scanner/report outputs
+scanner_output.json
+jimi_output.json
+jimi_report.json
+jimi_scan_output.json
+last_scan.json
+report.json
+jimi_audit/scanner_output.json
+jimi_audit/EVAL.md.save

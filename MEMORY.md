@@ -2,14 +2,14 @@
 
 ## Active Systems
 
-### 🔄 Automated LLM Fallback System
-- **Description**: A transparent proxy that provides free LLM access via a third-party GitHub repo, with automatic fallback to production Google Gemini keys if the free keys fail (401/429).
+### 🔄 Automated LLM Fallback System (Unified Proxy)
+- **Description**: A transparent proxy that provides free LLM access via a third-party GitHub repo, with automatic fallback to production Google Gemini keys if the free keys fail (401/429). Runs on `localhost:8821`.
 - **Components**:
-    - `fallback_proxy.py`: Custom Python-based OpenAI-compatible proxy running on `localhost:8000`.
+    - `unified_proxy.py`: Custom Python-based OpenAI-compatible proxy running on `localhost:8821`.
     - `rotate_keys.py`: Script that scrapes the GitHub repo for fresh keys.
     - `cron`: Scheduled to run every hour to ensure key freshness.
     - `.env`: Stores `PROD_API_KEY` for the proxy.
-- **Configuration**: `openclaw.json` is configured to use `http://localhost:8000/v1` as the `free-proxy` provider.
+- **Configuration**: `openclaw.json` is configured to use `http://localhost:8821/v1` as the `free-proxy` provider.
 
 ## Lessons Learned
 

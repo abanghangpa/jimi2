@@ -6,10 +6,29 @@ import urllib.error
 import os
 import sys
 
+def load_env():
+    env_path = "/root/.openclaw/workspace/.env"
+    if os.path.exists(env_path):
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' in line:
+                    key, value = line.split('=', 1)
+                    os.environ[key] = value
+
+load_env()
+
 # --- CONFIGURATION ---
 MODEL_MAPPING = {
     "default": {
-        "tier2": ["gpt-5.5", "claude-opus-4-7", "gemini-2.5-pro", "deepseek-chat"],
+        "tier2": [
+            "openai/gpt-5.5",
+            "anthropic/claude-opus-4-7",
+            "google/gemini-2.5-pro",
+            "deepseek/deepseek-chat"
+        ],
         "tier1": [
             "models/gemma-4-31b-it",
             "models/gemma-4-26b-a4b-it",
@@ -22,7 +41,11 @@ MODEL_MAPPING = {
         "tier0": "nvidia/nemotron-3-super-120b-a12b"
     },
     "deepseek": {
-        "tier2": ["deepseek-chat", "gpt-5.5", "claude-opus-4-7"],
+        "tier2": [
+            "deepseek/deepseek-chat",
+            "openai/gpt-5.5",
+            "anthropic/claude-opus-4-7"
+        ],
         "tier1": [
             "models/gemma-4-31b-it",
             "models/gemma-4-26b-a4b-it",
@@ -60,7 +83,7 @@ TIERS = [
     }
 ]
 
-PORT = 8000
+PORT = 8820
 
 def load_free_keys():
     try:
