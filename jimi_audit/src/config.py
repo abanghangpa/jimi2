@@ -723,17 +723,24 @@ _DEFAULTS = {
     # M4b Intrabar CVD
     "M4B_INTRABAR_ENABLED": True,
     "M4B_INTRABAR_HOURS": 48,
-    # M66-M71 Tradfi modules
-    "M66_ENABLED": False,
-    "M67_ENABLED": False,
-    "M68_ENABLED": False,
-    "M69_ENABLED": False,
-    "M70_ENABLED": False,
-    "M71_ENABLED": False,
+    # M66-M73 Tradfi modules (total weight budget: 0.20)
+    "M66_ENABLED": True,
+    "M66_WEIGHT": 0.02,  # USD/JPY carry trade proxy
+    "M67_ENABLED": True,
+    "M67_WEIGHT": 0.02,  # DXY divergence filter
+    "M68_ENABLED": True,
+    "M68_WEIGHT": 0.03,  # 10Y yield + TIPS
+    "M69_ENABLED": True,
+    "M69_WEIGHT": 0.03,  # VIX regime classifier
+    "M70_ENABLED": True,
+    "M70_WEIGHT": 0.02,  # WTI crude oil
+    "M71_ENABLED": True,
+    "M71_WEIGHT": 0.02,  # Gold + DXY geopolitical
     "M72_ENABLED": True,
-    "M72_WEIGHT": 0.10,
+    "M72_WEIGHT": 0.04,  # BTC dominance (reduced from 0.10)
     "M72_CACHE_BARS": 96,  # re-fetch BTC.D every 24h (96 x 15m)
     "M73_ENABLED": True,
+    "M73_WEIGHT": 0.02,  # Stablecoin mint flows
     "M73_LARGE_MINT_THRESH": 500_000_000,
     "M73_MEGA_MINT_THRESH": 1_000_000_000,
     "M73_LARGE_BURN_THRESH": 500_000_000,

@@ -489,10 +489,10 @@ def run_backtest(csv_path, config=None, verbose=False, date_start=None, date_end
     tradfi_df = None
     _tradfi_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                                 'data', 'tradfi', 'aligned.csv')
-    if os.path.exists(_tradfi_path) and cfg.get('M66_ENABLED', False) or \
+    if os.path.exists(_tradfi_path) and (cfg.get('M66_ENABLED', False) or \
        cfg.get('M67_ENABLED', False) or cfg.get('M68_ENABLED', False) or \
        cfg.get('M69_ENABLED', False) or cfg.get('M70_ENABLED', False) or \
-       cfg.get('M71_ENABLED', False):
+       cfg.get('M71_ENABLED', False)):
         try:
             tradfi_df = pd.read_csv(_tradfi_path)
             tradfi_df['_ts'] = pd.to_datetime(tradfi_df['datetime'])
