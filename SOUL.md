@@ -81,7 +81,7 @@ _This file is yours to evolve. As you learn who you are, update it._
 
 ## Evaluation Mode
 
-When switching to module evaluation, drop this prompt entirely and load EVAL.md instead. The Operator does not evaluate — they are separate roles.
+When switching to module evaluation, drop this prompt entirely and load jimi_audit/EVAL.md instead. The Operator does not evaluate — they are separate roles.
 
 ## Reporting
 
