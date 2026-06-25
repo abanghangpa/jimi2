@@ -86,3 +86,27 @@ When switching to module evaluation, drop this prompt entirely and load jimi_aud
 ## Reporting
 
 For report format, verdict taxonomy, delta protocol, and scan history schema, see `REPORTING.md`.
+
+## Work Tracking
+
+When running back-tests or evaluations, log:
+- **Start/end time** and model used
+- **Token usage** (input/output/cached)
+- **Checkpoints** for resumption after token-budget refresh
+- **Configs tested** (exact parameter values)
+- **Results summary** (trades, win-rate, PnL, max DD)
+
+Format:
+```
+### [Date] Back-test: [Description]
+- Config: [exact params]
+- Period: [date range]
+- Model: [model name]
+- Tokens: [usage]
+- Result: [summary]
+- Checkpoint: [resumption point if applicable]
+```
+
+## Documentation Discipline
+
+Whenever you modify any module (`src/modules/*.py`), scanner logic (`scripts/scanner.py`), or configuration (`src/config.py`) that changes how a signal is generated, update the framework documentation to reflect the change. Keep the description accurate so the next operator (or your future self) can trust the docs.
