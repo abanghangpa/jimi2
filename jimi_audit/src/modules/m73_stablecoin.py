@@ -1,12 +1,35 @@
 """M73: Stablecoin Mint Flows — on-chain liquidity signal from USDT/USDC mint/burn activity."""
 
 import numpy as np
+import json
+import os
 
 try:
     import requests
     HAS_REQUESTS = True
 except ImportError:
     HAS_REQUESTS = False
+
+CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'm73_supply_cache.json')
+
+
+def _load_cache():
+    """Load persistent supply cache from disk."""
+    try:
+        with open(CACHE_FILE) as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {'usdt': None, 'usdc': None, 'total': None, 'timestamp': None}
+
+
+def _save_cache(cache):
+    """Save supply cache to disk."""
+    try:
+        os.makedirs(os.path.dirname(CACHE_FILE), exist_ok=True)
+        with open(CACHE_FILE, 'w') as f:
+            json.dump(cache, f)
+    except Exception:
+        pass
 
 
 def fetch_stablecoin_mints():
@@ -49,10 +72,6 @@ def fetch_stablecoin_mints():
         return None
 
 
-# Cache for previous supply readings (to compute daily change)
-_supply_cache = {'usdt': None, 'usdc': None, 'timestamp': None}
-
-
 def score_m73_stablecoin(mint_data, direction, config=None):
     """Score stablecoin mint/burn activity.
 
@@ -60,9 +79,9 @@ def score_m73_stablecoin(mint_data, direction, config=None):
     Often precedes major ETH pumps by 12-48h.
 
     Thresholds:
-        > $1B single-day mint: MEGA_MINT → bullish
-        > $500M single-day mint: LARGE_MINT → mildly bullish
-        > $500M burn: LARGE_BURN → mildly bearish
+        > $1B single-day mint: MEGA_MINT -> bullish
+        > $500M single-day mint: LARGE_MINT -> mildly bullish
+        > $500M burn: LARGE_BURN -> mildly bearish
 
     Args:
         mint_data: dict from fetch_stablecoin_mints()
@@ -86,14 +105,18 @@ def score_m73_stablecoin(mint_data, direction, config=None):
     current_supply = mint_data.get('total_supply', 0)
     now = time.time()
 
+    # Load persistent cache (survives process restarts)
+    _supply_cache = _load_cache()
+
     # Compute change from cached previous reading
     total_change = 0
-    if _supply_cache['timestamp'] is not None and _supply_cache['total'] is not None:
+    if _supply_cache.get('timestamp') is not None and _supply_cache.get('total') is not None:
         total_change = current_supply - _supply_cache['total']
 
-    # Update cache
+    # Update cache and persist to disk
     _supply_cache['total'] = current_supply
     _supply_cache['timestamp'] = now
+    _save_cache(_supply_cache)
 
     # Classification based on supply change
     if total_change > mega_mint:
