@@ -3,12 +3,8 @@ import threading
 import time
 import pandas as pd
 
-# TEMPORARY MOCK to prevent yfinance hangs during debugging
-def mocked_download(*args, **kwargs):
-    print("  ⚠️  [DEBUG] yfinance download mocked to prevent hang")
-    return pd.DataFrame()
-
-yf.download = mocked_download
+# yfinance download - live data fetching enabled
+# Mock removed 2026-06-26 - was blocking all TradFi modules (M66-M73)
 
 def fetch_tradfi_data():
     """Fetch current TradFi macro indicators using yfinance.
