@@ -5525,5 +5525,13 @@ def main():
         print(f"\n  ⚠️  Derivatives collection failed: {e}")
 
 
+    # ── Mirror to latest_scan.json (for downstream scripts) ──
+    try:
+        import shutil
+        latest_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "latest_scan.json")
+        shutil.copy2(scan_file, latest_path)
+    except Exception as e:
+        print(f"  ⚠️  Failed to mirror to latest_scan.json: <paramiko.ChannelFile from <paramiko.Channel 1 (closed) -> <paramiko.Transport at 0x5a168dd0 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>>")
+
 if __name__ == '__main__':
     main()
