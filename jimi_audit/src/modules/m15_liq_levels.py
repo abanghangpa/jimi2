@@ -708,12 +708,12 @@ def estimate_liquidity_levels(df_15m, idx, sr_levels, oi_usd, ls_ratio,
                 density_zones[bucket_idx]["count"] += 1
                 
         bid_walls_found = []
-        for idx, data in density_zones.items():
+        for bucket_idx, data in density_zones.items():
             if data["total_volume"] == 0: continue
             strength = min(data["total_volume"] / np.mean(bid_vols) * 10, 100) if np.mean(bid_vols) > 0 else 100
             if strength > 15: # Minimum strength to be considered a wall
                 # Approximate price for the bucket center
-                bucket_price = (price_buckets[idx] + price_buckets[idx+1]) / 2
+                bucket_price = (price_buckets[bucket_idx] + price_buckets[bucket_idx+1]) / 2
                 bid_walls_found.append({
                     'price': round(bucket_price, 2),
                     'type': 'BID_WALL',
@@ -732,11 +732,11 @@ def estimate_liquidity_levels(df_15m, idx, sr_levels, oi_usd, ls_ratio,
                 density_zones[bucket_idx]["count"] += 1
                 
         ask_walls_found = []
-        for idx, data in density_zones.items():
+        for bucket_idx, data in density_zones.items():
             if data["total_volume"] == 0: continue
             strength = min(data["total_volume"] / np.mean(ask_vols) * 10, 100) if np.mean(ask_vols) > 0 else 100
             if strength > 15:
-                bucket_price = (price_buckets[idx] + price_buckets[idx+1]) / 2
+                bucket_price = (price_buckets[bucket_idx] + price_buckets[bucket_idx+1]) / 2
                 ask_walls_found.append({
                     'price': round(bucket_price, 2),
                     'type': 'ASK_WALL',
@@ -788,7 +788,7 @@ def estimate_liquidity_levels(df_15m, idx, sr_levels, oi_usd, ls_ratio,
     # Check if zones have been swept by recent price action.
     # For zones with known formation time, check if swept AFTER formation.
     # For zones without formation time (legacy), use 4h lookback.
-    sweep_lookback = 16  # 4h fallback
+    sweep_lookback = 1  # 15min fallback (was 4h, too aggressive)
     recent_high = float(np.max(df_15m['High'].values[max(0, idx - sweep_lookback + 1):idx+1].astype(float)))
     recent_low = float(np.min(df_15m['Low'].values[max(0, idx - sweep_lookback + 1):idx+1].astype(float)))
     recent_times = df_15m['Open time'].values[max(0, idx - sweep_lookback + 1):idx+1]
@@ -865,6 +865,14 @@ def estimate_liquidity_levels(df_15m, idx, sr_levels, oi_usd, ls_ratio,
         # Keep order book walls regardless (they're real liquidity)
         if zone['type'] in ('BID_WALL', 'ASK_WALL'):
             filtered.append(zone)
+            continue
+
+        # Filter out directionally nonsensical zones:
+        #   LONG_STOP above price = longs don't have stops above price
+        #   SHORT_STOP below price = shorts don't have stops below price
+        if zone['type'] == 'LONG_STOP' and zone['price'] > current_price:
+            continue
+        if zone['type'] == 'SHORT_STOP' and zone['price'] < current_price:
             continue
 
         is_fresh = zone.get('formed_at') is not None and zone['formed_at'] > fresh_cutoff
