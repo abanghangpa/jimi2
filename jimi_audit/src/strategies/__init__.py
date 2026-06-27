@@ -1,4 +1,4 @@
-"""JIMI Multi-Strategy System — 21 strategies with order flow."""
+"""JIMI Multi-Strategy System — 22 strategies with order flow."""
 from .base import BaseStrategy, SignalResult
 from .runner import StrategyRunner
 from .s01_failed_breakout import FailedBreakoutStrategy
@@ -22,6 +22,7 @@ from .s18_momentum_v2 import MomentumV2Strategy
 from .s19_orderbook_imbalance import OrderBookImbalanceStrategy
 from .s20_liquidation_cascade import LiquidationCascadeStrategy
 from .s21_trade_flow import TradeFlowStrategy
+from .s22_judas_sweep import JudasSweepStrategy
 
 ALL_STRATEGIES = [
     FailedBreakoutStrategy, SqueezeBreakoutStrategy, CascadeStrategy,
@@ -31,6 +32,7 @@ ALL_STRATEGIES = [
     FundingArbStrategy, WhaleWatchStrategy, VolRotationStrategy,
     MTFConfluenceStrategy, ScalpV2Strategy, MomentumV2Strategy,
     OrderBookImbalanceStrategy, LiquidationCascadeStrategy, TradeFlowStrategy,
+    JudasSweepStrategy,
 ]
 
 def create_runner(config=None) -> StrategyRunner:
