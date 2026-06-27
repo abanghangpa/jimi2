@@ -4,6 +4,12 @@ Every strategy must implement check() and returns a SignalResult or None.
 """
 from dataclasses import dataclass, field
 from typing import Optional, Dict, Any
+import json
+import os
+from datetime import datetime, timezone
+
+
+SIGNAL_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data')
 
 
 @dataclass
@@ -63,32 +69,46 @@ class BaseStrategy:
     def __init__(self, config=None):
         self.cfg = config or {}
 
-    def check(self, data: dict, df_15m=None, idx=None, **kwargs) -> Optional[SignalResult]:
-        """Check if this strategy has a valid signal.
-
-        Args:
-            data: Full scan result dict (all modules, derivatives, etc.)
-            df_15m: 15m OHLCV DataFrame (optional, for bar-level analysis)
-            idx: Current bar index (optional)
-
-        Returns:
-            SignalResult if signal found, None otherwise.
-        """
+    def check(self, data, df_15m=None, idx=None, **kwargs) -> Optional[SignalResult]:
+        """Override this. Return SignalResult or None."""
         raise NotImplementedError
+
+    def log_signal(self, data: dict, result: Optional[SignalResult] = None):
+        """Log signal to JSONL for outcome tracking. Call from check() before returning."""
+        try:
+            os.makedirs(SIGNAL_LOG_DIR, exist_ok=True)
+            log_path = os.path.join(SIGNAL_LOG_DIR, 'strategy_signals.jsonl')
+            entry = {
+                'timestamp': str(data.get('timestamp', datetime.now(timezone.utc))),
+                'strategy': self.name,
+                'price': data.get('price', 0),
+                'direction': result.direction if result else None,
+                'conviction': round(result.conviction, 4) if result else None,
+                'entry': round(result.entry, 2) if result else None,
+                'sl': round(result.sl, 2) if result else None,
+                'tp1': round(result.tp1, 2) if result else None,
+                'rr1': round(result.rr1, 2) if result else None,
+                'fired': result is not None,
+                'outcome': None,  # filled later by outcome tracker
+            }
+            with open(log_path, 'a') as f:
+                f.write(json.dumps(entry, default=str) + '\n')
+        except Exception:
+            pass  # Don't let logging crash the strategy
 
     def _calc_levels(self, price, direction, atr, tp_mults=(1.5, 2.5, 4.0), sl_mult=1.0):
         """Calculate SL/TP levels from ATR."""
         if direction == 'LONG':
-            sl = price - sl_mult * atr
-            tp1 = price + tp_mults[0] * atr
-            tp2 = price + tp_mults[1] * atr
-            tp3 = price + tp_mults[2] * atr
+            sl = price - atr * sl_mult
+            tp1 = price + atr * tp_mults[0]
+            tp2 = price + atr * tp_mults[1]
+            tp3 = price + atr * tp_mults[2]
         else:
-            sl = price + sl_mult * atr
-            tp1 = price - tp_mults[0] * atr
-            tp2 = price - tp_mults[1] * atr
-            tp3 = price - tp_mults[2] * atr
+            sl = price + atr * sl_mult
+            tp1 = price - atr * tp_mults[0]
+            tp2 = price - atr * tp_mults[1]
+            tp3 = price - atr * tp_mults[2]
 
-        sl_pct = abs(price - sl) / price * 100
+        sl_pct = abs(sl - price) / price * 100
         tp1_pct = abs(tp1 - price) / price * 100
         return sl, tp1, tp2, tp3, sl_pct, tp1_pct

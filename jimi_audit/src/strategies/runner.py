@@ -1,8 +1,38 @@
 """
 Strategy Runner — executes all registered strategies and picks the best signal.
+Logs all signals for outcome tracking.
 """
 from typing import List, Optional, Dict
 from .base import BaseStrategy, SignalResult
+import json
+import os
+from datetime import datetime, timezone
+
+SIGNAL_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data')
+
+
+def _log_signal(strategy_name: str, data: dict, result: Optional[SignalResult] = None):
+    """Log signal to JSONL for outcome tracking."""
+    try:
+        os.makedirs(SIGNAL_LOG_DIR, exist_ok=True)
+        log_path = os.path.join(SIGNAL_LOG_DIR, 'strategy_signals.jsonl')
+        entry = {
+            'timestamp': str(data.get('timestamp', datetime.now(timezone.utc))),
+            'strategy': strategy_name,
+            'price': data.get('price', 0),
+            'direction': result.direction if result else None,
+            'conviction': round(result.conviction, 4) if result else None,
+            'entry': round(result.entry, 2) if result else None,
+            'sl': round(result.sl, 2) if result else None,
+            'tp1': round(result.tp1, 2) if result else None,
+            'rr1': round(result.rr1, 2) if result else None,
+            'fired': result is not None,
+            'outcome': None,  # filled later by outcome tracker
+        }
+        with open(log_path, 'a') as f:
+            f.write(json.dumps(entry, default=str) + '\n')
+    except Exception:
+        pass
 
 
 class StrategyRunner:
@@ -24,8 +54,11 @@ class StrategyRunner:
                 if result is not None:
                     result.timestamp = data.get('timestamp', '')
                     signals.append(result)
+                # Log every strategy (fired or not)
+                _log_signal(strat.name, data, result)
             except Exception as e:
-                # Don't let one strategy crash the whole runner
+                # Log the attempt even on error
+                _log_signal(strat.name, data, None)
                 pass
         # Sort by conviction descending
         signals.sort(key=lambda s: s.conviction, reverse=True)
