@@ -62,7 +62,23 @@ Every report must follow this exact order:
 * *Scenario:* [Describe the sweep/hold setup with sweep low, hold level, targets]
 ```
 
-### 5. STRATEGY SIGNALS (22 strategies)
+### 5. CONVERGENCE CHECK: LIQUIDITY × FLOW
+Compare WHERE the liquidity is vs WHERE the flow is pushing.
+
+*Liquidity Map* (WHERE price wants to go):
+* Direction Resolver: direction, reason
+* Nearest Magnet, Key S/R Levels, Stop Clusters
+
+*Flow Map* (WHAT is pushing price):
+* Whale Signal, Taker 4h, OB Imbalance, Net Flow, OI Change, L/S Ratio
+
+*Convergence Score:* ALIGNED / PARTIAL / DIVERGENT
+- ALIGNED: liquidity and flow point same direction = high conviction
+- DIVERGENT: liquidity says X, flow says Y = Judas sweep risk or conflict
+
+Renumber sections after:
+
+### 6. STRATEGY SIGNALS (22 strategies)
 Read `multi_strategy` from JSON. Show:
 - `signals_fired`/`total_strategies`
 - Best signal from `strategy_signal`: strategy name, type, direction, conviction, entry/SL/TP1/TP2/TP3, R:R, reason, bypass_gates
@@ -79,7 +95,7 @@ Read `multi_strategy` from JSON. Show:
 * *Reason:* [reason]
 ```
 
-### 6. ORDER FLOW
+### 7. ORDER FLOW
 Read `order_flow` from JSON:
 ```
 ### 📊 Order Flow
@@ -89,7 +105,7 @@ Read `order_flow` from JSON:
 * *Funding Avg:* `[funding_avg]`
 ```
 
-### 7. DUAL-GEAR STATUS
+### 8. DUAL-GEAR STATUS
 Read `dual_strategy` from JSON. Show Strategy A (Scalp) and Strategy B (Momentum) status:
 ```
 ### ⚙️ Dual-Gear Status
@@ -98,7 +114,7 @@ Read `dual_strategy` from JSON. Show Strategy A (Scalp) and Strategy B (Momentum
 * *Base Direction:* `[direction]` | *Regime:* `[regime]`
 ```
 
-### 8. NARRATIVE & VERDICT
+### 9. NARRATIVE & VERDICT
 ```
 ### 📝 Narrative
 [Plain-English market story. Reference strategy signals and order flow.
@@ -118,6 +134,7 @@ DO NOT mention module names or IDs.]
 | Exchange Activity | `exchange_activity`, `derivatives` |
 | Macro | `macro_indicators`, `m22`, `cascade` |
 | Conflict | `conflict`, `direction_resolver` |
+| Convergence | `direction_resolver`, `derivatives`, `taker_summary`, `order_flow`, `magnets`, `sr_levels`, `liquidity_levels` |
 | Strategy Signals | `multi_strategy`, `strategy_signal` |
 | Order Flow | `order_flow` |
 | Dual-Gear | `dual_strategy` |
