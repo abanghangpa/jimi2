@@ -1,12 +1,4 @@
 {
-    "claude-opus-4-7": [
-        "sk-adUi6wE32xv8DF7we0bvchEQMuvjZXtenvNU3qLNAVbDiz6B",
-        "sk-OYtSJVadaCShac60VCUX5efB3lbIJRzJE7Ntj4iJtgaceonZ",
-        "sk-F2YBKPn1IvkIReUz7erJ5xn6qvNSo7UH6vKspxlCBsomETLY",
-        "sk-JtZEhLZ1OpPGboaxEFo3u1hMpX45qzJeZTv62JZY4jF0DBJh",
-        "sk-XET7KOdHWr33jdbCnshpFas0zgeJ8sbUvzaGrAJDHJ70C09k",
-        "sk-74dyFBPNSILSC3ygilea9qVvlt0vPKPvwiEuXB5iDitsRDug"
-    ],
     "gemini-2.5-flash": [
         "sk-FIC8yZ9bfBdWoTspA3d1NE6ufqoGtnDLQhO0rro0bSiFbD4Y",
         "sk-k3nOZqm35D0F39cToIGhCyuucFlQyAfSwENWnnHAt8azr9OS",
@@ -15,83 +7,84 @@
         "sk-DvFEC7yMEAuAv8gVhX7fupg5IBrXz9gxMCyxdBUN2mdeYy2C",
         "sk-hk0CxzsBYKaq3qncyl12UbmwawMLxjPVz334qMwi7PNxoTea"
     ],
-    "deepseek-chat": [
-        "sk-PMFQPPGT9w19bs4skwqxQ6BzSe4A1ODBg2AdtsHoE1Sq1EoH"
-    ],
     "kimi-k2.5": [
-        "sk-IkqFZCnmX2VewBxt51d8JWxb9txhRv2xWSRXn1GOoILGwSho",
-        "sk-veTu9azNAa7K6yzyR2hJ1sR8vxO2esKGDLpmUVGXl5tahRIz",
-        "sk-RudxsQhBjVYI5qZdU487dW7tUFHkTw3piCy7KUqzLb1YzP1i"
+        "sk-6phu3Yo4fpUKxSdcKhgftZpO4vkav7YJrqm2P7tWBdvoh1Zk",
+        "sk-eVXlxlxyCk8KIIKhVuVAPTiRqIRK0qhFDoypjhj8IV1Y33v5",
+        "sk-vUmPEhbsQjn8MdhAUbpu4OH7E5wmey0dJgWb4j4d0iUzXp3G",
+        "sk-iGsChN5qohTSAEuStMGlQd7VVBQJ0g6DgcBsCnlk3CMqDiwF"
     ],
     "text-embedding-3-small": [
         "sk-ZcNHy86ZlQnr3MCXwkHEsHwfPrjYlcLJePySk3zNS4rHUH9j",
         "sk-vae9NLsxl9m8BbIFDIGreZOvmDmOnp9Of9bmXHa6cnW1cgDJ",
         "sk-WMmBH48QVHMYjZSMYFoYeWFGuC0yao0CjrlsBKZjOPwV8SZY"
     ],
-    "mistralai/mistral-medium-3-5": [
-        "sk-nuALh8KRfXRDxAczug4bWJy5scBnfk1gFxSqjmtnuPNCuwwH"
+    "ibm-granite/granite-4.1-8b": [
+        "sk-OH3qgXBdmqQaFCUYhz6acJoTahYDbUtryOPGg4lvJexopGgP"
     ],
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": [
-        "sk-KixpH3cwi88Gj7WPLPddeFssrIROVHGO5WIH6AKgQ0jddWig"
+        "sk-kLy4z7oKvMHfefXcxkE7xvpaBkHHt3XfYVBJvHUup0PKNKra"
+    ],
+    "openrouter/owl-alpha": [
+        "sk-E0mKu8NL9v1OfcHDx6FiT3etq1EU23ohcmuhV75NpflUxLpX"
     ],
     "poolside/laguna-m.1:free": [
-        "sk-wzb8A6RjT7v1byN7V67jz9c1xnXOZ2bor5kgmFAAXKdoYIer"
-    ],
-    "poolside/laguna-xs.2:free": [
-        "sk-bwa7DrEsZaKZ8rd0dVznPuFjvfEKOuDd5RozstZbNmZbindm"
+        "sk-BrbG9EoluxJhUu8c3K7rvOdfEHIMfBa5ayAniouPvgVlw2Sr"
     ],
     "qwen/qwen3.6-27b": [
-        "sk-XnRAzxvYFGsUcmPB5A6rcmMiuGbvxiNG4DknBzac5gL7v1UP"
+        "sk-vBXtL8ePacD2kEQYoPM6nQC0QgFELxR7nCo9OgyZmlNknKbM"
+    ],
+    "poolside/laguna-xs.2:free": [
+        "sk-zaY3RIUBdiWk41CuRNR6JUKGyDMnC6CpDEipX41f5n0WISZC"
+    ],
+    "baidu/cobuddy:free": [
+        "sk-zvZOEOPKjB7b5Xsj6r49HhEDjmEKxZNTNIPi74ZHhJPxMAZS"
+    ],
+    "perceptron/perceptron-mk1": [
+        "sk-rxTRVPf7Tvy28LoWOa6zc7pexdasuf2nD0nO4iOYgvJvZFxE"
+    ],
+    "deepseek/deepseek-v4-flash": [
+        "sk-R5qkMNFbGmShRrISOpkncmfMEGhVJ85CAqrMqjiP28T5fPSk"
+    ],
+    "deepseek/deepseek-v4-pro": [
+        "sk-zUFR5amPMBbokGZ5vhFDSDC6zmo68OuLdKfqRWDHKNn2bpyH"
+    ],
+    "inclusionai/ling-2.6-1t:free": [
+        "sk-URUVhR6MDaDGAQorHLdkBgIVSTGWTQN7iSIk5OJS6On7I63j"
+    ],
+    "openai/gpt-5.5": [
+        "sk-AZmgxhYJpji6kwV1NY20Kjk6ETUY7XYfkhLuBgUSNvKxRVIC"
+    ],
+    "openai/gpt-5.5-pro": [
+        "sk-noxtnWDoGqvOyn1Vak00lgvCx13SB1ScpR22dhkJxpVY3tdP"
+    ],
+    "qwen/qwen3.5-plus-20260420": [
+        "sk-XCZN4jQkUpkBm8MfH8ktQOIv1qUBdeJsM6posrJ4vO8Hjj0I"
+    ],
+    "qwen/qwen3.6-max-preview": [
+        "sk-jixQfufT9J9WtydnEGdRWmvgLXOkSEk0oCQetkhYSIRAKKHc"
+    ],
+    "qwen/qwen3.6-35b-a3b": [
+        "sk-Dr8tg5jL82lakTxJrvCAVz5O59FFvZSSyyrNiYODgx0GE1DA"
+    ],
+    "inclusionai/ring-2.6-1t": [
+        "sk-J5veqOPOl3h9VnWI0d36sRDsth9S5lQIlFobXXkONfbc5Bqs"
+    ],
+    "x-ai/grok-4.3": [
+        "sk-JzdE3B7VJyf7Wi847eqJHmFb2JOW1laxj4gRVep3jZPzYH1z"
+    ],
+    "google/gemini-3.1-flash-lite": [
+        "sk-Ugysy5RjQuqmmBJOXin93hk3AAUdxJ08sqwN7Ku1ZEbkgZ3v"
+    ],
+    "openai/gpt-chat-latest": [
+        "sk-BjNvusLBXWa3XjfPkLbrzOCq0xagQsNOmicg3zdY36zzLNw6"
+    ],
+    "mistralai/mistral-medium-3-5": [
+        "sk-nuALh8KRfXRDxAczug4bWJy5scBnfk1gFxSqjmtnuPNCuwwH"
     ],
     "qwen/qwen3.6-flash": [
         "sk-QW6xitaEhv9UrATp79iiowmylnRQJvGRQdJFfZWvc8jvLhWL"
     ],
     "inclusionai/ring-2.6-1t:free": [
         "sk-6HXK68jx5Ju05UUOMniNb7hJbb4xg7GLMClC1CeooMPYcbCB"
-    ],
-    "ibm-granite/granite-4.1-8b": [
-        "sk-95Ph12gDPbbfg0FDR4dIBgco47I3AWegmaqDf1tJTCzDv6hx"
-    ],
-    "baidu/cobuddy:free": [
-        "sk-LYXLhoBejFEiHX8iX2af0hDA01wyzn7i5GiFa3C83wFcU1Br"
-    ],
-    "perceptron/perceptron-mk1": [
-        "sk-HDjE1ctWzAPNeEKj6yacqmf9dUDe7sYMxP3U8lZGUWD4lJ0p"
-    ],
-    "deepseek/deepseek-v4-flash": [
-        "sk-j0IpBPTgDPOaALmvintv2MkCWGxgUZSUPLnRU0ZTMvT8WJad"
-    ],
-    "deepseek/deepseek-v4-pro": [
-        "sk-YLUNQCFhxoXjCAkDSHCnqOl5ScbXces5HgspWqSlIIejIstX"
-    ],
-    "inclusionai/ling-2.6-1t:free": [
-        "sk-tMGz9UFQ3Ss3ujuut9nOq1D93fAzIJN0rLkb9uJVfE3Q1A86"
-    ],
-    "openai/gpt-5.5": [
-        "sk-IbtYZCjV0N2ZU8MW5FWPaCjBu9iWqbSEQJAw3WnKTJ2oGy7r"
-    ],
-    "openai/gpt-5.5-pro": [
-        "sk-OWf3OwGh6O6wLUXSULv0pCTjsnNFuJFSoIr97Cu8FSyoXiVI"
-    ],
-    "qwen/qwen3.5-plus-20260420": [
-        "sk-DuUp2r9D9pAJUWfVP04mEIJ9V0WVvGqZ67E3Td6wvewXfVGr"
-    ],
-    "qwen/qwen3.6-max-preview": [
-        "sk-0lqvSU40Sn1jNnd9lQhalQovIFpGQ1wPGOySQiJZDzRYl7Fu"
-    ],
-    "qwen/qwen3.6-35b-a3b": [
-        "sk-G3HumI3WfkVlquYhQ7GUwjg6yzpI7DPt0JaCw0B8d4iIym3c"
-    ],
-    "inclusionai/ring-2.6-1t": [
-        "sk-8eeYBocNW0CfBdWzFpeJGZhOkBmuSISWHTMOcTOkr671BhCZ"
-    ],
-    "x-ai/grok-4.3": [
-        "sk-qKqUwTV1LeUOt6GqYmU2b4mwhvqqFjOUWqiNKL9vplhq0t2K"
-    ],
-    "google/gemini-3.1-flash-lite": [
-        "sk-p8ry7OgfUKxLQ4FgbiN81B3ckoCV4i2vV80R7S7tSFljwh8m"
-    ],
-    "openai/gpt-chat-latest": [
-        "sk-kdTo3RPaMeeVuB5eAjDVMEcp8PVsNia5TOhpvghCq6sUZLgL"
     ]
 }

@@ -1,0 +1,40 @@
+"""JIMI Multi-Strategy System — 21 strategies with order flow."""
+from .base import BaseStrategy, SignalResult
+from .runner import StrategyRunner
+from .s01_failed_breakout import FailedBreakoutStrategy
+from .s02_squeeze_breakout import SqueezeBreakoutStrategy
+from .s03_cascade import CascadeStrategy
+from .s04_positioning_fade import PositioningFadeStrategy
+from .s05_kill_zone import KillZoneStrategy
+from .s06_liquidity_grab import LiquidityGrabStrategy
+from .s07_taker_flow import TakerFlowStrategy
+from .s08_regime_switch import RegimeSwitchStrategy
+from .s09_power_of_3 import PowerOf3Strategy
+from .s10_structural_break import StructuralBreakStrategy
+from .s11_cross_asset import CrossAssetStrategy
+from .s12_macro_surprise import MacroSurpriseStrategy
+from .s13_funding_arb import FundingArbStrategy
+from .s14_whale_watch import WhaleWatchStrategy
+from .s15_vol_rotation import VolRotationStrategy
+from .s16_mtf_confluence import MTFConfluenceStrategy
+from .s17_scalp_v2 import ScalpV2Strategy
+from .s18_momentum_v2 import MomentumV2Strategy
+from .s19_orderbook_imbalance import OrderBookImbalanceStrategy
+from .s20_liquidation_cascade import LiquidationCascadeStrategy
+from .s21_trade_flow import TradeFlowStrategy
+
+ALL_STRATEGIES = [
+    FailedBreakoutStrategy, SqueezeBreakoutStrategy, CascadeStrategy,
+    PositioningFadeStrategy, KillZoneStrategy, LiquidityGrabStrategy,
+    TakerFlowStrategy, RegimeSwitchStrategy, PowerOf3Strategy,
+    StructuralBreakStrategy, CrossAssetStrategy, MacroSurpriseStrategy,
+    FundingArbStrategy, WhaleWatchStrategy, VolRotationStrategy,
+    MTFConfluenceStrategy, ScalpV2Strategy, MomentumV2Strategy,
+    OrderBookImbalanceStrategy, LiquidationCascadeStrategy, TradeFlowStrategy,
+]
+
+def create_runner(config=None) -> StrategyRunner:
+    runner = StrategyRunner(config=config)
+    for StratClass in ALL_STRATEGIES:
+        runner.register(StratClass(config=config))
+    return runner

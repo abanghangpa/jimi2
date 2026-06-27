@@ -361,15 +361,13 @@ def run_gatekeepers(direction, vol_regime, m7_score, m7_status, m7_details,
             result.ics_boost += cfg.get('M7_GATE_STRONG_BOOST', 0.04)
             result.details['M7'] = 'strong_agree'
 
-    # M10: Advisory only — penalize ICS but don't hard block
-    # (cross-asset macro is a lagging indicator, shouldn't kill event-driven signals)
     if cfg.get('M10_ENABLED', False) and m10_status != 'SKIP':
         if direction == 'LONG' and m10_score < 0.25:
-            result.ics_boost -= 0.05
-            result.details['M10'] = f'bearish_penalty ({m10_score:.3f})'
+            result.block('M10', f'M10 {m10_score:.3f} strongly bearish')
+            return result
         elif direction == 'SHORT' and m10_score < 0.25:
-            result.ics_boost -= 0.05
-            result.details['M10'] = f'bullish_penalty ({m10_score:.3f})'
+            result.block('M10', f'M10 {m10_score:.3f} strongly bullish')
+            return result
 
     # M9 Regime Block — hard block on CRISIS and CHOP_HARD
     # M9 Regime Block — already handled in Phase 1 before direction resolution

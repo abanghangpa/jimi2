@@ -118,8 +118,6 @@ from src.modules.m18_squeeze import detect_squeeze_v6 as detect_squeeze, format_
 from src.modules.m19_breakout_confirm import check_breakout_filters, format_breakout_confirm
 from src.modules.m20_failed_breakout import score_m20, format_failed_breakout
 from src.dual_strategy import DualStrategy
-from src.strategies import create_runner as create_strategy_runner
-from src.utils.order_flow import fetch_multi_exchange_ob, fetch_recent_trades, fetch_liquidations, fetch_funding_rates
 
 # ── M66-M73: Traditional Finance Macro Filters ──
 from src.modules.m66_usdjpy import score_m66_usdjpy
@@ -3366,40 +3364,37 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
     threshold = cfg['ICS_THRESHOLD_CAUTION'] if phase0_val and phase0_val >= 0.40 else cfg['ICS_THRESHOLD_NORMAL']
     result['threshold'] = round(float(threshold), 4)
 
-    # M3 hard fail — but not when M20 direct signal or squeeze is active
-    # (failed breakouts naturally have poor VWAP scores; squeezes override structure)
+    # M3 hard fail — but not when M20 direct signal is active
+    # (failed breakouts naturally have poor VWAP scores)
     m20_override_active_for_m3 = dir_details.get('m20_override') is not None
-    m20_strong_for_m3 = m20_status == 'PASS' and m20_score >= cfg.get('M20_DIRECT_SIGNAL_THRESHOLD', 0.70)
-    _squeeze_active_early = squeeze_result['squeeze_status'] == 'TRIGGERED' and squeeze_confirmed
-    if m3_status == 'FAIL' and not (m20_override_active_for_m3 and m20_strong_for_m3) and not _squeeze_active_early:
+    m20_strong_for_m3 = m20_status == 'PASS' and m20_score >= cfg.get('M20_DIRECT_SIGNAL_THRESHOLD', 0.85)
+    if m3_status == 'FAIL' and not (m20_override_active_for_m3 and m20_strong_for_m3):
         result['status'] = 'NO_SIGNAL'
         result['reason'] = 'M3 VWAP fail'
         return result
 
-    # ICS check — with bypass paths for event-driven signals
+    # ICS check
     if ics < effective_floor or ics < threshold:
-        # ── Squeeze Bypass ──
-        # Squeeze confirmed = volatility compression → expansion. Self-confirming.
-        if squeeze_result['squeeze_status'] == 'TRIGGERED' and squeeze_confirmed:
-            result['ics_bypassed_by_squeeze'] = True
-            print(f"  ⚡ SQUEEZE BYPASS: squeeze confirmed — ICS {ics:.3f} < {threshold:.2f} overridden")
         # ── M20 Direct Signal Path ──
         # When normal ICS fails but M20 detected a strong failed breakout
         # that overrode the direction, allow M20 to generate a signal directly.
+        # Failed breakouts are high-conviction contrarian events that the normal
+        # module pipeline doesn't score well (M3/M4/M13 work against the flip).
+        m20_direct_threshold = cfg.get('M20_DIRECT_SIGNAL_THRESHOLD', 0.85)
+        m20_override_active = dir_details.get('m20_override') is not None
+        if (m20_status == 'PASS' and m20_score >= m20_direct_threshold and
+                m20_result and m20_result.get('status') == 'FAILED' and
+                m20_override_active):
+            # M20 strong failed breakout — bypass ICS gate
+            result['m20_direct_signal'] = True
+            result['m20_direct_score'] = round(float(m20_score), 4)
+            result['ics_bypassed_by_m20'] = True
+            print(f"  💥 M20 DIRECT SIGNAL: failed breakout score={m20_score:.3f} ≥ {m20_direct_threshold} — bypassing ICS gate")
+            # Continue to trade level computation below (don't return NO_SIGNAL)
         else:
-            m20_direct_threshold = cfg.get('M20_DIRECT_SIGNAL_THRESHOLD', 0.70)
-            m20_override_active = dir_details.get('m20_override') is not None
-            if (m20_status == 'PASS' and m20_score >= m20_direct_threshold and
-                    m20_result and m20_result.get('status') == 'FAILED' and
-                    m20_override_active):
-                result['m20_direct_signal'] = True
-                result['m20_direct_score'] = round(float(m20_score), 4)
-                result['ics_bypassed_by_m20'] = True
-                print(f"  💥 M20 DIRECT SIGNAL: failed breakout score={m20_score:.3f} ≥ {m20_direct_threshold} — bypassing ICS gate")
-            else:
-                result['status'] = 'NO_SIGNAL'
-                result['reason'] = f'ICS {ics:.4f} < threshold {threshold:.2f}'
-                return result
+            result['status'] = 'NO_SIGNAL'
+            result['reason'] = f'ICS {ics:.4f} < threshold {threshold:.2f}'
+            return result
 
     # Gatekeepers
     gatekeeper = run_gatekeepers(
@@ -3563,10 +3558,8 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
             return result
 
     # ── M14 Sweep Gate ──
-    # Bypass for M20 direct signals, squeeze-triggered entries, AND any M20 PASS
-    # (failed breakouts are self-confirming events — they don't need sweep confirmation)
-    _m20_detected = m20_status == 'PASS'
-    if not _m20_direct and not _squeeze_active_for_filters and not _m20_detected:
+    # Bypass for M20 direct signals and squeeze-triggered entries
+    if not _m20_direct and not _squeeze_active_for_filters:
         sweep_passed, sweep_reason = check_sweep_gate(m14_status, m14_score, cfg)
         if not sweep_passed:
             result['status'] = 'NO_SIGNAL'
@@ -5427,58 +5420,6 @@ def main():
     except Exception as e:
         print(f"  ⚠️  Dual strategy error: {e}")
         result['dual_strategy'] = None
-
-    # ── Multi-Strategy Runner (21 strategies + order flow) ──
-    try:
-        # Fetch real-time order flow data
-        _ob_data = fetch_multi_exchange_ob('ETH/USDT', depth=20)
-        _trade_data = fetch_recent_trades('ETH/USDT', 'binance', limit=100)
-        _liq_data = fetch_liquidations('ETHUSDT')
-        _fr_data = fetch_funding_rates('ETH/USDT:USDT')
-        _order_flow_kwargs = {
-            'order_flow': _ob_data or {},
-            'trade_flow': _trade_data or {},
-            'liquidations': _liq_data or {},
-            'funding_rates': _fr_data or {},
-        }
-        result['order_flow'] = {
-            'ob_imbalance': _ob_data.get('avg_imbalance') if _ob_data else None,
-            'ob_consensus': _ob_data.get('consensus') if _ob_data else None,
-            'trade_taker': _trade_data.get('taker_ratio') if _trade_data else None,
-            'trade_net_flow': _trade_data.get('net_flow') if _trade_data else None,
-            'liq_imbalance': _liq_data.get('liq_imbalance') if _liq_data else None,
-            'funding_avg': _fr_data.get('avg_rate') if _fr_data else None,
-        }
-
-        strategy_runner = create_strategy_runner(config=scaled_config)
-        strategy_summary = strategy_runner.summary(result, df_15m=df_base, idx=len(df_base)-1, **_order_flow_kwargs)
-        result['multi_strategy'] = strategy_summary
-
-        # If no signal from main pipeline but runner found one, use it
-        best = strategy_summary.get('best')
-        if best and result.get('status') != 'SIGNAL':
-            result['strategy_signal'] = best
-            result['status'] = 'SIGNAL'
-            result['source'] = f"strategy:{best['strategy']}"
-            result['reason'] = best['reason']
-            result['entry'] = best['entry']
-            result['sl'] = best['sl']
-            result['tp1'] = best['tp1']
-            result['tp2'] = best['tp2']
-            result['tp3'] = best['tp3']
-            result['sl_pct'] = best['sl_pct']
-            result['tp1_pct'] = best['tp1_pct']
-            result['direction'] = best['direction']
-            print(f"  🎯 Multi-strategy signal: {best['strategy']} → {best['direction']} "
-                  f"(conviction={best['conviction']:.0%}, rr={best['rr1']:.1f}x)")
-        elif best:
-            print(f"  📊 Multi-strategy best: {best['strategy']} → {best['direction']} "
-                  f"(conviction={best['conviction']:.0%}), but main signal already active")
-        else:
-            print(f"  📊 Multi-strategy: {strategy_summary['signals_fired']}/{strategy_summary['total_strategies']} strategies fired")
-    except Exception as e:
-        print(f"  ⚠️  Multi-strategy error: {e}")
-        result['multi_strategy'] = None
 
     # ── Macro Calendar ──
     try:
