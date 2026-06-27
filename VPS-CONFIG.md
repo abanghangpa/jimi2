@@ -67,3 +67,33 @@ ca94730d Update nvidia provider: 38 working free endpoints only
 f5534830 Clean fallback chain
 30811aa7 Remove xiaomi and mistral providers
 ```
+
+## Strategies (22 total)
+
+| # | Strategy | Type | Status |
+|---|----------|------|--------|
+| s01 | failed_breakout | event | Active |
+| s02 | squeeze_breakout | event | Active |
+| s03 | cascade | event | Active |
+| s04 | positioning_fade | structure | Active |
+| s05 | kill_zone | session | **Needs upgrade** |
+| s06 | liquidity_grab | structure | **Needs upgrade** |
+| s07 | taker_flow | flow | **Needs upgrade** |
+| s08 | regime_switch | regime | Active |
+| s09 | power_of_3 | structure | Active |
+| s10 | structural_break | structure | Active |
+| s11 | cross_asset | flow | **Needs SHORT direction** |
+| s12 | macro_surprise | event | Active |
+| s13 | funding_arb | flow | Active |
+| s14 | whale_watch | flow | Active |
+| s15 | vol_rotation | regime | Active |
+| s16 | mtf_confluence | structure | Active |
+| s17 | scalp_v2 | session | Active |
+| s18 | momentum_v2 | flow | Active |
+| s19 | orderbook_imbalance | flow | Active |
+| s20 | liquidation_cascade | event | Active |
+| s21 | trade_flow | flow | Active |
+| s22 | judas_sweep | event | ✅ v2 (validated 80.2% win) |
+
+See `jimi_audit/STRATEGY_ROADMAP.md` for upgrade plan.
+Signal logging active — all 22 strategies log to `data/strategy_signals.jsonl`.
