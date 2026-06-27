@@ -62,7 +62,7 @@ Every report must follow this exact order:
 * *Scenario:* [Describe the sweep/hold setup with sweep low, hold level, targets]
 ```
 
-### 5. STRATEGY SIGNALS (21 strategies)
+### 5. STRATEGY SIGNALS (22 strategies)
 Read `multi_strategy` from JSON. Show:
 - `signals_fired`/`total_strategies`
 - Best signal from `strategy_signal`: strategy name, type, direction, conviction, entry/SL/TP1/TP2/TP3, R:R, reason, bypass_gates
@@ -70,7 +70,7 @@ Read `multi_strategy` from JSON. Show:
 
 ```
 ### 🎯 Strategy Signals
-* *Strategies Fired:* `[X]/21`
+* *Strategies Fired:* `[X]/22`
 * *Best Strategy:* `[name]` ([type])
 * *Direction:* `[LONG/SHORT]` | *Conviction:* `[X]%`
 * *Entry:* `$[entry]` | *SL:* `$[sl]` ([sl_pct]%)
