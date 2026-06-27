@@ -106,6 +106,11 @@ def get_next_macro_events(reference_time=None, lookback_hours=4, lookahead_hours
     with their cascade status.
     """
     now = reference_time or datetime.now(UTC)
+    if hasattr(now, 'tzinfo') and now.tzinfo is None:
+        now = now.replace(tzinfo=UTC)
+    elif hasattr(now, 'tzlocalize'):
+        now = now.tz_localize(UTC) if now.tzinfo is None else now.tz_convert(UTC)
+    
     year, month = now.year, now.month
 
     window_start = now - timedelta(hours=lookback_hours)
@@ -125,12 +130,13 @@ def get_next_macro_events(reference_time=None, lookback_hours=4, lookahead_hours
                 ny = year if month < 12 else year + 1
                 release_dt = datetime(ny, nm, day, evt['hour'], evt['minute'], tzinfo=UTC)
         elif day == 'first_friday':
-            release_dt = _first_friday(year, month).replace(hour=evt['hour'], minute=evt['minute'])
+            release_dt = _first_friday(year, month).replace(hour=evt['hour'], minute=evt['minute'], tzinfo=UTC)
             if release_dt < now - timedelta(days=2):
                 nm = month + 1 if month < 12 else 1
                 ny = year if month < 12 else year + 1
-                release_dt = _first_friday(ny, nm).replace(hour=evt['hour'], minute=evt['minute'])
+                release_dt = _first_friday(ny, nm).replace(hour=evt['hour'], minute=evt['minute'], tzinfo=UTC)
         elif day == 'thursday':
+
             # Find next Thursday
             d = now
             while d.weekday() != 3:
