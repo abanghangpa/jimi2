@@ -1,12 +1,91 @@
-"""S22: Judas Sweep — detect stop-grab sweeps above resistance that reverse."""
+"""S22: Judas Sweep v2 — bidirectional stop-grab traps with volume-weighted levels and dynamic thresholds."""
 from .base import BaseStrategy, SignalResult
 import numpy as np
+import json
+import os
+from datetime import datetime, timezone
+
+# Signal log path for outcome tracking
+SIGNAL_LOG = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                          'data', 'judas_sweep_signals.jsonl')
+
+
+def _log_signal(signal_data: dict):
+    """Append signal to JSONL log for later outcome analysis."""
+    try:
+        os.makedirs(os.path.dirname(SIGNAL_LOG), exist_ok=True)
+        with open(SIGNAL_LOG, 'a') as f:
+            f.write(json.dumps(signal_data, default=str) + '\n')
+    except Exception:
+        pass  # Don't let logging crash the strategy
+
+
+def _find_swing_points(series, period=3, mode='high'):
+    """Find fractal swing highs or lows."""
+    swings = []
+    for i in range(period, len(series) - period):
+        if mode == 'high':
+            if all(series[i] >= series[i - j] for j in range(1, period + 1)) and \
+               all(series[i] >= series[i + j] for j in range(1, period + 1)):
+                swings.append(i)
+        else:
+            if all(series[i] <= series[i - j] for j in range(1, period + 1)) and \
+               all(series[i] <= series[i + j] for j in range(1, period + 1)):
+                swings.append(i)
+    return swings
+
+
+def _cluster_levels(prices, volumes, cluster_pct=0.002, min_touches=2):
+    """Cluster nearby price points into zones, weighted by volume."""
+    if len(prices) < min_touches:
+        return []
+
+    sorted_indices = np.argsort(prices)
+    sorted_prices = prices[sorted_indices]
+    sorted_vols = volumes[sorted_indices] if volumes is not None else np.ones(len(prices))
+
+    clusters = []
+    current_cluster_prices = [sorted_prices[0]]
+    current_cluster_vols = [sorted_vols[0]]
+
+    for i in range(1, len(sorted_prices)):
+        if (sorted_prices[i] - current_cluster_prices[-1]) / current_cluster_prices[-1] < cluster_pct:
+            current_cluster_prices.append(sorted_prices[i])
+            current_cluster_vols.append(sorted_vols[i])
+        else:
+            if len(current_cluster_prices) >= min_touches:
+                vol_weights = np.array(current_cluster_vols) / sum(current_cluster_vols)
+                avg_price = np.average(current_cluster_prices, weights=vol_weights)
+                total_vol = sum(current_cluster_vols)
+                clusters.append({
+                    'price': avg_price,
+                    'touches': len(current_cluster_prices),
+                    'volume': total_vol,
+                    'strength': len(current_cluster_prices) * (1 + np.log1p(total_vol)),
+                })
+            current_cluster_prices = [sorted_prices[i]]
+            current_cluster_vols = [sorted_vols[i]]
+
+    # Last cluster
+    if len(current_cluster_prices) >= min_touches:
+        vol_weights = np.array(current_cluster_vols) / sum(current_cluster_vols)
+        avg_price = np.average(current_cluster_prices, weights=vol_weights)
+        total_vol = sum(current_cluster_vols)
+        clusters.append({
+            'price': avg_price,
+            'touches': len(current_cluster_prices),
+            'volume': total_vol,
+            'strength': len(current_cluster_prices) * (1 + np.log1p(total_vol)),
+        })
+
+    clusters.sort(key=lambda x: x['strength'], reverse=True)
+    return clusters[:10]
 
 
 class JudasSweepStrategy(BaseStrategy):
     name = 'judas_sweep'
     strategy_type = 'event'
-    description = 'Detect sweep above resistance (stop grab) that reverses — institutional trap pattern'
+    description = 'Bidirectional stop-grab trap detection with volume-weighted levels'
 
     def check(self, data, df_15m=None, idx=None, **kwargs):
         price = data.get('price', 0)
@@ -14,133 +93,199 @@ class JudasSweepStrategy(BaseStrategy):
         if not price or not atr or df_15m is None or idx is None:
             return None
 
-        # Config
-        sweep_min_pct = 0.001   # 0.1% minimum sweep above resistance
-        sweep_max_pct = 0.01    # 1.0% maximum sweep
-        compression_max = 2.0   # max range width %
-        compression_lookback = 48  # bars for compression check
-        taker_threshold = 0.48  # bearish taker below this
-        min_resistance_touches = 2
-
         closes = df_15m['Close'].values
         highs = df_15m['High'].values
         lows = df_15m['Low'].values
         volumes = df_15m['Volume'].values
+        taker_base = df_15m['Taker buy base asset volume'].values
 
-        if idx < compression_lookback + 10:
+        lookback = 200
+        if idx < lookback + 50:
             return None
 
         current_price = closes[idx]
         current_high = highs[idx]
+        current_low = lows[idx]
 
-        # Step 1: Check compression (narrow range = setup)
-        lookback_highs = highs[max(0, idx - compression_lookback):idx + 1]
-        lookback_lows = lows[max(0, idx - compression_lookback):idx + 1]
-        range_high = np.max(lookback_highs)
-        range_low = np.min(lookback_lows)
+        # ── Dynamic thresholds based on ATR ──
+        atr_pct = atr / current_price
+        sweep_min_pct = max(0.0005, atr_pct * 0.3)   # 0.3x ATR minimum sweep
+        sweep_max_pct = min(0.02, atr_pct * 3.0)      # 3x ATR maximum sweep
+        compression_max_pct = atr_pct * 50             # 50x ATR% as compression ceiling
+        compression_bars = max(24, int(48 / max(atr_pct / 0.003, 0.5)))  # dynamic lookback
+
+        # ── Step 1: Compression check ──
+        window_start = max(0, idx - compression_bars)
+        range_high = np.max(highs[window_start:idx + 1])
+        range_low = np.min(lows[window_start:idx + 1])
         if range_low <= 0:
             return None
         compression = (range_high - range_low) / range_low * 100
 
-        if compression > compression_max:
-            return None  # Not compressed — no Judas setup
-
-        # Step 2: Find resistance levels from recent swing highs
-        swing_period = 3
-        window_start = max(0, idx - 200)
-        swing_highs = []
-        for i in range(window_start + swing_period, idx - swing_period):
-            if all(highs[i] >= highs[i - j] for j in range(1, swing_period + 1)) and \
-               all(highs[i] >= highs[i + j] for j in range(1, swing_period + 1)):
-                swing_highs.append(i)
-
-        if len(swing_highs) < min_resistance_touches:
+        if compression > compression_max_pct:
             return None
 
-        # Cluster nearby swing highs into resistance zones
-        sh_prices = np.sort(highs[swing_highs])
-        clusters = []
-        current_cluster = [sh_prices[0]]
-        for p in sh_prices[1:]:
-            if (p - current_cluster[-1]) / current_cluster[-1] < 0.002:  # 0.2% cluster
-                current_cluster.append(p)
-            else:
-                if len(current_cluster) >= min_resistance_touches:
-                    clusters.append(np.mean(current_cluster))
-                current_cluster = [p]
-        if len(current_cluster) >= min_resistance_touches:
-            clusters.append(np.mean(current_cluster))
+        # ── Step 2: Volume-weighted resistance/support detection ──
+        swing_highs = _find_swing_points(highs[window_start:idx + 1], period=3, mode='high')
+        swing_lows = _find_swing_points(lows[window_start:idx + 1], period=3, mode='low')
 
-        if not clusters:
+        # Offset to global index
+        swing_highs = [s + window_start for s in swing_highs]
+        swing_lows = [s + window_start for s in swing_lows]
+
+        sh_prices = highs[swing_highs] if swing_highs else np.array([])
+        sl_prices = lows[swing_lows] if swing_lows else np.array([])
+        sh_vols = volumes[swing_highs] if swing_highs else np.array([])
+        sl_vols = volumes[swing_lows] if swing_lows else np.array([])
+
+        resistance_clusters = _cluster_levels(sh_prices, sh_vols, cluster_pct=0.002, min_touches=2)
+        support_clusters = _cluster_levels(sl_prices, sl_vols, cluster_pct=0.002, min_touches=2)
+
+        # ── Step 3: Detect sweep direction ──
+        direction = None
+        level_price = None
+        sweep_pct = 0
+        level_type = ''
+
+        # Check SHORT: sweep above resistance
+        if resistance_clusters:
+            near_res = [c for c in resistance_clusters if abs(c['price'] - current_price) / current_price < 0.015]
+            if near_res:
+                best_res = min(near_res, key=lambda x: abs(x['price'] - current_price))
+                sp = (current_high - best_res['price']) / best_res['price']
+                if sweep_min_pct <= sp <= sweep_max_pct:
+                    direction = 'SHORT'
+                    level_price = best_res['price']
+                    sweep_pct = sp
+                    level_type = 'resistance'
+
+        # Check LONG: sweep below support
+        if direction is None and support_clusters:
+            near_sup = [c for c in support_clusters if abs(c['price'] - current_price) / current_price < 0.015]
+            if near_sup:
+                best_sup = min(near_sup, key=lambda x: abs(x['price'] - current_price))
+                sp = (best_sup['price'] - current_low) / best_sup['price']
+                if sweep_min_pct <= sp <= sweep_max_pct:
+                    direction = 'LONG'
+                    level_price = best_sup['price']
+                    sweep_pct = sp
+                    level_type = 'support'
+
+        if direction is None:
             return None
 
-        # Step 3: Find nearest resistance above current price
-        resistances = [c for c in clusters if c > current_price * 0.998]  # allow slightly below
-        if not resistances:
-            return None
-
-        nearest_res = min(resistances, key=lambda x: abs(x - current_price))
-        dist_to_res = abs(nearest_res - current_price) / current_price
-
-        # Must be near resistance (within 1%)
-        if dist_to_res > 0.01:
-            return None
-
-        # Step 4: Check if current bar sweeps above resistance
-        sweep_pct = (current_high - nearest_res) / nearest_res
-
-        if sweep_pct < sweep_min_pct or sweep_pct > sweep_max_pct:
-            return None  # No sweep or sweep too large (breakout, not Judas)
-
-        # Step 5: Check taker ratio (bearish — sellers present)
-        taker_base = df_15m['Taker buy base asset volume'].values
-        total_vol = df_15m['Volume'].values
-
-        # Use 4-bar average taker for stability
+        # ── Step 4: Taker ratio (directional confirmation) ──
         taker_window = max(0, idx - 3)
-        taker_avg = np.mean(taker_base[taker_window:idx + 1]) / max(np.mean(total_vol[taker_window:idx + 1]), 1)
+        taker_avg = np.mean(taker_base[taker_window:idx + 1]) / max(np.mean(volumes[taker_window:idx + 1]), 1)
 
-        # Also check if close is below resistance (swept and rejected)
-        closed_below = closes[idx] < nearest_res
+        if direction == 'SHORT' and taker_avg > 0.52:
+            return None  # Buyers still active, not a trap
+        if direction == 'LONG' and taker_avg < 0.48:
+            return None  # Sellers still active, not a trap
 
-        if not closed_below and taker_avg > taker_threshold:
-            return None  # No rejection and taker not bearish
+        # ── Step 5: Rejection confirmation ──
+        if direction == 'SHORT':
+            rejected = closes[idx] < level_price
+        else:
+            rejected = closes[idx] > level_price
 
-        # Step 6: Calculate conviction
-        sweep_score = min(sweep_pct / 0.005, 1.0) * 0.25  # tighter sweep = better
-        compression_score = max(0, (compression_max - compression) / compression_max) * 0.2
-        taker_score = max(0, (0.5 - taker_avg) / 0.5) * 0.25 if taker_avg < 0.5 else 0
-        rejection_score = 0.3 if closed_below else 0.1
+        if not rejected:
+            # Allow if taker is very directional
+            if direction == 'SHORT' and taker_avg < 0.45:
+                rejected = True  # Strong selling pressure
+            elif direction == 'LONG' and taker_avg > 0.55:
+                rejected = True  # Strong buying pressure
+            else:
+                return None
 
-        conviction = sweep_score + compression_score + taker_score + rejection_score
+        # ── Step 6: Conviction scoring ──
+        # Sweep precision (tighter = better)
+        sweep_score = min(sweep_pct / (sweep_max_pct * 0.5), 1.0) * 0.20
+
+        # Compression (more compressed = better)
+        compression_ratio = compression / compression_max_pct
+        compression_score = max(0, (1.0 - compression_ratio)) * 0.15
+
+        # Taker directional confirmation
+        if direction == 'SHORT':
+            taker_score = max(0, (0.5 - taker_avg) / 0.5) * 0.20
+        else:
+            taker_score = max(0, (taker_avg - 0.5) / 0.5) * 0.20
+
+        # Rejection strength
+        if direction == 'SHORT':
+            rejection_dist = (level_price - closes[idx]) / atr if closes[idx] < level_price else 0
+        else:
+            rejection_dist = (closes[idx] - level_price) / atr if closes[idx] > level_price else 0
+        rejection_score = min(rejection_dist / 1.0, 1.0) * 0.20
+
+        # Level strength (volume-weighted)
+        level_strength = 0
+        if level_type == 'resistance' and resistance_clusters:
+            matched = [c for c in resistance_clusters if abs(c['price'] - level_price) / level_price < 0.005]
+            if matched:
+                level_strength = min(matched[0]['strength'] / 10.0, 1.0) * 0.15
+        elif level_type == 'support' and support_clusters:
+            matched = [c for c in support_clusters if abs(c['price'] - level_price) / level_price < 0.005]
+            if matched:
+                level_strength = min(matched[0]['strength'] / 10.0, 1.0) * 0.15
+
+        conviction = sweep_score + compression_score + taker_score + rejection_score + level_strength
         conviction = min(conviction, 0.95)
 
-        if conviction < 0.4:
+        if conviction < 0.40:
             return None
 
-        # Step 7: Entry/SL/TP
-        direction = 'SHORT'
+        # ── Step 7: Entry/SL/TP ──
         entry = current_price
 
-        sl = current_high + atr * 0.3
-        sl_pct = abs(sl - entry) / entry * 100
+        if direction == 'SHORT':
+            sl = current_high + atr * 0.3
+            sl_pct = abs(sl - entry) / entry * 100
 
-        support_levels = data.get('sr_levels', [])
-        supports = [x[0] for x in support_levels if len(x) >= 3 and x[2] == 'SUPPORT' and x[0] < price]
-        if supports:
-            tp1 = max(supports)
+            support_levels = data.get('sr_levels', [])
+            supports = [x[0] for x in support_levels if len(x) >= 3 and x[2] == 'SUPPORT' and x[0] < price]
+            tp1 = max(supports) if supports else entry - atr * 1.5
+            tp2 = entry - atr * 2.5
+            tp3 = entry - atr * 4.0
         else:
-            tp1 = entry - atr * 1.5
-        tp2 = entry - atr * 2.5
-        tp3 = entry - atr * 4.0
+            sl = current_low - atr * 0.3
+            sl_pct = abs(sl - entry) / entry * 100
+
+            support_levels = data.get('sr_levels', [])
+            resistances = [x[0] for x in support_levels if len(x) >= 3 and x[2] == 'RESISTANCE' and x[0] > price]
+            tp1 = min(resistances) if resistances else entry + atr * 1.5
+            tp2 = entry + atr * 2.5
+            tp3 = entry + atr * 4.0
 
         tp1_pct = abs(tp1 - entry) / entry * 100
+        rr1 = tp1_pct / sl_pct if sl_pct > 0 else 0
+
+        if rr1 < 1.0:
+            return None
 
         size_mult = 0.8 if sl_pct > 0.3 else 1.0
 
-        rr1 = tp1_pct / sl_pct if sl_pct > 0 else 0
-        if rr1 < 1.0:
-            return None  # Poor R:R
+        # ── Step 8: Log signal for outcome tracking ──
+        _log_signal({
+            'timestamp': str(data.get('timestamp', datetime.now(timezone.utc))),
+            'strategy': self.name,
+            'direction': direction,
+            'entry': entry,
+            'sl': sl,
+            'tp1': tp1,
+            'tp2': tp2,
+            'tp3': tp3,
+            'conviction': conviction,
+            'level_price': level_price,
+            'level_type': level_type,
+            'sweep_pct': sweep_pct * 100,
+            'compression': compression,
+            'taker_avg': taker_avg,
+            'atr': atr,
+            'rr1': rr1,
+            'outcome': None,  # filled in later by outcome tracker
+        })
 
         return SignalResult(
             strategy_name=self.name,
@@ -155,16 +300,19 @@ class JudasSweepStrategy(BaseStrategy):
             sl_pct=sl_pct,
             tp1_pct=tp1_pct,
             size_mult=size_mult,
-            reason=f"Judas sweep: swept {sweep_pct*100:.2f}% above ${nearest_res:.2f}, "
-                   f"compression={compression:.2f}%, taker={taker_avg:.3f}, "
-                   f"{'rejected' if closed_below else 'sweeping'}",
+            reason=f"Judas sweep {direction}: swept {sweep_pct*100:.2f}% {('above' if direction == 'SHORT' else 'below')} "
+                   f"${level_price:.2f} ({level_type}), comp={compression:.2f}%, taker={taker_avg:.3f}, "
+                   f"{'rejected' if rejected else 'sweeping'}",
             bypass_gates=True,
             details={
-                'resistance': nearest_res,
+                'level_price': level_price,
+                'level_type': level_type,
                 'sweep_pct': sweep_pct * 100,
                 'compression': compression,
                 'taker_avg': taker_avg,
-                'closed_below': closed_below,
+                'rejected': rejected,
                 'rr1': rr1,
+                'resistance_clusters': len(resistance_clusters),
+                'support_clusters': len(support_clusters),
             },
         )
