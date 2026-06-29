@@ -36,6 +36,22 @@ Every report must follow this exact order:
 *ICS Score:* `[ICS_SCORE]`
 ```
 
+
+### ⏳ Confirmation Status
+* *Signal Status:* [PENDING / CONFIRMED_3BAR / CONFIRMED_1BAR / EXPIRED]
+* *Bars Waited:* [X]/3
+* *Hold Window:* [X]h (strategy-specific)
+* *Confirmed Price:* $[price] ([direction] confirmed)
+
+If PENDING:
+> Signal queued for market confirmation. Will enter if price moves [direction] within 3 bars (45 min).
+
+If CONFIRMED:
+> ✅ Market confirmed [direction] — price moved [X]% from signal entry. Hold window: [X]h.
+
+If EXPIRED:
+> ❌ Market did not confirm — signal expired. No trade taken.
+
 ### 2. TECHNICAL ANALYSIS
 ```
 ### 📈 Technical Analysis
