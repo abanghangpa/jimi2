@@ -5632,6 +5632,19 @@ def main():
         print(f"  ⚠️  Multi-strategy error: {e}")
         result['multi_strategy'] = None
 
+    # ── Ensemble Gate ──
+    _ensemble = None
+    try:
+        _all_sigs = result.get('multi_strategy', {}).get('all_signals', [])
+        _ensemble = evaluate_ensemble(_all_sigs)
+        result['ensemble'] = _ensemble
+        if _ensemble.get('passes'):
+            print("  🎯 Ensemble PASS: %d strategies agree %s (conv=%.2f)" % (_ensemble['agree_count'], _ensemble['consensus'], _ensemble['ensemble_conviction']))
+        else:
+            print("  ⚠️  Ensemble FAIL: %s" % _ensemble.get('reason', 'no consensus'))
+    except Exception as e:
+        print("  ⚠️  Ensemble error: %s" % e)
+
     # ── Confirmation Layer ──
     # Check pending signals against current price
     try:
