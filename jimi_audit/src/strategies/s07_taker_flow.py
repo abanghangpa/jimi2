@@ -25,10 +25,13 @@ class TakerFlowStrategy(BaseStrategy):
         if not price or not atr:
             return None
 
-        # Direction from taker flow
-        if momentum > 0.1 and avg_4h > 0.52:
+        # Direction from taker flow (ATR-relative thresholds)
+        atr_pct = atr / price if price else 0
+        long_thresh = 0.5 + atr_pct * 2  # higher bar in volatile regimes
+        short_thresh = 0.5 - atr_pct * 2
+        if momentum > 0.1 and avg_4h > long_thresh:
             direction = 'LONG'
-        elif momentum < -0.1 and avg_4h < 0.48:
+        elif momentum < -0.1 and avg_4h < short_thresh:
             direction = 'SHORT'
         else:
             return None

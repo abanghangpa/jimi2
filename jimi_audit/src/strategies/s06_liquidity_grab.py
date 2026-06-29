@@ -18,6 +18,9 @@ class LiquidityGrabStrategy(BaseStrategy):
         below = liq.get('below', [])
         above = liq.get('above', [])
         magnets = data.get('magnets', [])
+        squeeze = data.get('squeeze_quality', 0.5)
+        # Dynamic proximity: tighter in compression, wider in expansion
+        proximity_mult = 0.3 + squeeze * 0.4  # range: 0.3-0.7 (was fixed 0.5)
 
         # Find nearest liquidity level
         nearest_below = min(below, key=lambda x: abs(x.get('price', 0) - price)) if below else None
@@ -33,14 +36,14 @@ class LiquidityGrabStrategy(BaseStrategy):
 
         if nearest_below:
             dist = price - nearest_below.get('price', price)
-            if 0 < dist < 0.5 * atr:
+            if 0 < dist < proximity_mult * atr:
                 direction = 'LONG'  # bounce off support
                 level_price = nearest_below.get('price')
                 level_type = nearest_below.get('type', 'support')
 
         if nearest_above:
             dist = nearest_above.get('price', price) - price
-            if 0 < dist < 0.5 * atr:
+            if 0 < dist < proximity_mult * atr:
                 if direction is None:
                     direction = 'SHORT'  # rejection at resistance
                     level_price = nearest_above.get('price')

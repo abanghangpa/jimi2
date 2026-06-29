@@ -34,9 +34,12 @@ class KillZoneStrategy(BaseStrategy):
         zone_score = 0.3 if zone == 'LONDON_NY_OVERLAP' else 0.2
         vol_score = min(vol_ratio / 2.0, 0.3) if vol_ratio > 0 else 0
         taker_score = 0
-        if direction == 'LONG' and taker > 0.53:
+        atr_pct = atr / price if price else 0
+        taker_long_thresh = 0.5 + atr_pct * 5
+        taker_short_thresh = 0.5 - atr_pct * 5
+        if direction == 'LONG' and taker > taker_long_thresh:
             taker_score = 0.2
-        elif direction == 'SHORT' and taker < 0.47:
+        elif direction == 'SHORT' and taker < taker_short_thresh:
             taker_score = 0.2
         expansion_score = min(bar_expansion / 2.0, 0.2)
 

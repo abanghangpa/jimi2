@@ -15,22 +15,23 @@ class CrossAssetStrategy(BaseStrategy):
         m7_score = m7.get('score', 0.5)
         ex_score = ex.get('score', 0.5)
 
-        direction = data.get('direction')
-        if not direction:
-            return None
-
         price = data.get('price', 0)
         atr = data.get('atr', 0)
         if not price or not atr:
             return None
 
-        # Cross-asset alignment score
-        if direction == 'LONG':
-            alignment = (m10_score + m7_score + ex_score) / 3
-        else:
-            alignment = (1 - m10_score + 1 - m7_score + 1 - ex_score) / 3
+        # Check both directions for cross-asset alignment
+        long_alignment = (m10_score + m7_score + ex_score) / 3
+        short_alignment = (1 - m10_score + 1 - m7_score + 1 - ex_score) / 3
 
-        if alignment < 0.55:
+        # Pick the stronger aligned direction
+        if long_alignment >= short_alignment and long_alignment >= 0.55:
+            direction = 'LONG'
+            alignment = long_alignment
+        elif short_alignment > long_alignment and short_alignment >= 0.55:
+            direction = 'SHORT'
+            alignment = short_alignment
+        else:
             return None
 
         conviction = min(alignment * 0.8 + 0.1, 0.80)
@@ -48,5 +49,6 @@ class CrossAssetStrategy(BaseStrategy):
                    f"M7={m7_score:.2f} EX={ex_score:.2f}",
             bypass_gates=False,
             details={'m10_score': m10_score, 'm7_score': m7_score,
-                     'exchange_score': ex_score, 'alignment': alignment},
+                     'exchange_score': ex_score, 'alignment': alignment,
+                     'long_alignment': long_alignment, 'short_alignment': short_alignment},
         )
