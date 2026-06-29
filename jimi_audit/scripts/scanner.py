@@ -5632,6 +5632,26 @@ def main():
         print(f"  ⚠️  Multi-strategy error: {e}")
         result['multi_strategy'] = None
 
+    # M20 Repurpose: contrarian block + staleness filter + level export
+    if result.get('status') == 'SIGNAL':
+        try:
+            _m20_filter = apply_m20_filter(
+                result.get('m20', {}), result.get('direction', ''), result.get('price', 0))
+            result['m20_filter'] = _m20_filter
+            if _m20_filter.get('blocked'):
+                result['status'] = 'M20_BLOCKED'
+                result['reason'] = _m20_filter.get('reason', '')
+                print('  !! M20 filter blocked: %s' % _m20_filter.get('reason', ''))
+            elif _m20_filter.get('level') and _m20_filter.get('level_type') != 'none':
+                result['m20_entry_level'] = {
+                    'price': _m20_filter['level'],
+                    'type': _m20_filter['level_type'],
+                    'quality': _m20_filter.get('quality', '?'),
+                }
+                print('  M20 entry level: $%.2f (%s)' % (_m20_filter['level'], _m20_filter['level_type']))
+        except Exception as e:
+            print('  ! M20 filter error: %s' % e)
+
     # ── Ensemble Gate ──
     _ensemble = None
     try:
