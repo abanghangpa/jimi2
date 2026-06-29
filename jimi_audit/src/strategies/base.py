@@ -42,6 +42,7 @@ class SignalResult:
     def to_dict(self) -> dict:
         return {
             'strategy': self.strategy_name,
+            'source': f"strategy:{self.strategy_name}",
             'type': self.strategy_type,
             'direction': self.direction,
             'conviction': round(self.conviction, 4),
