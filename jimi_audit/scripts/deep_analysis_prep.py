@@ -248,6 +248,22 @@ def compute_signal_accuracy(scans, signals):
         "by_signal_type": {k: safe_wr(v) for k, v in sorted(by_type.items())},
         "by_direction_window": {k: safe_wr(v) for k, v in sorted(by_dir_window.items())},
         "by_regime_direction": {k: safe_wr(v) for k, v in sorted(by_regime_dir.items())},
+        # New architecture filter stats
+        "filter_stats": {
+            "total_signals": len(signals),
+            "ensemble_blocked": sum(1 for s in signals if not s.get("ensemble_passes", True)),
+            "sweep_blocked": sum(1 for s in signals if s.get("sweep_blocked", False)),
+            "m20_blocked": sum(1 for s in signals if s.get("m20_blocked", False)),
+            "confirmed": sum(1 for s in signals if s.get("confirmation_status") == "CONFIRMED"),
+            "pending": sum(1 for s in signals if s.get("confirmation_status") == "PENDING"),
+            "expired": sum(1 for s in signals if s.get("confirmation_status") == "EXPIRED"),
+        },
+        "ensemble_stats": {
+            "consensus_distribution": dict(Counter(s.get("ensemble_consensus", "NONE") for s in signals)),
+            "avg_agree_count": round(sum(s.get("ensemble_agree_count", 0) for s in signals) / max(len(signals), 1), 2),
+            "avg_conviction": round(sum(s.get("ensemble_conviction", 0) for s in signals) / max(len(signals), 1), 3),
+        },
+        "regime_distribution": dict(Counter(s.get("regime", "UNKNOWN") for s in signals)),
         "by_ics_bucket_window": {k: safe_wr(v) for k, v in sorted(by_ics_bucket.items())},
         "by_direction_ics": {k: safe_wr(v) for k, v in sorted(by_dir_ics.items())},
         "fixed_timeframe_by_source": {
