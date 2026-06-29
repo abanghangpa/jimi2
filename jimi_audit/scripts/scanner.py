@@ -3741,6 +3741,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
     # ── SIGNAL: set levels ──
     result.update({
         'status': 'SIGNAL', 'entry': effective_entry,
+        'source': 'main_pipeline',
         'market_entry': entry_price,
         'limit_entry': limit_entry,
         'sl': levels['sl'], 'tp1': levels['tp1'],
