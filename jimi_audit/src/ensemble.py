@@ -17,9 +17,18 @@ STRATEGY_WEIGHTS = {
     "momentum_v2": 1.0,
 }
 
-def evaluate_ensemble(strategy_signals):
+def evaluate_ensemble(strategy_signals, m10_details=None):
     if not strategy_signals:
         return _empty()
+    # Apply regime-based weight adjustments if m10 data available
+    regime_result = None
+    if m10_details:
+        try:
+            regime_result = apply_regime_weights(strategy_signals, m10_details)
+            strategy_signals = regime_result['adjusted_signals']
+        except Exception:
+            pass
+    
     fired = [s for s in strategy_signals if s.get("direction") and s.get("conviction",0) >= MIN_CONVICTION]
     if not fired:
         return _empty()
@@ -52,10 +61,15 @@ def evaluate_ensemble(strategy_signals):
                 "reason":"No consensus: %d LONG vs %d SHORT (need %d+)" % (lc, sc, MIN_AGREE)}
     avg = ws/agree_count if agree_count else 0
     ec = min(avg, 1.0)
-    return {"consensus":consensus,"agree_count":agree_count,"total_fired":len(fired),
+    result = {"consensus":consensus,"agree_count":agree_count,"total_fired":len(fired),
             "weighted_score":round(ws,4),"agreeing_strategies":agreeing,"disagreeing_strategies":disagreeing,
             "ensemble_conviction":round(ec,4),"passes":True,
             "reason":"Ensemble: %d strategies agree %s (weighted=%.2f)" % (agree_count, consensus, ws)}
+    if regime_result:
+        result["regime"] = regime_result.get("regime")
+        result["regime_blocked"] = regime_result.get("blocked", [])
+        result["regime_boosted"] = regime_result.get("boosted", [])
+    return result
 
 def _empty():
     return {"consensus":"NONE","agree_count":0,"total_fired":0,"weighted_score":0,

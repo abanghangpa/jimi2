@@ -5636,7 +5636,7 @@ def main():
     _ensemble = None
     try:
         _all_sigs = result.get('multi_strategy', {}).get('all_signals', [])
-        _ensemble = evaluate_ensemble(_all_sigs)
+        _ensemble = evaluate_ensemble(_all_sigs, m10_details=result.get('m10',{}).get('details',{}))
         result['ensemble'] = _ensemble
         if _ensemble.get('passes'):
             print("  🎯 Ensemble PASS: %d strategies agree %s (conv=%.2f)" % (_ensemble['agree_count'], _ensemble['consensus'], _ensemble['ensemble_conviction']))
