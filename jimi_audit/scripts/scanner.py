@@ -121,6 +121,7 @@ from src.dual_strategy import DualStrategy
 from src.strategies import create_runner as create_strategy_runner
 from src.confirmation import add_pending, check_confirmations, get_hold_window, format_confirmation_report
 from src.ensemble import evaluate_ensemble, format_ensemble
+from src.m20_filter import apply_m20_filter, format_m20_filter
 from src.utils.order_flow import fetch_multi_exchange_ob, fetch_recent_trades, fetch_liquidations, fetch_funding_rates
 
 # ── M66-M73: Traditional Finance Macro Filters ──
