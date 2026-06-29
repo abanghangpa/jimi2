@@ -60,7 +60,7 @@ def _save_pending(signals: List[Dict]):
         json.dump(signals, f, indent=2, default=str)
 
 
-def add_pending(signal: Dict, source: str = 'main_pipeline') -> Dict:
+def add_pending(signal: Dict, source: str = 'main_pipeline', ensemble: Dict = None) -> Dict:
     """
     Add a signal to the pending queue for confirmation.
     Returns the pending entry with confirmation metadata.
@@ -90,6 +90,7 @@ def add_pending(signal: Dict, source: str = 'main_pipeline') -> Dict:
         'status': 'PENDING',
         'bars_waited': 0,
         'confirmation_prices': [],
+        'ensemble': ensemble if ensemble else None,
     }
     
     # Avoid duplicates

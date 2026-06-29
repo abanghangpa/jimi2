@@ -120,6 +120,7 @@ from src.modules.m20_failed_breakout import score_m20, format_failed_breakout
 from src.dual_strategy import DualStrategy
 from src.strategies import create_runner as create_strategy_runner
 from src.confirmation import add_pending, check_confirmations, get_hold_window, format_confirmation_report
+from src.ensemble import evaluate_ensemble, format_ensemble
 from src.utils.order_flow import fetch_multi_exchange_ob, fetch_recent_trades, fetch_liquidations, fetch_funding_rates
 
 # ── M66-M73: Traditional Finance Macro Filters ──
@@ -5655,10 +5656,10 @@ def main():
         result['confirmation_status'] = None
 
     # If this scan generated a SIGNAL, add to pending queue
-    if result.get('status') == 'SIGNAL':
+    if result.get('status') == 'SIGNAL' and (_ensemble is None or _ensemble.get('passes')):
         try:
             _src = result.get('source', 'main_pipeline')
-            _pending_entry = add_pending(result, source=_src)
+            _pending_entry = add_pending(result, source=_src, ensemble=_ensemble)
             result['confirmation'] = {
                 'status': 'PENDING',
                 'bars_to_confirm': _pending_entry.get('confirm_bars', 3),
@@ -5668,6 +5669,10 @@ def main():
             print(f"  ⏳ Signal queued for confirmation (wait {_pending_entry.get('confirm_bars',3)} bars)")
         except Exception as e:
             print(f"  ⚠️  Confirmation queue error: {e}")
+    elif result.get('status') == 'SIGNAL' and _ensemble and not _ensemble.get('passes'):
+        result['status'] = 'ENSEMBLE_BLOCKED'
+        result['reason'] = 'Ensemble blocked: %s' % _ensemble.get('reason', 'no consensus')
+        print('  !! Signal blocked by ensemble gate')
 
     # ── Macro Calendar ──
     try:
