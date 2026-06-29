@@ -223,20 +223,51 @@ def generate_report(curr, prev=None):
             lines.append(f"🧲 Magnets [{label}]:")
             active = [m for m in mags if not m.get('swept')]
             swept = [m for m in mags if m.get('swept')]
-            for m in active:
-                p = m.get('price', 0)
-                s = m.get('strength', 0)
-                d = m.get('dist_pct', 0)
-                arw = "+" if d >= 0 else ""
-                lines.append(f" 🎯 ${fmt_num(p)} str={fmt_num(s,1)}x ({arw}{d:.2f}%)")
-            if not active and swept:
-                lines.append("  (all swept — no active pull targets)")
-            for m in swept:
-                p = m.get('price', 0)
-                s = m.get('strength', 0)
-                d = m.get('dist_pct', 0)
-                tag = "RES (swept)" if d >= 0 else "SUP (swept)"
-                lines.append(f" ⤷ ${fmt_num(p)} {tag} str={fmt_num(s,1)}x ({d:+.2f}%)")
+
+            if active:
+                for m in active:
+                    p = m.get('price', 0)
+                    s = m.get('strength', 0)
+                    d = m.get('dist_pct', 0)
+                    arw = "+" if d >= 0 else ""
+                    lines.append(f" 🎯 ${fmt_num(p)} str={fmt_num(s,1)}x ({arw}{d:.2f}%)")
+                # Also show swept as context
+                for m in swept:
+                    p = m.get('price', 0)
+                    s = m.get('strength', 0)
+                    d = m.get('dist_pct', 0)
+                    tag = "RES (swept)" if d >= 0 else "SUP (swept)"
+                    lines.append(f" ⤷ ${fmt_num(p)} {tag} str={fmt_num(s,1)}x ({d:+.2f}%)")
+            elif swept:
+                # All swept — pick nearest in each direction as next targets
+                above = [m for m in swept if m.get('dist_pct', 0) > 0]
+                below = [m for m in swept if m.get('dist_pct', 0) <= 0]
+                nearest_above = min(above, key=lambda x: x.get('dist_pct', 999)) if above else None
+                nearest_below = min(below, key=lambda x: abs(x.get('dist_pct', 999))) if below else None
+
+                targets_shown = set()
+                if nearest_above:
+                    p = nearest_above.get('price', 0)
+                    s = nearest_above.get('strength', 0)
+                    d = nearest_above.get('dist_pct', 0)
+                    lines.append(f" 🎯 ${fmt_num(p)} str={fmt_num(s,1)}x (+{d:.2f}%) next resistance")
+                    targets_shown.add(p)
+                if nearest_below:
+                    p = nearest_below.get('price', 0)
+                    s = nearest_below.get('strength', 0)
+                    d = nearest_below.get('dist_pct', 0)
+                    lines.append(f" 🎯 ${fmt_num(p)} str={fmt_num(s,1)}x ({d:.2f}%) next support")
+                    targets_shown.add(p)
+                if nearest_above or nearest_below:
+                    lines.append("  (all swept — showing nearest in each direction)")
+                # Show remaining swept as context
+                for m in swept:
+                    if m.get('price') not in targets_shown:
+                        p = m.get('price', 0)
+                        s = m.get('strength', 0)
+                        d = m.get('dist_pct', 0)
+                        tag = "RES" if d >= 0 else "SUP"
+                        lines.append(f" ⤷ ${fmt_num(p)} {tag} str={fmt_num(s,1)}x ({d:+.2f}%)")
             lines.append("")
     else:
         lines.append("🧲 Magnets:")
