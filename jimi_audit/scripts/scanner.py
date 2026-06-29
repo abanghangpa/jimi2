@@ -382,30 +382,60 @@ def ensure_csv_fresh(csv_path=None):
 
 
 def run_full_scan(config=None, df_1d_hist=None):
+    """Run a full scan programmatically and return the result dict.
+
+    Mirrors the logic in main() but without argparse/CLI dependencies.
+    Used by jimi_watchdog.py and OpenClaw cron jobs.
     """
-    Perform a full signal scan and return the results dictionary.
-    This is the core orchestration logic used by both scanner.py and other tools.
-    """
-    cfg = config or CONFIG
-    
-    # ── DATA FETCHING & PREP ──
-    df_15m = fetch_recent(symbol='ETHUSDT', timeframe='15m', limit=2000)
+    import json as _json
+
+    cfg = config or dict(CONFIG)
+
+    # Step 1: Ensure historical CSV is fresh
+    csv_path = ensure_csv_fresh()
+
+    # Step 2: Load daily data for EMA warmup
+    if df_1d_hist is None:
+        df_1d_hist = load_daily_from_csv(csv_path)
+
+    # Step 3: Fetch 15m data
+    df_15m = fetch_recent(symbol='ETH/USDT', timeframe='15m', bars=3000)
     if df_15m is None or len(df_15m) == 0:
         return {'status': 'ERROR', 'reason': 'could not fetch 15m data'}
 
-    # Use historical daily CSV if available for EMA warmup
-    csv_path = ensure_csv_fresh()
-    df_1d_hist = load_daily_from_csv(csv_path) if df_1d_hist is None else df_1d_hist
-    
-    df_15m, df_1h, df_2h, df_4h, df_1d = compute_indicators(df_15m, config=cfg, df_1d_hist=df_1d_hist)
-    
-    # The rest of the scan logic...
-    # (I will move the logic from the global scope to here)
-    
-    # [ALL THE MODULE SCORING LOGIC FROM THE ORIGINAL SCRIPT GOES HERE]
-    # I will perform this in a second edit because the script is too large for one edit.
-    
-    return result # The final results dictionary
+    # Step 4: Compute indicators
+    df_15m, df_1h, df_2h, df_4h, df_1d = compute_indicators(
+        df_15m, config=cfg, df_1d_hist=df_1d_hist)
+
+    # Step 5: Fetch BTC for cross-asset
+    btc_15m_df, btc_corr_series = None, None
+    if cfg.get('CROSS_ASSET_ENABLED', False):
+        try:
+            btc_15m_df = fetch_btc_15m(
+                df_15m['Open time'].iloc[0], df_15m['Open time'].iloc[-1])
+            if btc_15m_df is not None and len(btc_15m_df) > 100:
+                btc_corr_series = compute_btc_correlation(
+                    df_15m, btc_15m_df, cfg.get('CROSS_ASSET_LOOKBACK', 48))
+        except Exception:
+            btc_15m_df = None
+
+    # Step 6: Run main scan
+    result = scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d,
+                         config=cfg, btc_15m_df=btc_15m_df,
+                         btc_corr_series=btc_corr_series)
+    result['timeframe'] = '15m'
+    result['current_price'] = float(df_15m['Close'].iloc[-1])
+
+    # Multi-timeframe magnets
+    try:
+        result['magnets_multi_tf'] = compute_multi_tf_magnets(
+            df_15m, len(df_15m) - 1, config=cfg)
+    except Exception as e:
+        result['magnets_multi_tf'] = {}
+        print(f"  ⚠️  Multi-TF magnets error: {e}")
+
+
+    return result
 
 
 
@@ -457,6 +487,125 @@ def _check_swept_magnets(df_15m, idx, magnets, lookback_bars=96, config=None):
 
     return result
 
+
+
+# ── Multi-Timeframe Magnets ──
+import pandas as _pd
+
+MERGED_CSV = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'eth_15m_merged.csv')
+
+def _load_cached_15m(max_bars=35040):
+    if not os.path.exists(MERGED_CSV):
+        return None
+    try:
+        df = _pd.read_csv(MERGED_CSV, parse_dates=['Open time'])
+        if len(df) > max_bars:
+            df = df.tail(max_bars).reset_index(drop=True)
+        for col in ['Open', 'High', 'Low', 'Close', 'Volume']:
+            df[col] = _pd.to_numeric(df[col], errors='coerce')
+        df = df.dropna(subset=['Open', 'High', 'Low', 'Close', 'Volume'])
+        return df
+    except Exception:
+        return None
+
+# Lookback bars on 15m: 1d=96, 1w=672, 1m=2880, 1q=8640, 1y=35040
+MAGNET_TIMEFRAMES = {
+    '1d':  {'lookback': 96,    'bins': 30, 'label': '1-Day'},
+    '1w':  {'lookback': 672,   'bins': 40, 'label': '1-Week'},
+    '1m':  {'lookback': 2880,  'bins': 50, 'label': '1-Month'},
+    '1q':  {'lookback': 8640,  'bins': 60, 'label': '1-Quarter'},
+    '1y':  {'lookback': 35040, 'bins': 70, 'label': '1-Year'},
+}
+
+def compute_multi_tf_magnets(df_15m, idx, config=None):
+    """Compute magnets at multiple timeframes (1d, 1w, 1m, 1q, 1y).
+
+    Returns dict: {tf_key: [(price, strength, swept, swept_at), ...], ...}
+    Only timeframes that fit within the available data are computed.
+    """
+    cfg = config or CONFIG
+    proximity_pct = cfg.get('SWEEP_PROXIMITY_PCT', 0.001)
+    available_live = idx + 1
+    current = float(df_15m['Close'].values[idx])
+
+    cached_df = None
+    CACHE_THRESHOLD = 1000
+
+    highs_all = df_15m['High'].values[:idx+1].astype(float)
+    lows_all = df_15m['Low'].values[:idx+1].astype(float)
+    times_all = df_15m['Open time'].values[:idx+1]
+
+    result = {}
+    for tf_key, tf_cfg in MAGNET_TIMEFRAMES.items():
+        lb = tf_cfg['lookback']
+        nb = tf_cfg['bins']
+
+        if lb > CACHE_THRESHOLD and available_live < lb:
+            if cached_df is None:
+                cached_df = _load_cached_15m(max_bars=35040)
+            if cached_df is None or len(cached_df) < lb:
+                continue
+            h = cached_df['High'].values[-lb:].astype(float)
+            l = cached_df['Low'].values[-lb:].astype(float)
+            c = cached_df['Close'].values[-lb:].astype(float)
+            v = cached_df['Volume'].values[-lb:].astype(float)
+            t = cached_df['Open time'].values[-lb:]
+        else:
+            if available_live < lb:
+                continue
+            start = max(0, idx - lb + 1)
+            h = highs_all[start:idx+1]
+            l = lows_all[start:idx+1]
+            c = df_15m['Close'].values[start:idx+1].astype(float)
+            v = df_15m['Volume'].values[start:idx+1].astype(float)
+            t = times_all[start:idx+1]
+
+        bin_centers, vol_profile, _ = build_volume_profile(h, l, c, v, n_bins=nb, lookback=lb)
+        if bin_centers is None:
+            continue
+
+        mags = find_magnets(bin_centers, vol_profile, n_magnets=3)
+        if not mags:
+            continue
+
+        # Check swept status for this timeframe
+        session_high = np.max(h)
+        session_low = np.min(l)
+        tf_magnets = []
+        for price, vol, strength in mags:
+            swept = False
+            swept_at = None
+            proximity_buf = price * proximity_pct
+
+            if price > current and session_high >= price - proximity_buf:
+                swept = True
+                for j in range(len(h)):
+                    if h[j] >= price - proximity_buf:
+                        swept_at = str(t[j])
+                        break
+            elif price < current and session_low <= price + proximity_buf:
+                swept = True
+                for j in range(len(l)):
+                    if l[j] <= price + proximity_buf:
+                        swept_at = str(t[j])
+                        break
+
+            dist_pct = ((price - current) / current) * 100
+            tf_magnets.append({
+                'price': round(price, 2),
+                'strength': round(strength, 2),
+                'swept': swept,
+                'swept_at': swept_at,
+                'dist_pct': round(dist_pct, 2),
+            })
+
+        result[tf_key] = {
+            'label': tf_cfg['label'],
+            'lookback': lb,
+            'magnets': tf_magnets,
+        }
+
+    return result
 
 def _detect_cascade_risk(df, idx, result):
     """Detect whether the next liquidation cluster will be a quick flush or

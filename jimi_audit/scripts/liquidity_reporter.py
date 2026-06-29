@@ -11,11 +11,13 @@ Usage:
 """
 
 import csv
+import json
 import os
 import sys
 from datetime import datetime, timezone
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "liquidity_snapshots.csv")
+MULTI_TF_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "magnets_multi_tf.json")
 
 
 def read_last_n_rows(n=2):
@@ -26,6 +28,22 @@ def read_last_n_rows(n=2):
         for row in reader:
             rows.append(row)
     return rows[-n:] if len(rows) >= n else rows
+
+
+def load_multi_tf_magnets(timestamp=None):
+    if not os.path.exists(MULTI_TF_FILE):
+        return None
+    try:
+        with open(MULTI_TF_FILE) as f:
+            data = json.load(f)
+        if timestamp and str(timestamp) in data:
+            return data[str(timestamp)]
+        if data:
+            latest_key = sorted(data.keys())[-1]
+            return data[latest_key]
+    except Exception:
+        pass
+    return None
 
 
 def fmt_num(val, decimals=2):
@@ -188,17 +206,49 @@ def generate_report(curr, prev=None):
         lines.append(f" Position: {positioning} OI/Price Div: {oi_div}")
     lines.append("")
 
-    # Magnets
-    lines.append("🧲 Magnets:")
-    for i in range(1, 6):
-        mp = curr.get(f"mag{i}_price", "")
-        ms = curr.get(f"mag{i}_strength", "")
-        md = curr.get(f"mag{i}_dist_pct", "")
-        mw = curr.get(f"mag{i}_swept", "")
-        if mp:
-            icon = swept_icon(mw)
-            lines.append(f" {icon} #{i} ${fmt_num(mp)} str={fmt_num(ms,1)}x ({fmt_pct(md)})")
-    lines.append("")
+    # Magnets - Multi-Timeframe
+    ts = curr.get("timestamp", "")
+    mtf = load_multi_tf_magnets(ts)
+
+    if mtf:
+        tf_order = ['1d', '1w', '1m', '1q', '1y']
+        for tf_key in tf_order:
+            tf_data = mtf.get(tf_key)
+            if not tf_data:
+                continue
+            label = tf_data.get('label', tf_key)
+            mags = tf_data.get('magnets', [])
+            if not mags:
+                continue
+            lines.append(f"🧲 Magnets [{label}]:")
+            active = [m for m in mags if not m.get('swept')]
+            swept = [m for m in mags if m.get('swept')]
+            for m in active:
+                p = m.get('price', 0)
+                s = m.get('strength', 0)
+                d = m.get('dist_pct', 0)
+                arw = "+" if d >= 0 else ""
+                lines.append(f" 🎯 ${fmt_num(p)} str={fmt_num(s,1)}x ({arw}{d:.2f}%)")
+            if not active and swept:
+                lines.append("  (all swept — no active pull targets)")
+            for m in swept:
+                p = m.get('price', 0)
+                s = m.get('strength', 0)
+                d = m.get('dist_pct', 0)
+                tag = "RES (swept)" if d >= 0 else "SUP (swept)"
+                lines.append(f" ⤷ ${fmt_num(p)} {tag} str={fmt_num(s,1)}x ({d:+.2f}%)")
+            lines.append("")
+    else:
+        lines.append("🧲 Magnets:")
+        for i in range(1, 6):
+            mp = curr.get(f"mag{i}_price", "")
+            ms = curr.get(f"mag{i}_strength", "")
+            md = curr.get(f"mag{i}_dist_pct", "")
+            mw = curr.get(f"mag{i}_swept", "")
+            if mp:
+                icon = swept_icon(mw)
+                lines.append(f" {icon} #{i} ${fmt_num(mp)} str={fmt_num(ms,1)}x ({fmt_pct(md)})")
+        lines.append("")
 
     # Key Levels
     lines.append("📏 Key Levels:")

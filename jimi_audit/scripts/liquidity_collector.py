@@ -50,10 +50,11 @@ from src.utils.data_handler import resample_ohlcv
 
 # Import scanner helpers
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-from scanner import compute_indicators, scan_signal
+from scanner import compute_indicators, scan_signal, compute_multi_tf_magnets
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
 CSV_PATH = os.path.join(DATA_DIR, 'liquidity_snapshots.csv')
+MULTI_TF_PATH = os.path.join(DATA_DIR, 'magnets_multi_tf.json')
 
 CSV_FIELDS = [
     'timestamp', 'price', 'high_24h', 'low_24h', 'volume_24h',
@@ -81,7 +82,7 @@ CSV_FIELDS = [
 
 def collect_snapshot():
     """Run a single liquidity scan and return structured data."""
-    df_15m = fetch_recent(bars=1000)
+    df_15m = fetch_recent(bars=3000)
     df_15m, df_1h, df_2h, df_4h, df_1d = compute_indicators(df_15m)
     result = scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d)
 
@@ -181,6 +182,13 @@ def collect_snapshot():
     snap['swing_bias'] = result.get('swing_bias', '')
     snap['phase0'] = result.get('phase0', '')
 
+    # Multi-timeframe magnets
+    try:
+        snap['magnets_multi_tf'] = compute_multi_tf_magnets(df_15m, idx)
+    except Exception as e:
+        snap['magnets_multi_tf'] = {}
+        print(f'  Multi-TF magnets error: {e}')
+
     return snap, result
 
 
@@ -194,6 +202,24 @@ def save_snapshot(snap):
         if not file_exists:
             writer.writeheader()
         writer.writerow(snap)
+
+
+def save_multi_tf_magnets(timestamp, magnets_data):
+    os.makedirs(DATA_DIR, exist_ok=True)
+    existing = {}
+    if os.path.exists(MULTI_TF_PATH):
+        try:
+            with open(MULTI_TF_PATH) as f:
+                existing = json.load(f)
+        except Exception:
+            existing = {}
+    existing[str(timestamp)] = magnets_data
+    keys = sorted(existing.keys())
+    if len(keys) > 168:
+        for k in keys[:-168]:
+            del existing[k]
+    with open(MULTI_TF_PATH, 'w') as f:
+        json.dump(existing, f, indent=2)
 
 
 def print_snapshot(snap):
@@ -276,6 +302,8 @@ def main():
     else:
         snap, raw = collect_snapshot()
         save_snapshot(snap)
+        if snap.get('magnets_multi_tf'):
+            save_multi_tf_magnets(snap['timestamp'], snap['magnets_multi_tf'])
         if args.json:
             print(json.dumps(snap, default=str))
         else:
