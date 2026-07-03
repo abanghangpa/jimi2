@@ -1581,17 +1581,26 @@ def get_macro_calendar(reference_time=None):
         nfp_passed = False
 
     if day <= 3 and not nfp_passed:
-        phase, phase_desc, next_major = 'MONTH_START', 'PMI releases, NFP approaching', 'NFP (1st Friday)'
+        phase, phase_desc = 'MONTH_START', 'PMI releases, NFP approaching'
     elif day <= 7 or (day <= 3 and nfp_passed):
-        phase, phase_desc, next_major = 'NFP_WEEK', 'NFP sets tone for the month', 'CPI/PPI (~12-14th)'
+        phase, phase_desc = 'NFP_WEEK', 'NFP sets tone for the month'
     elif day <= 14:
-        phase, phase_desc, next_major = 'CPI_WEEK', 'CPI/PPI — biggest movers of the month', 'PBoC LPR (~20th)'
+        phase, phase_desc = 'CPI_WEEK', 'CPI/PPI — biggest movers of the month'
     elif day <= 21:
-        phase, phase_desc, next_major = 'MID_MONTH', 'PBoC, ECB/BOJ, China data cluster', 'End-of-month PMIs'
+        phase, phase_desc = 'MID_MONTH', 'PBoC, ECB/BOJ, China data cluster'
     elif day <= 28:
-        phase, phase_desc, next_major = 'LATE_MONTH', 'Tokyo CPI, Core PCE, PMI prep', 'Month-end PMIs → next NFP'
+        phase, phase_desc = 'LATE_MONTH', 'Tokyo CPI, Core PCE, PMI prep'
     else:
-        phase, phase_desc, next_major = 'MONTH_END', 'PMI releases, cycle reset', 'Next month NFP'
+        phase, phase_desc = 'MONTH_END', 'PMI releases, cycle reset'
+
+    # Dynamically determine next major event from calendar
+    MAJOR_EVENTS = {'us_cpi', 'us_ppi', 'us_nfp', 'us_fomc', 'cn_pboc_lpr', 'cn_cpi', 'eu_ecb', 'jp_boj', 'uk_boe'}
+    next_major = 'Next month NFP'
+    for evt in upcoming:  # Search all upcoming events
+        evt_id = evt.get('id', '')
+        if evt_id in MAJOR_EVENTS:
+            next_major = '%s (%s)' % (evt.get('name', ''), evt.get('countdown', '?'))
+            break
 
     # Determine current week in monthly cycle
     current_week = None
