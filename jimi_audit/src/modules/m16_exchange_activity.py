@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError
 
 SYMBOL = "ETH/USDT:USDT"
 EXCHANGES = ["binance", "okx", "bybit"]
-EXCHANGES_EXTENDED = ["binance", "okx", "bybit", "htx", "phemex", "kraken"]
+EXCHANGES_EXTENDED = ["binance", "okx", "bybit", "htx", "phemex", "kraken", "coinbaseinternational"]
 FUNDING_HISTORY_LIMIT = 30  # ~3.75 days of 8h funding
 
 # Kraken uses ETH/USD:USD instead of ETH/USDT:USDT
@@ -111,6 +111,53 @@ def _fetch_funding_history(name, limit=FUNDING_HISTORY_LIMIT):
     return pd.DataFrame()
 
 
+def _fetch_coinbase_international():
+    """Fetch funding rate and OI from Coinbase International REST API."""
+    import requests
+    try:
+        base = "https://international.coinbase.com/api/v1"
+        # Get instrument info (includes OI)
+        r = requests.get(f"{base}/instruments/ETH-PERP", timeout=10)
+        if r.status_code == 200:
+            data = r.json()
+            oi = float(data.get("open_interest", 0))
+            vol_24h = float(data.get("qty_24hr", 0))
+        else:
+            oi = None
+            vol_24h = None
+
+        # Get latest funding rate
+        r2 = requests.get(f"{base}/instruments/ETH-PERP/funding", timeout=10)
+        if r2.status_code == 200:
+            funding_data = r2.json()
+            results = funding_data.get("results", [])
+            if results:
+                funding_rate = float(results[0].get("funding_rate", 0))
+                mark_price = float(results[0].get("mark_price", 0))
+            else:
+                funding_rate = None
+                mark_price = None
+        else:
+            funding_rate = None
+            mark_price = None
+
+        return {
+            "exchange": "coinbaseinternational",
+            "funding_rate": funding_rate,
+            "open_interest": oi,
+            "volume_24h": vol_24h,
+            "mark_price": mark_price,
+            "ls_ratio": None,  # Not available from this API
+            "status": "ok",
+        }
+    except Exception as e:
+        return {
+            "exchange": "coinbaseinternational",
+            "error": str(e),
+            "status": "error",
+        }
+
+
 def _fetch_oi_history(name, timeframe="1h", limit=48):
     """Fetch OI history from one exchange (Binance/Bybit have this)."""
     ex = _make_exchange(name)
@@ -143,7 +190,11 @@ def fetch_all_exchange_data():
 
     # Parallel snapshots (all exchanges)
     with ThreadPoolExecutor(max_workers=len(EXCHANGES_EXTENDED)) as pool:
-        futures = {pool.submit(_fetch_snapshot, name): name for name in EXCHANGES_EXTENDED}
+        # Fetch regular exchanges
+        regular_exchanges = [n for n in EXCHANGES_EXTENDED if n != "coinbaseinternational"]
+        futures = {pool.submit(_fetch_snapshot, name): name for name in regular_exchanges}
+        # Add Coinbase International separately (different API)
+        futures[pool.submit(_fetch_coinbase_international)] = "coinbaseinternational"
         for f in as_completed(futures):
             name = futures[f]
             try:
