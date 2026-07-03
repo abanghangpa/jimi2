@@ -144,6 +144,8 @@ NFP_RELEASES = {
     '2026-03-06': {'nfp_k': 145, 'consensus_k': 130, 'prev_k': 135},
     '2026-04-03': {'nfp_k': 132, 'consensus_k': 128, 'prev_k': 145},
     '2026-05-01': {'nfp_k': 128, 'consensus_k': 130, 'prev_k': 132},
+    '2026-06-05': {'nfp_k': 129, 'consensus_k': 130, 'prev_k': 128},
+    '2026-07-02': {'nfp_k': 57, 'consensus_k': 110, 'prev_k': 129},
 }
 
 # All scheduled NFP release dates (including future dates without data yet)

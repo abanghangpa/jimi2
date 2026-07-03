@@ -44,6 +44,30 @@ def _first_friday(year, month):
     return d
 
 
+# US holidays that cause NFP to move to Thursday
+_NFP_HOLIDAY_ADJUSTMENTS = {
+    # July 4th (Independence Day) - if Friday is July 3rd or 4th, NFP moves to Thursday
+    (7, 3): -1,  # July 3rd -> move to July 2nd (Thursday)
+    (7, 4): -1,  # July 4th -> move to July 3rd (Thursday)
+    # Christmas - if Friday is Dec 25th or 24th, NFP moves to Thursday
+    (12, 24): -1,
+    (12, 25): -1,
+    # New Year's - if Friday is Jan 1st or Dec 31st, NFP moves to Thursday
+    (1, 1): -1,
+    (12, 31): -1,
+}
+
+
+def _nfp_date(year, month):
+    """Get NFP release date, adjusted for US holidays."""
+    d = _first_friday(year, month)
+    # Check if this Friday falls on or adjacent to a holiday
+    key = (d.month, d.day)
+    if key in _NFP_HOLIDAY_ADJUSTMENTS:
+        d += timedelta(days=_NFP_HOLIDAY_ADJUSTMENTS[key])
+    return d
+
+
 def _first_business_day(year, month):
     d = datetime(year, month, 1, tzinfo=UTC)
     while d.weekday() >= 5:
@@ -1184,7 +1208,7 @@ EVENTS = [
         'schedule': '1st Friday',
         'time_utc': '13:30',
         'impact': 'HIGH',
-        'get_next': lambda y, m: _first_friday(y, m).replace(hour=13, minute=30),
+        'get_next': lambda y, m: _nfp_date(y, m).replace(hour=13, minute=30),
         'what_comes_next': [
             'Fed speeches (following week) — Fed officials respond to jobs data within days',
             'Michigan Consumer Sentiment — released same day or next week, mood follows jobs',
@@ -1203,7 +1227,7 @@ EVENTS = [
         'schedule': 'Wednesday before NFP',
         'time_utc': '12:15',
         'impact': 'LOW',
-        'get_next': lambda y, m: (_first_friday(y, m) - timedelta(days=2)).replace(hour=12, minute=15),
+        'get_next': lambda y, m: (_nfp_date(y, m) - timedelta(days=2)).replace(hour=12, minute=15),
         'what_comes_next': [
             'Jobless Claims — Thursday, one more data point before NFP Friday',
             'NFP — ADP is the preview, but often diverges significantly',
@@ -1548,11 +1572,17 @@ def get_macro_calendar(reference_time=None):
     cutoff = now + timedelta(days=30)
     upcoming = [e for e in all_events if e['next_dt'] and e['next_dt'] < cutoff]
 
-    # Phase detection
+    # Phase detection - check if NFP has already happened this month
     day = now.day
-    if day <= 3:
+    try:
+        nfp_dt = _nfp_date(year, month)
+        nfp_passed = now > nfp_dt
+    except Exception:
+        nfp_passed = False
+
+    if day <= 3 and not nfp_passed:
         phase, phase_desc, next_major = 'MONTH_START', 'PMI releases, NFP approaching', 'NFP (1st Friday)'
-    elif day <= 7:
+    elif day <= 7 or (day <= 3 and nfp_passed):
         phase, phase_desc, next_major = 'NFP_WEEK', 'NFP sets tone for the month', 'CPI/PPI (~12-14th)'
     elif day <= 14:
         phase, phase_desc, next_major = 'CPI_WEEK', 'CPI/PPI — biggest movers of the month', 'PBoC LPR (~20th)'
