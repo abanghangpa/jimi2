@@ -25,7 +25,7 @@ FEE_RATE = 0.0002    # HTX maker fee 0.02% per side
 SLIPPAGE = 0.001     # 0.1% slippage
 INITIAL_CAPITAL = 200.0
 MIN_PHASE0 = 0.15    # Minimum phase0 for scanner signal
-ATR_MIN_PCT = 0.012  # Min 0.8% ATR for volatility filter
+ATR_MIN_PCT = 0.012  # Min 1.2% ATR for volatility filter
 
 # === DRAWDOWN CIRCUIT BREAKER ===
 DD_STOP = 0.45
