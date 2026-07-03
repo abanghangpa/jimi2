@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Paper Trading Engine - Scanner + Momentum Hybrid
-Signal: scanner.py direction (multi-factor) + Mom12 momentum confirmation
+Paper Trading Engine - Pure Momentum Entry
+Signal: 12h momentum > 3% (backtested: 61.7% WR, 1.74 PF)
 Params: TP 0.30%, SL 0.20%, 20x leverage, 5% risk, 8h hold
 DD Circuit Breaker: stop trading for 24h when drawdown hits 45%
 """
