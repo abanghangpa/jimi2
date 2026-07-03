@@ -3,7 +3,7 @@
 Paper Trading Engine - Scanner + Momentum Hybrid
 Signal: scanner.py direction (multi-factor) + Mom12 momentum confirmation
 Params: TP 0.30%, SL 0.20%, 20x leverage, 5% risk, 8h hold
-DD Circuit Breaker: stop trading for 24h when drawdown hits 50%
+DD Circuit Breaker: stop trading for 24h when drawdown hits 45%
 """
 import json, os, requests, glob
 from datetime import datetime, timezone, timedelta
@@ -25,6 +25,7 @@ FEE_RATE = 0.0002    # HTX maker fee 0.02% per side
 SLIPPAGE = 0.001     # 0.1% slippage
 INITIAL_CAPITAL = 200.0
 MIN_PHASE0 = 0.15    # Minimum phase0 for scanner signal
+ATR_MIN_PCT = 0.008  # Min 0.8% ATR for volatility filter
 
 # === DRAWDOWN CIRCUIT BREAKER ===
 DD_STOP = 0.45
@@ -80,6 +81,24 @@ def get_recent_candles(limit=15):
     except:
         return None
 
+
+def get_atr(period=14):
+    """Calculate ATR from recent candles."""
+    candles = get_recent_candles(limit=period + 2)
+    if not candles or len(candles) < period + 1:
+        return None
+    trs = []
+    for i in range(1, len(candles)):
+        h = float(candles[i][2])
+        l = float(candles[i][3])
+        pc = float(candles[i-1][4])
+        tr = max(h - l, abs(h - pc), abs(l - pc))
+        trs.append(tr)
+    if len(trs) < period:
+        return None
+    atr_val = sum(trs[-period:]) / period
+    price = float(candles[-1][4])
+    return atr_val, atr_val / price if price > 0 else 0
 def get_latest_scan():
     """Read scanner.py's latest scan output."""
     scans = sorted(glob.glob(os.path.join(SCAN_DIR, "scan_*.json")))
@@ -163,6 +182,16 @@ def get_signal():
     else:
         reason = f"NO SIGNAL: {scan_info} | {mom_info}"
 
+
+    # === ATR VOLATILITY FILTER ===
+    # Skip low-volatility chop (ATR < 0.8% of price)
+    if signal:
+        atr_result = get_atr()
+        if atr_result:
+            atr_val, atr_pct = atr_result
+            if atr_pct < ATR_MIN_PCT:
+                reason = f"LOW_VOL: ATR={atr_pct*100:.2f}% < {ATR_MIN_PCT*100:.1f}% | {reason}"
+                signal = None
     return signal, reason
 
 def check_dd_circuit_breaker(state):
