@@ -27,7 +27,7 @@ INITIAL_CAPITAL = 200.0
 MIN_PHASE0 = 0.15    # Minimum phase0 for scanner signal
 
 # === DRAWDOWN CIRCUIT BREAKER ===
-DD_STOP = 0.50
+DD_STOP = 0.45
 DD_COOLDOWN_HOURS = 24
 
 def load_state():
