@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Paper Trading Engine - Mom12 Momentum Strategy with DD Circuit Breaker
-Backtested on 8 years of ETH data: $200 -> $1M+
-Signal: 12h momentum > 3% -> LONG, < -3% -> SHORT
+Paper Trading Engine - Scanner + Momentum Hybrid
+Signal: scanner.py direction (multi-factor) + Mom12 momentum confirmation
 Params: TP 0.30%, SL 0.20%, 20x leverage, 5% risk, 8h hold
 DD Circuit Breaker: stop trading for 24h when drawdown hits 50%
 """
-import json, os, requests
+import json, os, requests, glob
 from datetime import datetime, timezone, timedelta
 
 BASE = "/root/.openclaw/workspace/jimi_audit"
 POSITIONS_FILE = os.path.join(BASE, "data", "paper_positions.json")
 TRADE_LOG = os.path.join(BASE, "data", "paper_trades.json")
+SCAN_DIR = os.path.join(BASE, "data", "scans")
 
-# === BACKTESTED PARAMETERS (8yr data) ===
+# === BACKTESTED PARAMETERS ===
 TP_PCT = 0.003       # 0.30%
 SL_PCT = 0.002       # 0.20%
 RISK_PCT = 0.05      # 5% of capital per trade
@@ -22,12 +22,13 @@ HOLD_HOURS = 8       # 8 hour hold
 MOM_PERIOD = 12      # 12-hour momentum lookback
 MOM_THRESHOLD = 0.03 # 3% momentum threshold
 FEE_RATE = 0.0002    # HTX maker fee 0.02% per side
-SLIPPAGE = 0.001     # 0.1% slippage assumption
+SLIPPAGE = 0.001     # 0.1% slippage
 INITIAL_CAPITAL = 200.0
+MIN_PHASE0 = 0.15    # Minimum phase0 for scanner signal
 
 # === DRAWDOWN CIRCUIT BREAKER ===
-DD_STOP = 0.50       # Stop trading at 50% drawdown
-DD_COOLDOWN_HOURS = 24  # Wait 24h after DD trigger
+DD_STOP = 0.50
+DD_COOLDOWN_HOURS = 24
 
 def load_state():
     if os.path.exists(POSITIONS_FILE):
@@ -79,50 +80,110 @@ def get_recent_candles(limit=15):
     except:
         return None
 
+def get_latest_scan():
+    """Read scanner.py's latest scan output."""
+    scans = sorted(glob.glob(os.path.join(SCAN_DIR, "scan_*.json")))
+    if not scans:
+        return None
+    try:
+        with open(scans[-1]) as f:
+            return json.load(f)
+    except:
+        return None
+
 def get_momentum():
+    """Calculate 12h momentum."""
     candles = get_recent_candles(limit=MOM_PERIOD + 2)
     if not candles or len(candles) < MOM_PERIOD + 1:
-        return None, "insufficient_data"
+        return None, None, "insufficient_data"
 
     current_price = float(candles[-1][4])
     past_price = float(candles[-(MOM_PERIOD + 1)][4])
 
     if past_price == 0:
-        return None, "zero_price"
+        return None, None, "zero_price"
 
     momentum = (current_price - past_price) / past_price
 
     if momentum > MOM_THRESHOLD:
-        return "LONG", f"mom={momentum*100:+.2f}% > +{MOM_THRESHOLD*100}%"
+        return "LONG", momentum, f"mom={momentum*100:+.2f}%"
     elif momentum < -MOM_THRESHOLD:
-        return "SHORT", f"mom={momentum*100:+.2f}% < -{MOM_THRESHOLD*100}%"
-    return None, f"mom={momentum*100:+.2f}% (neutral)"
+        return "SHORT", momentum, f"mom={momentum*100:+.2f}%"
+    return None, momentum, f"mom={momentum*100:+.2f}%"
+
+def get_signal():
+    """
+    Hybrid signal: scanner.py direction + momentum confirmation.
+    Scanner provides multi-factor direction, momentum confirms.
+    """
+    scan = get_latest_scan()
+    mom_dir, mom_val, mom_info = get_momentum()
+
+    scan_dir = None
+    scan_info = "no_scan"
+    phase0 = 0
+    swing = ""
+    trend = ""
+    squeeze = False
+
+    if scan:
+        scan_dir = scan.get("direction")
+        phase0 = scan.get("phase0", 0)
+        swing = scan.get("swing_bias", "")
+        trend = scan.get("trend_dir", "")
+        squeeze = scan.get("squeeze_confirmed", False)
+        scan_info = f"dir={scan_dir} p0={phase0:.3f} swing={swing} trend={trend}"
+
+    # === SIGNAL LOGIC ===
+    # Priority 1: Scanner direction + momentum agree + phase0 OK
+    # Priority 2: Strong momentum alone (> 5%)
+    # Priority 3: Scanner direction alone with high phase0
+
+    signal = None
+    reason = ""
+
+    if scan_dir in ("LONG", "SHORT") and phase0 >= MIN_PHASE0:
+        if mom_dir == scan_dir:
+            # Both agree: highest conviction
+            signal = scan_dir
+            reason = f"SCANNER+MOM agree: {scan_info} | {mom_info}"
+        elif mom_dir is None:
+            # Scanner says direction, momentum neutral: moderate conviction
+            signal = scan_dir
+            reason = f"SCANNER only: {scan_info} | {mom_info}"
+        else:
+            # Conflict: skip
+            reason = f"CONFLICT: scanner={scan_dir} mom={mom_dir} | {scan_info}"
+
+    elif mom_dir and abs(mom_val or 0) > 0.05:
+        # Strong momentum alone (>5%): use it
+        signal = mom_dir
+        reason = f"STRONG MOMENTUM: {mom_info} (>5%)"
+
+    else:
+        reason = f"NO SIGNAL: {scan_info} | {mom_info}"
+
+    return signal, reason
 
 def check_dd_circuit_breaker(state):
-    """Check if drawdown circuit breaker should trigger."""
     capital = state["capital"]
     peak = state.get("peak_capital", INITIAL_CAPITAL)
 
-    # Update peak
     if capital > peak:
         state["peak_capital"] = capital
         peak = capital
 
-    # Check if in cooldown
     cooldown_until = state.get("dd_cooldown_until")
     if cooldown_until:
         cooldown_dt = datetime.fromisoformat(cooldown_until)
         if datetime.now(timezone.utc) < cooldown_dt:
             return True, f"DD cooldown until {cooldown_until[:16]}"
         else:
-            # Cooldown expired, reset
             state["dd_cooldown_until"] = None
 
-    # Check drawdown
     if peak > 0:
         dd = (peak - capital) / peak
         if dd >= DD_STOP:
-            # Trigger circuit breaker
             cooldown = datetime.now(timezone.utc) + timedelta(hours=DD_COOLDOWN_HOURS)
             state["dd_cooldown_until"] = cooldown.isoformat()
             state["dd_triggered_count"] = state.get("dd_triggered_count", 0) + 1
@@ -190,14 +251,13 @@ def format_status(state, signal_info, current_price, dd_blocked, dd_reason):
     ret = capital / INITIAL_CAPITAL
     dd_pct = ((peak - capital) / peak * 100) if peak > 0 else 0
 
-    msg = "MOMENTUM PAPER TRADER\n"
+    msg = "SCANNER+MOMENTUM TRADER\n"
     msg += f"Time: {now}\n"
     msg += f"ETH: ${current_price:,.2f}\n"
     msg += f"Signal: {signal_info}\n"
     msg += f"\nParams: TP {TP_PCT*100:.2f}% | SL {SL_PCT*100:.2f}% | {HOLD_HOURS}h hold | {LEVERAGE}x | {RISK_PCT*100:.0f}% risk\n"
-    msg += f"Momentum: {MOM_PERIOD}h lookback, {MOM_THRESHOLD*100}% threshold\n"
     msg += f"DD Breaker: {DD_STOP*100:.0f}% stop, {DD_COOLDOWN_HOURS}h cooldown\n"
-    msg += f"Capital: ${capital:,.2f} ({ret:.1f}x from ${INITIAL_CAPITAL}) | Peak: ${peak:,.2f} | DD: {dd_pct:.1f}%\n"
+    msg += f"Capital: ${capital:,.2f} ({ret:.1f}x) | Peak: ${peak:,.2f} | DD: {dd_pct:.1f}%\n"
     msg += f"P&L: ${state['total_pnl']:,.2f} | Fees: ${state['fees_paid']:.4f}\n"
 
     t = state["trades_count"]
@@ -209,23 +269,23 @@ def format_status(state, signal_info, current_price, dd_blocked, dd_reason):
         msg += f"\n!! CIRCUIT BREAKER: {dd_reason}\n"
 
     if state["positions"]:
-        msg += f"\nOpen Positions:\n"
+        msg += f"\nOpen:\n"
         for pos in state["positions"]:
             age = datetime.now(timezone.utc) - datetime.fromisoformat(pos["opened_at"])
             age_h = age.total_seconds() / 3600
             if pos["direction"] == "LONG":
                 unrealized = (current_price - pos["entry"]) / pos["entry"] * 100
             else:
-                unrealized = (pos["ertry"] - current_price) / pos["entry"] * 100
+                unrealized = (pos["entry"] - current_price) / pos["entry"] * 100
             icon = "+" if unrealized >= 0 else "-"
             msg += f"  {icon} {pos['direction']} @ ${pos['entry']:.2f} | "
             msg += f"TP ${pos['tp']:.2f} SL ${pos['sl']:.2f} | "
-            msg += f"P&L {unrealized:+.2f}% | Age {age_h:.1f}h\n"
+            msg += f"P&L {unrealized:+.2f}% | {age_h:.1f}h\n"
     else:
         msg += "\nNo open positions.\n"
 
     if state["closed"]:
-        msg += f"\nRecent Trades:\n"
+        msg += f"\nRecent:\n"
         for trade in state["closed"][-5:]:
             icon = "+" if trade["outcome"] == "WIN" else "-"
             msg += f"  {icon} {trade['direction']} ${trade['entry']:.2f} -> ${trade['exit']:.2f} | "
@@ -240,12 +300,11 @@ def main():
         print("Failed to get price")
         return
 
-    signal, signal_info = get_momentum()
+    signal, signal_info = get_signal()
 
-    # === DRAWDOWN CIRCUIT BREAKER CHECK ===
     dd_blocked, dd_reason = check_dd_circuit_breaker(state)
 
-    # === CHECK EXISTING POSITIONS (even during DD cooldown) ===
+    # Check existing positions
     positions_to_close = []
     positions_to_keep = []
 
@@ -272,7 +331,7 @@ def main():
 
     state["positions"] = positions_to_keep
 
-    # === CHECK FOR NEW ENTRY (blocked during DD cooldown) ===
+    # New entry (blocked during DD cooldown)
     if not state["positions"] and signal and not dd_blocked:
         entry = current_price * (1 + SLIPPAGE) if signal == "LONG" else current_price * (1 - SLIPPAGE)
 
