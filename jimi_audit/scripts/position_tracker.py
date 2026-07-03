@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-ETH Position Tracker - ONE direction per entry.
-Uses trend filter to pick LONG or SHORT.
+ETH Position Tracker - Uses framework metrics for direction.
 """
 import json
 import os
@@ -10,6 +9,7 @@ from datetime import datetime, timezone
 
 DATA_DIR = "/root/.openclaw/workspace/jimi_audit/data"
 POSITIONS_FILE = os.path.join(DATA_DIR, "positions.json")
+SCAN_DIR = os.path.join(DATA_DIR, "scans")
 
 TP = 10
 SL = 30
@@ -32,21 +32,103 @@ def get_current_price():
     except:
         return None
 
-def get_trend():
-    """Simple trend: price vs 2h ago."""
-    try:
-        r = requests.get("https://api.binance.com/api/v3/klines?symbol=ETHUSDT&interval=1h&limit=3", timeout=5)
-        data = r.json()
-        if len(data) >= 2:
-            price_2h_ago = float(data[0][4])  # close of 2h ago
-            price_now = float(data[-1][4])     # current close
-            if price_now > price_2h_ago + 5:
-                return "LONG"
-            elif price_now < price_2h_ago - 5:
-                return "SHORT"
-        return "LONG"  # default to LONG in neutral
-    except:
-        return "LONG"
+def get_framework_direction():
+    """Get direction from latest scan data."""
+    import glob
+    scans = sorted(glob.glob(os.path.join(SCAN_DIR, "scan_*.json")))
+    if not scans:
+        return "LONG", "No scan data"
+    
+    d = json.load(open(scans[-1]))
+    
+    # Metrics to consider
+    direction = d.get("direction", "NEUTRAL")
+    swing_bias = d.get("swing_bias", "NEUTRAL")
+    trend_dir = d.get("trend_dir", "NEUTRAL")
+    phase0 = d.get("phase0", 0.5)
+    m22_regime = d.get("m22", {}).get("regime", "UNKNOWN")
+    m9_regime = d.get("m9", {}).get("regime", "UNKNOWN")
+    ensemble = d.get("ensemble", {})
+    consensus = ensemble.get("consensus", "NONE")
+    derivatives = d.get("derivatives", {})
+    ls_ratio = derivatives.get("ls_ratio", 1.0)
+    whale_signal = derivatives.get("whale_signal", "NEUTRAL")
+    
+    # Decision logic
+    score = 0
+    reasons = []
+    
+    # Swing bias (strong signal)
+    if swing_bias == "BULLISH":
+        score += 2
+        reasons.append("swing_bullish")
+    elif swing_bias == "BEARISH":
+        score -= 2
+        reasons.append("swing_bearish")
+    
+    # Trend direction
+    if "UP" in trend_dir:
+        score += 1
+        reasons.append("trend_up")
+    elif "DOWN" in trend_dir:
+        score -= 1
+        reasons.append("trend_down")
+    
+    # Phase0 (momentum)
+    if phase0 > 0.5:
+        score += 1
+        reasons.append("phase0_strong")
+    elif phase0 < 0.15:
+        score -= 1
+        reasons.append("phase0_weak")
+    
+    # Whale signal
+    if whale_signal == "WHALE_BULLISH":
+        score += 1
+        reasons.append("whale_bull")
+    elif whale_signal == "WHALE_BEARISH":
+        score -= 1
+        reasons.append("whale_bear")
+    
+    # L/S ratio (contrarian)
+    if ls_ratio > 1.5:
+        score -= 1
+        reasons.append("crowded_long")
+    elif ls_ratio < 0.7:
+        score += 1
+        reasons.append("crowded_short")
+    
+    # Regime
+    if "BULL" in m22_regime or "MARKUP" in m22_regime:
+        score += 1
+        reasons.append("regime_bull")
+    elif "BEAR" in m22_regime or "MARKDOWN" in m22_regime:
+        score -= 1
+        reasons.append("regime_bear")
+    
+    # Decision
+    if score >= 2:
+        direction = "LONG"
+    elif score <= -2:
+        direction = "SHORT"
+    elif score > 0:
+        direction = "LONG"
+    elif score < 0:
+        direction = "SHORT"
+    else:
+        # Neutral - use recent price action
+        try:
+            r = requests.get("https://api.binance.com/api/v3/klines?symbol=ETHUSDT&interval=1h&limit=3", timeout=5)
+            data = r.json()
+            if len(data) >= 2:
+                price_2h = float(data[0][4])
+                price_now = float(data[-1][4])
+                direction = "LONG" if price_now > price_2h else "SHORT"
+        except:
+            direction = "LONG"
+    
+    reason_str = ", ".join(reasons) if reasons else "neutral"
+    return direction, reason_str
 
 def check_positions(data, current_price):
     still_open = []
@@ -100,8 +182,7 @@ def check_positions(data, current_price):
     data["closed"].extend(newly_closed)
     return data, newly_closed
 
-def enter_position(data, current_price, direction):
-    """Enter ONE position based on trend."""
+def enter_position(data, current_price, direction, reason):
     now = datetime.now(timezone.utc).isoformat()
     
     pos = {
@@ -113,18 +194,20 @@ def enter_position(data, current_price, direction):
         "opened_at": now,
         "current": current_price,
         "unrealized": 0,
+        "reason": reason,
     }
     
     data["positions"].append(pos)
     return data
 
-def format_message(data, current_price, newly_closed, direction):
+def format_message(data, current_price, newly_closed, direction, reason):
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     
     msg = "📊 *ETH Position Update*\n"
     msg += "🕐 %s\n" % now
-    msg += "💰 Current: *$%.2f*\n" % current_price
-    msg += "📈 Trend: *%s*\n\n" % direction
+    msg += "💰 Price: *$%.2f*\n" % current_price
+    msg += "📈 Direction: *%s*\n" % direction
+    msg += "🔍 Reason: %s\n\n" % reason
     
     # Open positions
     if data["positions"]:
@@ -137,8 +220,9 @@ def format_message(data, current_price, newly_closed, direction):
             unrealized = pos.get("unrealized", 0)
             icon = "🟢" if unrealized >= 0 else "🔴"
             pnl_pct = unrealized / entry * 100
+            r = pos.get("reason", "")
             
-            msg += "%s *%s*\n" % (icon, d)
+            msg += "%s *%s* (%s)\n" % (icon, d, r)
             msg += "  Entry: $%.2f\n" % entry
             msg += "  TP: $%.2f (+$%d)\n" % (tp, TP)
             msg += "  SL: $%.2f (-$%d)\n" % (sl, SL)
@@ -182,13 +266,14 @@ def main():
     
     # Only enter if no open positions
     if not data["positions"]:
-        direction = get_trend()
-        data = enter_position(data, current_price, direction)
+        direction, reason = get_framework_direction()
+        data = enter_position(data, current_price, direction, reason)
     else:
         direction = data["positions"][0]["direction"]
+        reason = data["positions"][0].get("reason", "")
     
     save_positions(data)
-    msg = format_message(data, current_price, newly_closed, direction)
+    msg = format_message(data, current_price, newly_closed, direction, reason)
     print(msg)
 
 if __name__ == "__main__":
