@@ -456,6 +456,7 @@ def fetch_caixin_pmi(force_refresh=False):
 def fetch_nbs_pmi(force_refresh=False):
     """Fetch latest NBS Manufacturing PMI data.
 
+    Tries multiple sources in priority order. Caches result for 24h.
     Also updates M24's NBS PMI cache so the session bias module
     has fresh data for release-day scoring.
     """
@@ -469,37 +470,71 @@ def fetch_nbs_pmi(force_refresh=False):
 
     print("  📡 Fetching NBS Manufacturing PMI...")
 
-    # NBS PMI is available from Trading Economics
-    result = _fetch_trading_economics('manufacturing-pmi')
-    if result is None:
-        result = _fetch_manual_input()
+    # Try sources in priority order
+    sources = [
+        ('trading_economics', lambda: _fetch_trading_economics('manufacturing-pmi')),
+        ('trading_economics_china', lambda: _fetch_trading_economics('china/manufacturing-pmi')),
+        ('hardcoded_releases', _fetch_nbs_hardcoded_latest),
+    ]
 
-    if result and result.get('actual') is not None:
-        result['surprise'] = _classify_surprise(
-            result['actual'], result.get('previous', result['actual']))
+    result = None
+    for name, fetcher in sources:
+        try:
+            result = fetcher()
+            if result and result.get('actual') is not None:
+                print(f"  ✅ NBS PMI from {name}: actual={result['actual']}")
+
+                # ── Feed live NBS PMI into M24 cache ──
+                try:
+                    from src.modules.m24_nbs_pmi import update_nbs_cache
+                    _today = datetime.now(UTC).strftime('%Y-%m-%d')
+                    # Try to fetch NBS Services PMI too
+                    svc_result = _fetch_trading_economics('services-pmi')
+                    svc_val = svc_result.get('actual') if svc_result else None
+                    update_nbs_cache(
+                        mfg_pmi=result['actual'],
+                        services_pmi=svc_val,
+                        release_date=_today,
+                    )
+                except Exception:
+                    pass  # non-critical
+
+                break
+        except Exception as e:
+            print(f"  ⚠️  {name} failed: {e}")
+            continue
+
+    if result is not None:
+        prev = result.get('previous')
+        if prev is not None:
+            result['surprise'] = _classify_surprise(result['actual'], prev)
+        else:
+            result['surprise'] = 'UNKNOWN'
         cache[cache_key] = result
         _save_cache(cache)
-        print(f"  ✅ NBS PMI: actual={result['actual']}")
-
-        # ── Feed live NBS PMI into M24 cache ──
-        try:
-            from src.modules.m24_nbs_pmi import update_nbs_cache
-            _today = datetime.now(UTC).strftime('%Y-%m-%d')
-            # Try to fetch NBS Services PMI too (released ~3 days later)
-            svc_result = _fetch_trading_economics('services-pmi')
-            svc_val = svc_result.get('actual') if svc_result else None
-            update_nbs_cache(
-                mfg_pmi=result['actual'],
-                services_pmi=svc_val,
-                release_date=_today,
-            )
-        except Exception:
-            pass  # non-critical
-
         return result
 
     if cache_key in cache:
         return cache[cache_key]
+    return None
+
+
+def _fetch_nbs_hardcoded_latest():
+    """Get latest NBS PMI from hardcoded releases dict (fallback)."""
+    try:
+        from src.modules.m24_nbs_pmi import NBS_PMI_RELEASES
+        if NBS_PMI_RELEASES:
+            latest_date = max(NBS_PMI_RELEASES.keys())
+            data = NBS_PMI_RELEASES[latest_date]
+            return {
+                'actual': data.get('mfg'),
+                'previous': None,  # unknown without more data
+                'source': 'hardcoded_releases',
+                'timestamp': datetime.now(UTC).isoformat(),
+                'release_date': latest_date,
+            }
+    except Exception:
+        pass
     return None
 
 

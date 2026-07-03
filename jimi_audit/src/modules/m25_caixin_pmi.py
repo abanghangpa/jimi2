@@ -153,6 +153,8 @@ CAIXIN_RELEASES = [
     ('2026-03-02', 51.1, 50.8),
     ('2026-04-01', 51.2, 51.1),
     ('2026-05-01', 50.7, 51.2),
+    ('2026-06-02', 51.8, 50.7),
+    ('2026-07-01', 51.7, 51.8),
 ]
 
 
@@ -244,6 +246,7 @@ SESSION_INHERITANCE_RATE = 0.81
 def _is_caixin_release_day(today_str=None, window_days=1):
     """Check if today is within N days of a Caixin PMI release.
 
+    Checks both hardcoded list and live cache (updated by macro_fetch).
     Caixin releases on the 1st of each month at ~01:45 UTC.
     """
     if today_str is None:
@@ -251,7 +254,17 @@ def _is_caixin_release_day(today_str=None, window_days=1):
 
     today = datetime.strptime(today_str, '%Y-%m-%d')
 
-    # Check against known release dates
+    # 1. Check live cache first (updated by macro_fetch.fetch_caixin_pmi)
+    cache = load_caixin_cache()
+    for release_date_str, cached_data in sorted(cache.items(), reverse=True):
+        release_dt = datetime.strptime(release_date_str, '%Y-%m-%d')
+        days_since = (today - release_dt).days
+        if 0 <= days_since <= window_days:
+            caixin_actual = cached_data.get('actual')
+            caixin_prev = cached_data.get('previous')
+            return True, release_date_str, caixin_actual, caixin_prev
+
+    # 2. Fall back to hardcoded list
     for release_date_str, actual, previous in reversed(CAIXIN_RELEASES):
         release_dt = datetime.strptime(release_date_str, '%Y-%m-%d')
         days_since = (today - release_dt).days
@@ -347,6 +360,8 @@ def score_m25_caixin_pmi(surprise=None, phase0=None, trend_30d=None,
     phase0_info = PHASE0_FILTER.get(phase0_bucket, PHASE0_FILTER['NEUTRAL'])
 
     # Death zone → BLOCK
+    trend_bucket = _classify_trend_30d(trend_30d) if trend_30d is not None else 'FLAT'
+
     if phase0_info['action'] == 'BLOCK':
         return 'BLOCK', 0.0, 0.0, {
             'regime': 'CAIXIN_PMI_BLOCKED',

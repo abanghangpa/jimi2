@@ -59,6 +59,7 @@ from src.modules.m21_wyckoff import score_m21, format_m21, detect_trading_range,
 from src.modules.m22_inflation_regime_v2 import score_m22, format_m22
 from src.modules.m22_aggregator import aggregate_macro_regime, format_m22_aggregated
 from src.modules.m24_nbs_pmi import score_m24_nbs_pmi, format_m24
+from src.utils.macro_fetch import fetch_nbs_pmi, fetch_caixin_pmi, fetch_china_cpi, fetch_adp_employment, fetch_ez_cpi, fetch_uk_wages, fetch_ums, fetch_china_gdp, fetch_us_pce, fetch_germany_cpi, fetch_uk_gdp_monthly, fetch_ism_svc_pmi, fetch_uk_cpi, fetch_us_durables, fetch_us_housing_starts, fetch_jp_cpi, fetch_rba_rate, fetch_ifo, fetch_au_cpi, fetch_us_gdp, fetch_us_retail_sales, fetch_nfp, fetch_pboc_lpr, fetch_ism_pmi, fetch_treasury_auction, fetch_ez_gdp, fetch_cb_consumer_confidence, fetch_jolts
 from src.modules.m25_caixin_pmi import score_m25_caixin_pmi, format_m25
 from src.modules.m65_china_activity import score_m65_china_activity, format_m65
 from src.modules.m26_ez_pmi import score_m26_ez_pmi, format_m26
@@ -122,6 +123,8 @@ from src.strategies import create_runner as create_strategy_runner
 from src.confirmation import add_pending, check_confirmations, get_hold_window, format_confirmation_report
 from src.ensemble import evaluate_ensemble, format_ensemble
 from src.m20_filter import apply_m20_filter, format_m20_filter
+from src.outcome.integration import classify_regime, filter_strategies_by_regime, apply_adaptive_weights, record_signal_for_tracking, rank_strategy_signals
+
 from src.utils.order_flow import fetch_multi_exchange_ob, fetch_recent_trades, fetch_liquidations, fetch_funding_rates
 
 # ── M66-M73: Traditional Finance Macro Filters ──
@@ -258,6 +261,8 @@ def compute_indicators(df_15m, config=None, df_1d_hist=None):
         df_1h['Close'], cfg['MACD_FAST'], cfg['MACD_SLOW'], cfg['MACD_SIGNAL'])
     df_1h['ema_fast'] = calc_ema(df_1h['Close'], cfg['EMA_FAST'])
     df_1h['ema_slow'] = calc_ema(df_1h['Close'], cfg['EMA_SLOW'])
+    df_1h['ema_200'] = calc_ema(df_1h['Close'], 200)
+    df_15m['ema_200'] = calc_ema(df_15m['Close'], 200)
     df_1h['atr'] = calc_atr(df_1h['High'], df_1h['Low'], df_1h['Close'], cfg['ATR_PERIOD'])
     df_1h['rsi'] = calc_rsi(df_1h['Close'], 14)
     df_4h['ema_fast'] = calc_ema(df_4h['Close'], cfg['EMA_FAST'])
@@ -943,6 +948,8 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         'timestamp': str(ts), 'price': float(row['Close']),
         'swing_bias': swing_bias, 'phase0': float(phase0_val) if not pd.isna(phase0_val) else None,
         'trend_dir': trend_dir, 'trend_val': float(trend_val),
+        'ema_200': float(df_1h['ema_200'].iloc[idx_1h]) if 'ema_200' in df_1h.columns else None,
+        'ensemble_passes': False, 'sweep_blocked': False, 'm20_blocked': False,
     }
 
     # Get current UTC time for use in multiple modules
@@ -1322,6 +1329,8 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
     result['m9']['status'] = m9_status
     result['m7']['score'] = round(float(m7_score), 3)
     result['m13']['score'] = round(float(m13_score), 3)
+    result['m13']['status'] = m13_status
+    result['m13']['bias'] = m13_bias
 
     # ── M21: Wyckoff Phase + Premium/Discount + Kill Zone ──
     m21_status = 'SKIP'
@@ -1427,6 +1436,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m23'] = {'status': 'ERROR', 'score': 0.5, 'error': str(e)}
 
     # ── M24: NBS PMI Session Bias (regime-conditional) ──
+    # Auto-fetch latest PMI data before scoring
+    try:
+        fetch_nbs_pmi()
+    except Exception:
+        pass  # non-critical, will use hardcoded data
+
     m24_score_adj = 0.0
     m24_size_mult = 1.0
     m24_details = {}
@@ -1464,6 +1479,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m24'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M25: Caixin PMI Session Bias (regime-conditional) ──
+    # Auto-fetch latest Caixin PMI data before scoring
+    try:
+        fetch_caixin_pmi()
+    except Exception:
+        pass  # non-critical, will use hardcoded data
+
     m25_score_adj = 0.0
     m25_size_mult = 1.0
     m25_details = {}
@@ -1519,7 +1540,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m25'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M26: Eurozone Flash PMI Session Bias (regime-conditional) ──
-    m26_score_adj = 0.0
+        m26_score_adj = 0.0
     m26_size_mult = 1.0
     m26_details = {}
     try:
@@ -1559,6 +1580,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m26'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M33: US Retail Sales Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_us_retail_sales()
+    except Exception:
+        pass  # non-critical
+
     m33_score_adj = 0.0
     m33_size_mult = 1.0
     m33_details = {}
@@ -1596,6 +1623,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m33'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M34: US Housing Starts Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_us_housing_starts()
+    except Exception:
+        pass  # non-critical
+
     m34_score_adj = 0.0
     m34_size_mult = 1.0
     m34_details = {}
@@ -1633,6 +1666,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m34'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M35: PBoC LPR Decision Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_pboc_lpr()
+    except Exception:
+        pass  # non-critical
+
     m35_score_adj = 0.0
     m35_size_mult = 1.0
     m35_details = {}
@@ -1670,6 +1709,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m35'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M36: ADP Employment Report Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_adp_employment()
+    except Exception:
+        pass  # non-critical
+
     m36_score_adj = 0.0
     m36_size_mult = 1.0
     m36_details = {}
@@ -1709,6 +1754,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
     today_str = _now_utc.strftime('%Y-%m-%d')
 
     # ── M37: US Non-Farm Payrolls Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_nfp()
+    except Exception:
+        pass  # non-critical
+
     m37_score_adj = 0.0
     m37_size_mult = 1.0
     m37_status = 'SKIP'
@@ -1745,6 +1796,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m37'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M38: Germany Ifo Business Climate Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_ifo()
+    except Exception:
+        pass  # non-critical
+
     m38_score_adj = 0.0
     m38_size_mult = 1.0
     m38_status = 'SKIP'
@@ -1782,6 +1839,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m38'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M39: Michigan Consumer Sentiment Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_ums()
+    except Exception:
+        pass  # non-critical
+
     m39_score_adj = 0.0
     m39_size_mult = 1.0
     m39_status = 'SKIP'
@@ -1821,6 +1884,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m39'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M40: Germany CPI Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_germany_cpi()
+    except Exception:
+        pass  # non-critical
+
     m40_score_adj = 0.0
     m40_size_mult = 1.0
     m40_status = 'SKIP'
@@ -1859,6 +1928,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m40'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M41: Eurozone CPI Flash Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_ez_cpi()
+    except Exception:
+        pass  # non-critical
+
     m41_score_adj = 0.0
     m41_size_mult = 1.0
     m41_status = 'SKIP'
@@ -1898,6 +1973,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m41'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M42: Eurozone GDP Flash Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_ez_gdp()
+    except Exception:
+        pass  # non-critical
+
     m42_score_adj = 0.0
     m42_size_mult = 1.0
     m42_status = 'SKIP'
@@ -1936,6 +2017,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m42'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M43: US GDP Advance Estimate Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_us_gdp()
+    except Exception:
+        pass  # non-critical
+
     m43_score_adj = 0.0
     m43_size_mult = 1.0
     m43_status = 'SKIP'
@@ -1974,6 +2061,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m43'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M44: US Durable Goods Orders Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_us_durables()
+    except Exception:
+        pass  # non-critical
+
     m44_score_adj = 0.0
     m44_size_mult = 1.0
     m44_status = 'SKIP'
@@ -2012,6 +2105,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m44'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M45: Core PCE + Personal Spending Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_us_pce()
+    except Exception:
+        pass  # non-critical
+
     m45_score_adj = 0.0
     m45_size_mult = 1.0
     m45_status = 'SKIP'
@@ -2052,6 +2151,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m45'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M46: Japan CPI (Tokyo Flash) Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_jp_cpi()
+    except Exception:
+        pass  # non-critical
+
     m46_score_adj = 0.0
     m46_size_mult = 1.0
     m46_status = 'SKIP'
@@ -2203,6 +2308,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m49'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M50: CB Consumer Confidence Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_cb_consumer_confidence()
+    except Exception:
+        pass  # non-critical
+
     m50_score_adj = 0.0
     m50_size_mult = 1.0
     m50_status = 'SKIP'
@@ -2237,6 +2348,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m50'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M51: UK Monthly GDP Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_uk_gdp_monthly()
+    except Exception:
+        pass  # non-critical
+
     m51_score_adj = 0.0
     m51_size_mult = 1.0
     m51_status = 'SKIP'
@@ -2272,6 +2389,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m51'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M52: RBA Rate Decision Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_rba_rate()
+    except Exception:
+        pass  # non-critical
+
     m52_score_adj = 0.0
     m52_size_mult = 1.0
     m52_status = 'SKIP'
@@ -2307,6 +2430,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m52'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M53: Australia Quarterly CPI Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_au_cpi()
+    except Exception:
+        pass  # non-critical
+
     m53_score_adj = 0.0
     m53_size_mult = 1.0
     m53_status = 'SKIP'
@@ -2341,6 +2470,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m53'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M54: China Quarterly GDP Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_china_gdp()
+    except Exception:
+        pass  # non-critical
+
     m54_score_adj = 0.0
     m54_size_mult = 1.0
     m54_status = 'SKIP'
@@ -2377,6 +2512,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         result['m54'] = {'status': 'ERROR', 'score_adj': 0.0, 'error': str(e)}
 
     # ── M55: US Treasury Auction Session Bias (regime-conditional) ──
+        # Auto-fetch latest data before scoring
+    try:
+        fetch_treasury_auction()
+    except Exception:
+        pass  # non-critical
+
     m55_score_adj = 0.0
     m55_size_mult = 1.0
     m55_status = 'SKIP'
@@ -3720,6 +3861,7 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
     _m20_detected = m20_status == 'PASS'
     if not _m20_direct and not _squeeze_active_for_filters and not _m20_detected:
         sweep_passed, sweep_reason = check_sweep_gate(m14_status, m14_score, cfg)
+        result['sweep_blocked'] = not sweep_passed
         if not sweep_passed:
             result['status'] = 'NO_SIGNAL'
             result['reason'] = sweep_reason
@@ -3755,6 +3897,68 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
         'tp2_source': levels['tp2_source'],
         'tp3_source': levels['tp3_source'],
     })
+
+
+    # -- Universal Quality Gates (applies to ALL signals, including main_pipeline) --
+    # Previously these only ran for multi-strategy signals. Now every SIGNAL
+    # passes through ensemble + confirmation before delivery.
+
+    # Ensemble Gate (only when multi-strategy data is available)
+    _ensemble = None
+    _all_sigs = result.get('multi_strategy', {}).get('all_signals', [])
+    if _all_sigs:
+        try:
+            _ensemble = evaluate_ensemble(_all_sigs, m10_details=result.get('m10', {}).get('details', {}))
+            result['ensemble'] = _ensemble
+            result['ensemble_passes'] = _ensemble.get('passes', False)
+            if _ensemble.get('passes'):
+                print("  >> Ensemble PASS: %d strategies agree %s (conv=%.2f)" % (
+                    _ensemble['agree_count'], _ensemble['consensus'], _ensemble['ensemble_conviction']))
+            else:
+                print("  !! Ensemble FAIL: %s" % _ensemble.get('reason', 'no consensus'))
+        except Exception as e:
+            print("  !! Ensemble error: %s" % e)
+
+    # Confirmation Layer - check pending + queue this signal
+    try:
+        _current_price = float(result.get('price', 0))
+        _current_ts = str(result.get('timestamp', ''))
+        _confirmations = check_confirmations(_current_price, _current_ts)
+        result['confirmation_status'] = {
+            'confirmed': _confirmations['confirmed'],
+            'expired': _confirmations['expired'],
+            'pending_count': len(_confirmations['pending']),
+        }
+        if _confirmations['confirmed']:
+            print("  >> %d signal(s) confirmed!" % len(_confirmations['confirmed']))
+            for _cs in _confirmations['confirmed']:
+                print("    -> %s: %s confirmed at $%.2f" % (_cs['source'], _cs['direction'], _cs.get('confirmation_price', 0)))
+        if _confirmations['expired']:
+            print("  ~~ %d signal(s) expired (unconfirmed)" % len(_confirmations['expired']))
+        if _confirmations['pending']:
+            print("  .. %d signal(s) pending confirmation" % len(_confirmations['pending']))
+    except Exception as e:
+        print("  !! Confirmation check error: %s" % e)
+        result['confirmation_status'] = None
+
+    # Queue signal for market confirmation (if ensemble did not block)
+    if _ensemble is None or _ensemble.get('passes'):
+        try:
+            _src = result.get('source', 'main_pipeline')
+            _pending_entry = add_pending(result, source=_src, ensemble=_ensemble)
+            result['confirmation'] = {
+                'status': 'PENDING',
+                'bars_to_confirm': _pending_entry.get('confirm_bars', 3),
+                'hold_window_hours': _pending_entry.get('hold_window_hours', 2),
+            }
+            result['hold_window_hours'] = _pending_entry.get('hold_window_hours', 2)
+            print("  .. Signal queued for confirmation (wait %d bars)" % _pending_entry.get('confirm_bars', 3))
+        except Exception as e:
+            print("  !! Confirmation queue error: %s" % e)
+    else:
+        result['status'] = 'ENSEMBLE_BLOCKED'
+        result['reason'] = 'Ensemble blocked: %s' % _ensemble.get('reason', 'no consensus')
+        print("  !! Signal blocked by ensemble gate")
 
     return result
 
@@ -5607,11 +5811,63 @@ def main():
         strategy_summary = strategy_runner.summary(result, df_15m=df_base, idx=len(df_base)-1, **_order_flow_kwargs)
         result['multi_strategy'] = strategy_summary
 
+        # Regime Router: filter strategies by regime
+        _trend_dir = result.get('trend_dir', '')
+        _swing_bias = result.get('swing_bias', '')
+        _regime = classify_regime(_trend_dir, _swing_bias)
+        _all_strategy_sigs = strategy_summary.get('all_signals', [])
+        if _all_strategy_sigs:
+            _allowed_sigs, _blocked_sigs = filter_strategies_by_regime(_all_strategy_sigs, _regime)
+            if _blocked_sigs:
+                _blocked_names = [s.get('strategy', '?') for s in _blocked_sigs]
+                print("  Regime Router: %d strategies blocked (%s): %s" % (len(_blocked_sigs), _regime, ', '.join(_blocked_names)))
+                result['regime_router'] = {
+                    'regime': _regime,
+                    'blocked': _blocked_names,
+                    'allowed_count': len(_allowed_sigs),
+                    'blocked_count': len(_blocked_sigs),
+                }
+                strategy_summary['all_signals'] = _allowed_sigs
+                strategy_summary['signals_fired'] = len([s for s in _allowed_sigs if s.get('direction')])
+                if _allowed_sigs:
+                    _allowed_sigs.sort(key=lambda s: s.get('conviction', 0), reverse=True)
+                    strategy_summary['best'] = _allowed_sigs[0]
+                else:
+                    strategy_summary['best'] = None
+            else:
+                result['regime_router'] = {'regime': _regime, 'blocked': [], 'allowed_count': len(_all_strategy_sigs), 'blocked_count': 0}
+
         # If no signal from main pipeline but runner found one, use it
         best = strategy_summary.get('best')
         if best and result.get('status') != 'SIGNAL':
-            result['strategy_signal'] = best
-            result['status'] = 'SIGNAL'
+            # Flip prevention: check recent signals for same strategy
+            _flip_detected = False
+            try:
+                import json as _json
+                _sig_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'strategy_signals.jsonl')
+                if os.path.exists(_sig_file):
+                    with open(_sig_file, 'r') as _f:
+                        _lines = _f.readlines()[-100:]
+                    for _line in _lines:
+                        try:
+                            _d = _json.loads(_line.strip())
+                            if _d.get('fired') and _d.get('strategy') == best['strategy'] and _d.get('direction'):
+                                if _d['direction'] != best['direction']:
+                                    from datetime import datetime
+                                    _lt = datetime.strptime(_d['timestamp'], '%Y-%m-%d %H:%M:%S')
+                                    _ct = datetime.strptime(result['timestamp'], '%Y-%m-%d %H:%M:%S')
+                                    _diff_min = abs((_ct - _lt).total_seconds()) / 60
+                                    if _diff_min < 60:
+                                        _flip_detected = True
+                                        print(f"  ⚠️  FLIP PREVENTED: {best['strategy']} would flip {_d['direction']}→{best['direction']} ({_diff_min:.0f}min ago)")
+                                        best = None
+                                        break
+                        except: pass
+            except: pass
+
+            if best and not _flip_detected:
+                result['strategy_signal'] = best
+                result['status'] = 'SIGNAL'
             result['source'] = f"strategy:{best['strategy']}"
             result['reason'] = best['reason']
             result['entry'] = best['entry']
@@ -5624,11 +5880,15 @@ def main():
             result['direction'] = best['direction']
             print(f"  🎯 Multi-strategy signal: {best['strategy']} → {best['direction']} "
                   f"(conviction={best['conviction']:.0%}, rr={best['rr1']:.1f}x)")
+            print(f"     Entry: ${best['entry']:.2f} | SL: ${best['sl']:.2f} ({best['sl_pct']:.2f}%) | "
+                  f"TP1: ${best['tp1']:.2f} ({best['tp1_pct']:.2f}%) | RR: {best['rr1']:.2f}x")
         elif best:
             print(f"  📊 Multi-strategy best: {best['strategy']} → {best['direction']} "
                   f"(conviction={best['conviction']:.0%}), but main signal already active")
         else:
-            print(f"  📊 Multi-strategy: {strategy_summary['signals_fired']}/{strategy_summary['total_strategies']} strategies fired")
+            _sf = strategy_summary.get('signals_fired', 0) if strategy_summary else 0
+            _ts = strategy_summary.get('total_strategies', 0) if strategy_summary else 0
+            print(f"  📊 Multi-strategy: {_sf}/{_ts} strategies fired")
     except Exception as e:
         print(f"  ⚠️  Multi-strategy error: {e}")
         result['multi_strategy'] = None
@@ -5639,6 +5899,7 @@ def main():
             _m20_filter = apply_m20_filter(
                 result.get('m20', {}), result.get('direction', ''), result.get('price', 0))
             result['m20_filter'] = _m20_filter
+            result['m20_blocked'] = _m20_filter.get('blocked', False)
             if _m20_filter.get('blocked'):
                 result['status'] = 'M20_BLOCKED'
                 result['reason'] = _m20_filter.get('reason', '')
@@ -5657,14 +5918,45 @@ def main():
     _ensemble = None
     try:
         _all_sigs = result.get('multi_strategy', {}).get('all_signals', [])
+        # Filter signals with ICS below floor (0.38) from ensemble consideration
+        _ics_val = result.get('ics', 0)
+        _ics_floor_multi = 0.38
+        if _ics_val and _ics_val < _ics_floor_multi:
+            _all_sigs = [s for s in _all_sigs if s.get('conviction', 0) >= 0.70]
+            if not _all_sigs:
+                result['ensemble'] = {'consensus': 'NONE', 'passes': False, 'reason': 'ICS %.3f < %.2f floor + no high-conviction strategies' % (_ics_val, _ics_floor_multi)}
+                print('  !! ICS floor: %.3f < %.2f — filtered low-conviction strategies' % (_ics_val, _ics_floor_multi))
         _ensemble = evaluate_ensemble(_all_sigs, m10_details=result.get('m10',{}).get('details',{}))
         result['ensemble'] = _ensemble
+        result['ensemble_passes'] = _ensemble.get('passes', False)
         if _ensemble.get('passes'):
             print("  🎯 Ensemble PASS: %d strategies agree %s (conv=%.2f)" % (_ensemble['agree_count'], _ensemble['consensus'], _ensemble['ensemble_conviction']))
         else:
             print("  ⚠️  Ensemble FAIL: %s" % _ensemble.get('reason', 'no consensus'))
     except Exception as e:
         print("  ⚠️  Ensemble error: %s" % e)
+
+    # ── Adaptive Gating: apply outcome-based weights/vetoes ──
+    _adaptive_result = None
+    _ms = result.get('multi_strategy') or {}
+    _all_sigs_for_gating = _ms.get('all_signals', [])
+    if _all_sigs_for_gating:
+        try:
+            _adaptive_result = apply_adaptive_weights(_all_sigs_for_gating, _regime)
+            if _adaptive_result.get('vetoed'):
+                _vetoed_names = [v.get('strategy', '?') for v in _adaptive_result['vetoed']]
+                print("  🔴 Adaptive Gating: %d vetoed: %s" % (len(_adaptive_result['vetoed']), ', '.join(_vetoed_names)))
+                result['adaptive_gating'] = {
+                    'vetoed': _adaptive_result['vetoed'],
+                    'boosted': _adaptive_result['boosted'],
+                    'reduced': _adaptive_result['reduced'],
+                }
+            if _adaptive_result.get('boosted'):
+                print("  🟢 Adaptive Gating: %d boosted" % len(_adaptive_result['boosted']))
+            if _adaptive_result.get('reduced'):
+                print("  🟡 Adaptive Gating: %d reduced" % len(_adaptive_result['reduced']))
+        except Exception as e:
+            print("  ⚠️  Adaptive gating error: %s" % e)
 
     # ── Confirmation Layer ──
     # Check pending signals against current price
@@ -5688,6 +5980,13 @@ def main():
     except Exception as e:
         print(f"  ⚠️  Confirmation check error: {e}")
         result['confirmation_status'] = None
+
+    # Record signal for outcome tracking
+    if result.get('status') == 'SIGNAL':
+        try:
+            record_signal_for_tracking(result, _regime)
+        except Exception as e:
+            print("  Outcome tracking error: %s" % e)
 
     # If this scan generated a SIGNAL, add to pending queue
     if result.get('status') == 'SIGNAL' and (_ensemble is None or _ensemble.get('passes')):

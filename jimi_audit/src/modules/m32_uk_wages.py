@@ -254,6 +254,14 @@ def _is_uk_wages_release_day(today_str=None, window_days=1):
     if today_str is None:
         today_str = datetime.utcnow().strftime('%Y-%m-%d')
     today = datetime.strptime(today_str, '%Y-%m-%d')
+    # Check live cache first (updated by macro_fetch)
+    cache = load_uk_wages_cache()
+    for release_date_str, cached_data in sorted(cache.items(), reverse=True):
+        release_dt = datetime.strptime(release_date_str, '%Y-%m-%d')
+        days_since = (today - release_dt).days
+        if 0 <= days_since <= window_days:
+            return True, release_date_str, cached_data if isinstance(cached_data, dict) else {'actual': cached_data}
+
     for release_date_str in sorted(UK_WAGES_RELEASES.keys(), reverse=True):
         release_dt = datetime.strptime(release_date_str, '%Y-%m-%d')
         days_since = (today - release_dt).days

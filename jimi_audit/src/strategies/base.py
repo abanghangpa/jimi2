@@ -69,6 +69,7 @@ class BaseStrategy:
 
     def __init__(self, config=None):
         self.cfg = config or {}
+        self.min_vol_ratio = self.cfg.get('min_vol_ratio', 0.0)  # 0 = no filter
 
     def check(self, data, df_15m=None, idx=None, **kwargs) -> Optional[SignalResult]:
         """Override this. Return SignalResult or None."""
@@ -90,6 +91,7 @@ class BaseStrategy:
                 'tp1': round(result.tp1, 2) if result else None,
                 'rr1': round(result.rr1, 2) if result else None,
                 'fired': result is not None,
+                'vol_ratio': data.get('vol_ratio', None),
                 'outcome': None,  # filled later by outcome tracker
             }
             with open(log_path, 'a') as f:
@@ -97,16 +99,19 @@ class BaseStrategy:
         except Exception:
             pass  # Don't let logging crash the strategy
 
-    def _calc_levels(self, price, direction, atr, tp_mults=(1.5, 2.5, 4.0), sl_mult=1.0):
-        """Calculate SL/TP levels from ATR."""
+    def _calc_levels(self, price, direction, atr, tp_mults=(1.6, 2.5, 4.0), sl_mult=1.0,
+                     tp_min_dollar=12.0, sl_min_dollar=36.0):
+        """Calculate SL/TP levels from ATR with minimum dollar floors."""
+        tp1_dist = max(atr * tp_mults[0], tp_min_dollar) if tp_min_dollar else atr * tp_mults[0]
+        sl_dist = max(atr * sl_mult, sl_min_dollar) if sl_min_dollar else atr * sl_mult
         if direction == 'LONG':
-            sl = price - atr * sl_mult
-            tp1 = price + atr * tp_mults[0]
+            sl = price - sl_dist
+            tp1 = price + tp1_dist
             tp2 = price + atr * tp_mults[1]
             tp3 = price + atr * tp_mults[2]
         else:
-            sl = price + atr * sl_mult
-            tp1 = price - atr * tp_mults[0]
+            sl = price + sl_dist
+            tp1 = price - tp1_dist
             tp2 = price - atr * tp_mults[1]
             tp3 = price - atr * tp_mults[2]
 

@@ -145,6 +145,8 @@ NBS_PMI_RELEASES = {
     '2026-02-28': {'mfg': 50.5, 'services': 51.5},
     '2026-03-31': {'mfg': 50.2, 'services': 51.0},
     '2026-04-30': {'mfg': 49.5, 'services': 50.5},
+    '2026-05-31': {'mfg': 50.0, 'services': 50.1},
+    '2026-06-30': {'mfg': 50.3, 'services': 50.2},
 }
 
 
@@ -203,6 +205,18 @@ def _classify_pmi_signal(mfg_pmi):
 
 def _classify_economic_regime(mfg_pmi, services_pmi):
     """Classify combined economic regime from mfg + services PMI."""
+    if mfg_pmi is None:
+        return 'UNKNOWN'
+    if services_pmi is None:
+        # Classify based on mfg only
+        if mfg_pmi >= 51:
+            return 'GROWTH_STRONG'
+        elif mfg_pmi >= 50:
+            return 'GROWTH_MILD'
+        elif mfg_pmi >= 49:
+            return 'MIXED_WEAK_MFG'
+        else:
+            return 'MFG_CONTRACTING'
     if mfg_pmi >= 51 and services_pmi >= 53:
         return 'GROWTH_STRONG'
     elif mfg_pmi >= 50 and services_pmi >= 50:
@@ -220,6 +234,7 @@ def _classify_economic_regime(mfg_pmi, services_pmi):
 def _is_nbs_release_day(today_str=None, window_days=1):
     """Check if today is within N days of an NBS PMI release.
 
+    Checks both hardcoded dict and live cache (updated by macro_fetch).
     Args:
         today_str: YYYY-MM-DD string (default: today UTC)
         window_days: number of days after release to consider active
@@ -232,7 +247,19 @@ def _is_nbs_release_day(today_str=None, window_days=1):
 
     today = datetime.strptime(today_str, '%Y-%m-%d')
 
-    # Find releases within the window
+    # 1. Check live cache first (updated by macro_fetch.fetch_nbs_pmi)
+    cache = load_nbs_cache()
+    for release_date_str, cached_data in sorted(cache.items(), reverse=True):
+        release_dt = datetime.strptime(release_date_str, '%Y-%m-%d')
+        days_since = (today - release_dt).days
+        if 0 <= days_since <= window_days:
+            pmi_data = {
+                'mfg': cached_data.get('mfg'),
+                'services': cached_data.get('services'),
+            }
+            return True, release_date_str, pmi_data
+
+    # 2. Fall back to hardcoded dict
     for release_date_str, pmi_data in sorted(NBS_PMI_RELEASES.items(), reverse=True):
         release_dt = datetime.strptime(release_date_str, '%Y-%m-%d')
         days_since = (today - release_dt).days

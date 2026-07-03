@@ -27,6 +27,8 @@ def _log_signal(strategy_name: str, data: dict, result: Optional[SignalResult] =
             'tp1': round(result.tp1, 2) if result else None,
             'rr1': round(result.rr1, 2) if result else None,
             'fired': result is not None,
+            'vol_ratio': data.get('vol_ratio', None),
+            'ema_200': data.get('ema_200', None),
             'outcome': None,  # filled later by outcome tracker
         }
         with open(log_path, 'a') as f:
@@ -50,6 +52,11 @@ class StrategyRunner:
         signals = []
         for strat in self.strategies:
             try:
+                # Volume ratio gate — skip if vol_ratio below strategy threshold
+                _vr = data.get('vol_ratio', 1.0) or 1.0
+                if strat.min_vol_ratio > 0 and _vr < strat.min_vol_ratio:
+                    _log_signal(strat.name, data, None)
+                    continue
                 result = strat.check(data, df_15m=df_15m, idx=idx, **kwargs)
                 if result is not None:
                     result.timestamp = data.get('timestamp', '')
