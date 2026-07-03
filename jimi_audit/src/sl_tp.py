@@ -23,15 +23,17 @@ _SL_TP_DEFAULTS = {
     'SL_VOID_BUFFER_PCT': 0.003,       # 0.3% buffer around levels = "clustered"
     'SL_VOID_MIN_DIST_PCT': 0.002,     # min SL distance as % of price
     'SL_VOID_MAX_DIST_PCT': 0.025,     # max SL distance (2.5% cap)
-    'SL_ATR_STD': 1.0,                 # ATR fallback multiplier
+    'SL_ATR_STD': 1.0,  # ATR fallback multiplier (SL floor is 30)                 # ATR fallback multiplier
     'SL_HARD_MAX_PCT': 0.02,           # hard max SL distance (2%)
+    'SL_MIN_DOLLAR': 30.0,              # minimum SL distance in dollars
 
     # TP targeting
     'TP1_USE_MAGNET': True,            # target nearest unswept magnet for TP1
     'TP1_MAGNET_MIN_DIST_PCT': 0.002,  # min distance to magnet (avoid entry-adjacent)
-    'TP1_ATR': 0.8,                    # ATR fallback for TP1
-    'TP2_ATR': 1.5,                    # ATR fallback for TP2
-    'TP3_ATR': 2.5,                    # ATR fallback for TP3
+    'TP1_ATR': 1.6,                    # ATR fallback for TP1 (~$15 at current ATR)
+    'TP1_MIN_DOLLAR': 10.0,            # minimum TP1 distance in dollars
+    'TP2_ATR': 2.5,                    # ATR fallback for TP2
+    'TP3_ATR': 4.0,                    # ATR fallback for TP3
 
     # Sweep gate
     'M14_ENTRY_GATE': False,           # require M14 sweep before signaling
@@ -264,9 +266,23 @@ def calc_trade_levels(entry_price, direction, atr_1h, vol_ratio,
     if void_sl is not None:
         sl = void_sl
         sl_source = 'LIQUIDITY_VOID'
+        # Enforce minimum distance even for liquidity voids
+        sl_min_dollar = _cfg(cfg, 'SL_MIN_DOLLAR')
+        if sl_min_dollar:
+            sl_dist_actual = abs(sl - entry_price)
+            if sl_dist_actual < sl_min_dollar:
+                if direction == 'LONG':
+                    sl = entry_price - sl_min_dollar
+                else:
+                    sl = entry_price + sl_min_dollar
+                sl_source = 'ATR'  # overrode liquidity void
     else:
         # ATR fallback
-        sl_dist = min(_cfg(cfg, 'SL_ATR_STD') * atr,
+        sl_atr_std = _cfg(cfg, 'SL_ATR_STD') * atr
+        sl_min_dollar = _cfg(cfg, 'SL_MIN_DOLLAR')
+        if sl_min_dollar and sl_atr_std < sl_min_dollar:
+            sl_atr_std = sl_min_dollar
+        sl_dist = min(sl_atr_std,
                       _cfg(cfg, 'SL_HARD_MAX_PCT') * entry_price)
         if direction == 'LONG':
             sl = entry_price - sl_dist
@@ -283,8 +299,23 @@ def calc_trade_levels(entry_price, direction, atr_1h, vol_ratio,
     if tp1_target is not None:
         tp1 = tp1_target
         tp1_source = 'UNSWEPT_POOL'
+        # If pool is closer than minimum TP, keep minimum TP instead
+        tp1_min_dollar = _cfg(cfg, 'TP1_MIN_DOLLAR')
+        if tp1_min_dollar:
+            tp1_dist_actual = abs(tp1 - entry_price)
+            if tp1_dist_actual < tp1_min_dollar:
+                # Pool is too close — use minimum TP
+                if direction == 'LONG':
+                    tp1 = entry_price + tp1_min_dollar
+                else:
+                    tp1 = entry_price - tp1_min_dollar
+                tp1_source = 'ATR'
+            # else: pool is beyond minimum — use pool as TP
     else:
         tp1_dist = _cfg(cfg, 'TP1_ATR') * atr
+        tp1_min_dollar = _cfg(cfg, 'TP1_MIN_DOLLAR')
+        if tp1_min_dollar and tp1_dist < tp1_min_dollar:
+            tp1_dist = tp1_min_dollar
         if direction == 'LONG':
             tp1 = entry_price + tp1_dist
         else:

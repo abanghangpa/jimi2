@@ -3,11 +3,11 @@
 Ensemble Gate - requires multiple strategies to agree before signaling.
 Combined with confirmation layer: consensus + market confirmation = high WR.
 """
-MIN_AGREE = 3
-MIN_CONVICTION = 0.5
+MIN_AGREE = 1
+MIN_CONVICTION = 0.3
 
 STRATEGY_WEIGHTS = {
-    "mtf_confluence": 1.5, "structural_break": 1.3, "orderbook_imbalance": 1.2,
+    "mtf_confluence": 1.5, "structural_break": 1.3,"orderbook_imbalance": 1.2,
     "trade_flow": 1.2, "cross_asset": 1.2, "funding_arb": 1.1,
     "failed_breakout": 0.8, "regime_switch": 0.9, "scalp_v2": 0.7,
     "squeeze_breakout": 0.5, "positioning_fade": 0.5, "kill_zone": 1.0,
