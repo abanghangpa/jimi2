@@ -74,7 +74,7 @@ class OrderBookImbalanceStrategy(BaseStrategy):
         # Wider SL for OB strategy (order flow whipsaws)
         sl_mult = 1.5  # wider than default1.0
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(
-            price, direction, atr, tp_mults=(1.5, 2.5, 4.0), sl_mult=sl_mult)
+            price, direction, atr, tp_mults=(0.3, 1.5, 3.0), sl_mult=sl_mult)
 
         # Cap max loss at1.5%
         if sl_pct > self.MAX_LOSS_PCT:

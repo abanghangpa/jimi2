@@ -115,6 +115,7 @@ from src.sl_tp import calc_trade_levels, check_sweep_gate, calc_limit_entry
 from src.signal_eval import evaluate_signal, format_signal_eval
 from src.modules.conflict_resolver import detect_conflict, format_conflict, conflict_to_dict
 from src.modules.power_of_3 import detect_phase, format_phase, phase_to_dict
+from src.modules.derivatives_loader import get_historical_derivatives
 from src.modules.m18_squeeze import detect_squeeze_v6 as detect_squeeze, format_squeeze
 from src.modules.m19_breakout_confirm import check_breakout_filters, format_breakout_confirm
 from src.modules.m20_failed_breakout import score_m20, format_failed_breakout
@@ -1101,6 +1102,12 @@ def scan_signal(df_15m, df_1h, df_2h, df_4h, df_1d, config=None,
             result['derivatives'] = deriv_summary
     except Exception:
         pass
+
+    # Fallback: use historical derivatives data if live fetch failed
+    if 'derivatives' not in result or not result['derivatives']:
+        _hist_deriv = get_historical_derivatives(str(result.get('timestamp', '')))
+        if _hist_deriv:
+            result['derivatives'] = _hist_deriv
 
     result['cascade_risk'] = _detect_cascade_risk(df_15m, idx, result)
 
@@ -5817,6 +5824,12 @@ def main():
                                     float(_r['Low']), float(_r['Close']), float(_r['Volume'])])
         _order_flow_kwargs['candles_1h'] = _candles_1h
 
+        # ── Power of 3 Phase Detection (moved here so strategies can use it) ──
+        try:
+            p3 = detect_phase(result, config=scaled_config, df_15m=df_base)
+            result["power_of_3"] = phase_to_dict(p3)
+        except Exception as e:
+            result["power_of_3"] = {"phase": "", "confidence": 0, "direction": "NEUTRAL"}
         strategy_runner = create_strategy_runner(config=scaled_config)
         strategy_summary = strategy_runner.summary(result, df_15m=df_base, idx=len(df_base)-1, **_order_flow_kwargs)
         result['multi_strategy'] = strategy_summary

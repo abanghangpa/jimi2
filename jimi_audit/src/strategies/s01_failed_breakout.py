@@ -41,7 +41,7 @@ class FailedBreakoutStrategy(BaseStrategy):
 
         # Wider stops for failed breakouts
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(
-            price, direction, atr, tp_mults=(2.0, 3.5, 5.0), sl_mult=1.5)
+            price, direction, atr, tp_mults=(0.3, 1.5, 3.0), sl_mult=3.0)
 
         return SignalResult(
             strategy_name=self.name, strategy_type=self.strategy_type,

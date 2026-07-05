@@ -12,14 +12,12 @@ class PositioningFadeStrategy(BaseStrategy):
         if not deriv:
             return None
 
-        ls_ratio = deriv.get('ls_ratio', 0)
-        # Always compute zscore from ls_ratio (scan has stale pre-computed value)
         ls_ratio = deriv.get('ls_ratio', 1.0)
         ls_zscore = (ls_ratio - 2.15) / 0.3 if ls_ratio > 0 else 0
         positioning = deriv.get('positioning', 'NEUTRAL')
         whale = deriv.get('whale_signal', 'NEUTRAL')
 
-        # Need extreme positioning
+        # Need extreme positioning (optimized: z>0.8 or BULLISH/BEARISH)
         if abs(ls_zscore) < 0.8 and positioning not in ('EXTREME_LONG', 'EXTREME_SHORT', 'BULLISH', 'BEARISH'):
             return None
 
@@ -29,10 +27,10 @@ class PositioningFadeStrategy(BaseStrategy):
             return None
 
         # Direction: fade the crowd
-        if ls_zscore > 1.5 or positioning == 'EXTREME_LONG':
+        if ls_zscore > 0.8 or positioning in ('EXTREME_LONG', 'BULLISH'):
             direction = 'SHORT'
             extreme = ls_zscore
-        elif ls_zscore < -1.5 or positioning == 'EXTREME_SHORT':
+        elif ls_zscore < -0.8 or positioning in ('EXTREME_SHORT', 'BEARISH'):
             direction = 'LONG'
             extreme = abs(ls_zscore)
         else:
@@ -40,16 +38,19 @@ class PositioningFadeStrategy(BaseStrategy):
 
         # Whale confirmation bonus
         whale_confirm = 0
-        if (direction == 'SHORT' and whale == 'BEARISH') or \
-           (direction == 'LONG' and whale == 'BULLISH'):
-            whale_confirm = 0.15
+        tls = deriv.get('top_ls_ratio', 0)
+        if tls > 0:
+            top_z = (tls - 2.15) / 0.3
+            if (direction == 'SHORT' and top_z > 0.5) or                (direction == 'LONG' and top_z < -0.5):
+                whale_confirm = 0.15
 
         conviction = min(0.40 + (abs(extreme) - 0.8) * 0.15 + whale_confirm, 0.85)
         if conviction < 0.35:
             return None
 
+        # Optimized: TP=1.0% SL=1.0% (ATR mults adjusted for ~1% target)
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(
-            price, direction, atr, tp_mults=(1.5, 2.5, 4.0), sl_mult=1.2)
+            price, direction, atr, tp_mults=(0.3, 1.5, 2.5), sl_mult=2.0)
 
         return SignalResult(
             strategy_name=self.name, strategy_type=self.strategy_type,

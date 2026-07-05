@@ -45,7 +45,7 @@ class StructuralBreakStrategy(BaseStrategy):
         conviction = (m1_score * 0.4 + m2_score * 0.3 + m13_score * 0.3)
 
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(
-            price, direction, atr, tp_mults=(1.5, 2.5, 4.0), sl_mult=1.0)
+            price, direction, atr, tp_mults=(0.3, 1.0, 2.0), sl_mult=2.0)
 
         return SignalResult(
             strategy_name=self.name, strategy_type=self.strategy_type,

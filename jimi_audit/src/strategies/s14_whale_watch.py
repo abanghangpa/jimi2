@@ -12,15 +12,14 @@ class WhaleWatchStrategy(BaseStrategy):
             return None
 
         whale = deriv.get('whale_signal', 'NEUTRAL')
-        # Derive from ls_ratio if neutral
+        ls_ratio = deriv.get('ls_ratio', 1.0)
+        # Derive from ls_ratio if neutral (optimized: wider thresholds)
         if whale == 'NEUTRAL':
-            ls_ratio = deriv.get('ls_ratio', 1.0)
-            if ls_ratio > 2.3:
+            if ls_ratio > 2.1:
                 whale = 'BEARISH'
-            elif ls_ratio < 1.8:
+            elif ls_ratio < 1.9:
                 whale = 'BULLISH'
         positioning = deriv.get('positioning', 'NEUTRAL')
-        ls_ratio = deriv.get('ls_ratio', 1.0)
 
         if whale == 'NEUTRAL' or whale == '':
             return None
@@ -40,16 +39,16 @@ class WhaleWatchStrategy(BaseStrategy):
 
         # Confirmation from positioning
         pos_confirm = 0
-        if (direction == 'LONG' and positioning in ('BULLISH', 'EXTREME_LONG')) or \
-           (direction == 'SHORT' and positioning in ('BEARISH', 'EXTREME_SHORT')):
+        if (direction == 'LONG' and positioning in ('BULLISH', 'EXTREME_LONG')) or            (direction == 'SHORT' and positioning in ('BEARISH', 'EXTREME_SHORT')):
             pos_confirm = 0.15
 
         conviction = min(0.40 + pos_confirm + abs(ls_ratio - 1.0) * 0.2, 0.80)
         if conviction < 0.40:
             return None
 
+        # Optimized: TP=1.5% SL=1.0% (ATR mults adjusted)
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(
-            price, direction, atr, tp_mults=(1.5, 2.5, 4.0), sl_mult=1.0)
+            price, direction, atr, tp_mults=(0.3, 1.5, 2.5), sl_mult=2.0)
 
         return SignalResult(
             strategy_name=self.name, strategy_type=self.strategy_type,
