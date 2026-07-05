@@ -5807,6 +5807,16 @@ def main():
             'funding_avg': _fr_data.get('avg_rate') if _fr_data else None,
         }
 
+        # Build candles_1h for BB+mom6 strategy (Option B)
+        _candles_1h = []
+        if df_1h is not None and len(df_1h) > 0:
+            for _, _r in df_1h.iterrows():
+                _ts = _r['Open time']
+                _ts_ms = int(_ts.timestamp() * 1000) if hasattr(_ts, 'timestamp') else 0
+                _candles_1h.append([_ts_ms, float(_r['Open']), float(_r['High']),
+                                    float(_r['Low']), float(_r['Close']), float(_r['Volume'])])
+        _order_flow_kwargs['candles_1h'] = _candles_1h
+
         strategy_runner = create_strategy_runner(config=scaled_config)
         strategy_summary = strategy_runner.summary(result, df_15m=df_base, idx=len(df_base)-1, **_order_flow_kwargs)
         result['multi_strategy'] = strategy_summary

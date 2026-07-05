@@ -13,12 +13,14 @@ class PositioningFadeStrategy(BaseStrategy):
             return None
 
         ls_ratio = deriv.get('ls_ratio', 0)
-        ls_zscore = deriv.get('ls_zscore', 0)
+        # Always compute zscore from ls_ratio (scan has stale pre-computed value)
+        ls_ratio = deriv.get('ls_ratio', 1.0)
+        ls_zscore = (ls_ratio - 2.15) / 0.3 if ls_ratio > 0 else 0
         positioning = deriv.get('positioning', 'NEUTRAL')
         whale = deriv.get('whale_signal', 'NEUTRAL')
 
         # Need extreme positioning
-        if abs(ls_zscore) < 1.5 and positioning not in ('EXTREME_LONG', 'EXTREME_SHORT'):
+        if abs(ls_zscore) < 0.8 and positioning not in ('EXTREME_LONG', 'EXTREME_SHORT', 'BULLISH', 'BEARISH'):
             return None
 
         price = data.get('price', 0)
@@ -42,8 +44,8 @@ class PositioningFadeStrategy(BaseStrategy):
            (direction == 'LONG' and whale == 'BULLISH'):
             whale_confirm = 0.15
 
-        conviction = min(0.40 + (extreme - 1.5) * 0.20 + whale_confirm, 0.85)
-        if conviction < 0.7:
+        conviction = min(0.40 + (abs(extreme) - 0.8) * 0.15 + whale_confirm, 0.85)
+        if conviction < 0.35:
             return None
 
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(

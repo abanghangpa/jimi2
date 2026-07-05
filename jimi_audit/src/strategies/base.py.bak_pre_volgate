@@ -1,0 +1,119 @@
+"""
+Base class for all JIMI strategies.
+Every strategy must implement check() and returns a SignalResult or None.
+"""
+from dataclasses import dataclass, field
+from typing import Optional, Dict, Any
+import json
+import os
+from datetime import datetime, timezone
+
+
+SIGNAL_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data')
+
+
+@dataclass
+class SignalResult:
+    """Standardized signal output from any strategy."""
+    strategy_name: str
+    strategy_type: str          # 'event', 'flow', 'structure', 'regime', 'session'
+    direction: str              # 'LONG' or 'SHORT'
+    conviction: float           # 0.0-1.0 — how strong the signal is
+    entry: float
+    sl: float
+    tp1: float
+    tp2: float
+    tp3: float
+    sl_pct: float
+    tp1_pct: float
+    size_mult: float = 1.0      # position size multiplier
+    reason: str = ''
+    details: Dict[str, Any] = field(default_factory=dict)
+    bypass_gates: bool = False   # if True, skip normal ICS/sweep gates
+    timestamp: str = ''
+
+    @property
+    def rr1(self) -> float:
+        """Risk:reward to TP1."""
+        if self.sl_pct == 0:
+            return 0
+        return abs(self.tp1_pct / self.sl_pct)
+
+    def to_dict(self) -> dict:
+        return {
+            'strategy': self.strategy_name,
+            'source': f"strategy:{self.strategy_name}",
+            'type': self.strategy_type,
+            'direction': self.direction,
+            'conviction': round(self.conviction, 4),
+            'entry': round(self.entry, 2),
+            'sl': round(self.sl, 2),
+            'tp1': round(self.tp1, 2),
+            'tp2': round(self.tp2, 2),
+            'tp3': round(self.tp3, 2),
+            'sl_pct': round(self.sl_pct, 3),
+            'tp1_pct': round(self.tp1_pct, 3),
+            'rr1': round(self.rr1, 2),
+            'size_mult': round(self.size_mult, 2),
+            'reason': self.reason,
+            'bypass_gates': self.bypass_gates,
+            'details': self.details,
+        }
+
+
+class BaseStrategy:
+    """Base class for all strategies."""
+    name = 'base'
+    strategy_type = 'unknown'
+    description = ''
+
+    def __init__(self, config=None):
+        self.cfg = config or {}
+
+    def check(self, data, df_15m=None, idx=None, **kwargs) -> Optional[SignalResult]:
+        """Override this. Return SignalResult or None."""
+        raise NotImplementedError
+
+    def log_signal(self, data: dict, result: Optional[SignalResult] = None):
+        """Log signal to JSONL for outcome tracking. Call from check() before returning."""
+        try:
+            os.makedirs(SIGNAL_LOG_DIR, exist_ok=True)
+            log_path = os.path.join(SIGNAL_LOG_DIR, 'strategy_signals.jsonl')
+            entry = {
+                'timestamp': str(data.get('timestamp', datetime.now(timezone.utc))),
+                'strategy': self.name,
+                'price': data.get('price', 0),
+                'direction': result.direction if result else None,
+                'conviction': round(result.conviction, 4) if result else None,
+                'entry': round(result.entry, 2) if result else None,
+                'sl': round(result.sl, 2) if result else None,
+                'tp1': round(result.tp1, 2) if result else None,
+                'rr1': round(result.rr1, 2) if result else None,
+                'fired': result is not None,
+                'vol_ratio': data.get('vol_ratio', None),
+                'outcome': None,  # filled later by outcome tracker
+            }
+            with open(log_path, 'a') as f:
+                f.write(json.dumps(entry, default=str) + '\n')
+        except Exception:
+            pass  # Don't let logging crash the strategy
+
+    def _calc_levels(self, price, direction, atr, tp_mults=(1.6, 2.5, 4.0), sl_mult=1.0,
+                     tp_min_dollar=15.0, sl_min_dollar=30.0):
+        """Calculate SL/TP levels from ATR with minimum dollar floors."""
+        tp1_dist = max(atr * tp_mults[0], tp_min_dollar) if tp_min_dollar else atr * tp_mults[0]
+        sl_dist = max(atr * sl_mult, sl_min_dollar) if sl_min_dollar else atr * sl_mult
+        if direction == 'LONG':
+            sl = price - sl_dist
+            tp1 = price + tp1_dist
+            tp2 = price + atr * tp_mults[1]
+            tp3 = price + atr * tp_mults[2]
+        else:
+            sl = price + sl_dist
+            tp1 = price - tp1_dist
+            tp2 = price - atr * tp_mults[1]
+            tp3 = price - atr * tp_mults[2]
+
+        sl_pct = abs(sl - price) / price * 100
+        tp1_pct = abs(tp1 - price) / price * 100
+        return sl, tp1, tp2, tp3, sl_pct, tp1_pct

@@ -453,6 +453,7 @@ def _detect_secondary_setup(price, sweep_level, reversal_target, target_result,
 
         # Bounce detected — direction is LONG (up from the low)
         new_direction = 'LONG'
+        new_phase = 'ACCUMULATION' if phase in ('MARKUP', 'ACCUMULATION') else phase
         mid = (sweep_level + reversal_target) / 2
 
         # If midpoint already reached, target the sweep level (full re-test)
@@ -505,6 +506,7 @@ def _detect_secondary_setup(price, sweep_level, reversal_target, target_result,
             return None
 
         new_direction = 'SHORT'
+        new_phase = 'DISTRIBUTION' if phase in ('MARKDOWN', 'DISTRIBUTION') else phase
         mid = (sweep_level + reversal_target) / 2
 
         # If midpoint already reached, target the sweep level (full re-test)
@@ -548,7 +550,7 @@ def _detect_secondary_setup(price, sweep_level, reversal_target, target_result,
         )
 
     return PhaseResult(
-        phase=phase,
+        phase=new_phase,
         confidence=round(confidence * 0.5, 3),  # halved — secondary setup
         direction=new_direction,
         narrative=narrative,
@@ -1462,6 +1464,20 @@ def detect_phase(result: dict, config: dict = None, df_15m=None) -> PhaseResult:
         stats = get_judas_stats_for_sweep(est_sweep_pct)
         target_tiers = _build_target_tiers(
             price, impl_direction, magnets, sr_levels, liq, key_level, stats)
+
+    # Enforce direction-phase consistency
+    if phase == 'MARKUP' and impl_direction != 'LONG':
+        impl_direction = 'LONG'
+        trade_bias = 'ENTER_LONG'
+    elif phase == 'MARKDOWN' and impl_direction != 'SHORT':
+        impl_direction = 'SHORT'
+        trade_bias = 'ENTER_SHORT'
+    elif phase == 'ACCUMULATION' and impl_direction != 'LONG':
+        impl_direction = 'LONG'
+        trade_bias = 'WAIT'
+    elif phase == 'DISTRIBUTION' and impl_direction != 'SHORT':
+        impl_direction = 'SHORT'
+        trade_bias = 'WAIT'
 
     return PhaseResult(
         phase=phase, confidence=round(confidence, 3),

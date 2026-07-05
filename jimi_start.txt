@@ -1,0 +1,500 @@
+  📄 CSV last: 2026-06-28 19:00:00  (0 bars behind)
+  📦 FRED: cache fresh (133.1h old), skipping fetch
+  📡 Fetching NBS Manufacturing PMI...
+  📡 Fetching US ISM Manufacturing PMI...
+  📡 Fetching US ISM Services PMI...
+  📡 Fetching JOLTS Job Openings...
+  📡 Fetching China CPI+PPI...
+  📡 Fetching UK CPI...
+  📡 Fetching UK Wages...
+  📡 Fetching US Retail Sales...
+  📡 Fetching US Housing Starts...
+  📡 Fetching PBoC LPR...
+  📡 Fetching ADP Employment...
+  📡 Fetching NFP (Non-Farm Payrolls)...
+  📡 Fetching Germany Ifo Business Climate...
+  📡 Fetching Michigan Consumer Sentiment...
+  📡 Fetching Germany CPI...
+  📡 Fetching Eurozone CPI Flash...
+  📡 Fetching Eurozone GDP Flash...
+  📡 Fetching US GDP Advance...
+  📡 Fetching US Durable Goods Orders...
+  📡 Fetching US Core PCE...
+  📡 Fetching Japan CPI (Tokyo Flash)...
+  📡 Fetching CB Consumer Confidence...
+  📡 Fetching UK Monthly GDP...
+  📡 Fetching RBA Rate Decision...
+  📡 Fetching Australia Quarterly CPI...
+  📡 Fetching China Quarterly GDP...
+  📡 Fetching US Treasury 10Y auction results...
+  📊 caixin_mfg_pmi: actual=50.7 prev=51.2 surprise=MISS
+  📊 Daily bias from CSV (3237 bars)
+Fetching 15m data (1000 bars)...
+Computing indicators...
+Fetching BTC/USDT 15m for cross-asset...
+  BTC data: 999 bars, correlation computed
+Scanning [15m]...
+  💥 M20 pre-compute: failed breakout → SHORT (score=1.000)
+  📊 Fetching 72h of 1m bars for intrabar CVD...
+  📊 Computing intrabar delta (4320 bars)...
+  📊 Aggregating to 15min...
+  📡 Fetching NBS Manufacturing PMI...
+  📡 Fetching US ISM Manufacturing PMI...
+  📡 Fetching US ISM Services PMI...
+  📡 Fetching JOLTS Job Openings...
+  📡 Fetching China CPI+PPI...
+  📡 Fetching UK CPI...
+  📡 Fetching UK Wages...
+  📡 Fetching US Retail Sales...
+  📡 Fetching US Housing Starts...
+  📡 Fetching PBoC LPR...
+  📡 Fetching ADP Employment...
+  📡 Fetching NFP (Non-Farm Payrolls)...
+  📡 Fetching Germany Ifo Business Climate...
+  📡 Fetching Michigan Consumer Sentiment...
+  📡 Fetching Germany CPI...
+  📡 Fetching Eurozone CPI Flash...
+  📡 Fetching Eurozone GDP Flash...
+  📡 Fetching US GDP Advance...
+  📡 Fetching US Durable Goods Orders...
+  📡 Fetching US Core PCE...
+  📡 Fetching Japan CPI (Tokyo Flash)...
+  📡 Fetching CB Consumer Confidence...
+  📡 Fetching UK Monthly GDP...
+  📡 Fetching RBA Rate Decision...
+  📡 Fetching Australia Quarterly CPI...
+  📡 Fetching China Quarterly GDP...
+  📡 Fetching US Treasury 10Y auction results...
+  📊 Fetching TradFi data (DXY, 10Y, VIX, gold, WTI, USD/JPY)...
+    DXY: 338 bars
+    10Y: 35 bars
+    VIX: 260 bars
+    WTI: 344 bars
+    Gold: 344 bars
+    USD/JPY: 7077 bars
+  ⚠️  [SPOOF] Skipping FRED TIPS call to prevent hang
+  [DEBUG] _load_fred_for_cascades: Attempting to load macro_cache.json
+  [DEBUG] _load_fred_for_cascades: Successfully loaded macro_cache.json
+  [DEBUG] _load_claims_for_cascades: Attempting to load claims_cache.json
+  [DEBUG] _load_claims_for_cascades: Successfully loaded claims_cache.json
+    Fetching BTC/USDT daily...
+    Fetching ETH/BTC daily...
+  🎯 Multi-strategy signal: structural_break → SHORT (conviction=85%, rr=1.5x)
+  📡 Fetching NBS Manufacturing PMI...
+  📡 Fetching US ISM Manufacturing PMI...
+  📡 Fetching US ISM Services PMI...
+  📡 Fetching JOLTS Job Openings...
+  📡 Fetching China CPI+PPI...
+  📡 Fetching UK CPI...
+  📡 Fetching UK Wages...
+  📡 Fetching US Retail Sales...
+  📡 Fetching US Housing Starts...
+  📡 Fetching PBoC LPR...
+  📡 Fetching ADP Employment...
+  📡 Fetching NFP (Non-Farm Payrolls)...
+  📡 Fetching Germany Ifo Business Climate...
+  📡 Fetching Michigan Consumer Sentiment...
+  📡 Fetching Germany CPI...
+  📡 Fetching Eurozone CPI Flash...
+  📡 Fetching Eurozone GDP Flash...
+  📡 Fetching US GDP Advance...
+  📡 Fetching US Durable Goods Orders...
+  📡 Fetching US Core PCE...
+  📡 Fetching Japan CPI (Tokyo Flash)...
+  📡 Fetching CB Consumer Confidence...
+  📡 Fetching UK Monthly GDP...
+  📡 Fetching RBA Rate Decision...
+  📡 Fetching Australia Quarterly CPI...
+  📡 Fetching China Quarterly GDP...
+  📡 Fetching US Treasury 10Y auction results...
+
+  💾 Saved: /root/.openclaw/workspace/jimi_audit/data/scans/scan_20260628_190727.json
+{
+  "timestamp": "2026-06-28 19:00:00",
+  "price": 1569.19,
+  "swing_bias": "BEARISH",
+  "phase0": 0.22910621099539533,
+  "trend_dir": "STRONG_DOWN",
+  "trend_val": -0.8874465767080562,
+  "m9": {
+    "regime": "NEUTRAL",
+    "raw": 0.5,
+    "score": 0.5,
+    "status": "PASS"
+  },
+  "m13": {
+    "bias": "BEARISH",
+    "score": 0.98,
+    "status": "SKIP"
+  },
+  "m7": {
+    "score": 0.639,
+    "status": "PASS"
+  },
+  "magnets": [
+    [
+      1573.62,
+      3.98,
+      true,
+      "2026-06-27T19:15:00.000"
+    ],
+    [
+      1648.63,
+      1.86,
+      false,
+      null
+    ],
+    [
+      1734.36,
+      1.34,
+      false,
+      null
+    ]
+  ],
+  "gaps": [
+    1514.68,
+    1696.85,
+    1702.21,
+    1520.04,
+    1777.22
+  ],
+  "target_scores": {
+    "LONG": 0.368,
+    "SHORT": 1.0,
+    "long_details": {
+      "direction": "LONG",
+      "targets": [
+        {
+          "price": 1648.63,
+          "strength": 1.86,
+          "dist_pct": 5.06,
+          "contrib": 0.0
+        },
+        {
+          "price": 1734.36,
+          "strength": 1.34,
+          "dist_pct": 10.53,
+          "contrib": 0.0
+        }
+      ],
+      "gaps": [
+        {
+          "price": 1696.85,
+          "dist_pct": 8.14,
+          "contrib": 0.0
+        },
+        {
+          "price": 1702.21,
+          "dist_pct": 8.48,
+          "contrib": 0.0
+        },
+        {
+          "price": 1777.22,
+          "dist_pct": 13.26,
+          "contrib": 0.0
+        }
+      ],
+      "sr": [
+        {
+          "price": 1576.61,
+          "strength": 140.0,
+          "touches": 166,
+          "bounces": 140,
+          "dist_pct": 0.47,
+          "contrib": 0.229
+        },
+        {
+          "price": 1586.07,
+          "strength": 65.0,
+          "touches": 66,
+          "bounces": 65,
+          "dist_pct": 1.08,
+          "contrib": 0.139
+        }
+      ],
+      "score": 0.368
+    },
+    "short_details": {
+      "direction": "SHORT",
+      "targets": [],
+      "gaps": [
+        {
+          "price": 1514.68,
+          "dist_pct": 3.47,
+          "contrib": 0.0
+        },
+        {
+          "price": 1520.04,
+          "dist_pct": 3.13,
+          "contrib": 0.0
+        }
+      ],
+      "sr": [
+        {
+          "price": 1564.0,
+          "strength": 74.0,
+          "touches": 75,
+          "bounces": 74,
+          "dist_pct": 0.33,
+          "contrib": 0.25
+        },
+        {
+          "price": 1560.85,
+          "strength": 53.0,
+          "touches": 53,
+          "bounces": 53,
+          "dist_pct": 0.53,
+          "contrib": 0.22
+        },
+        {
+          "price": 1557.7,
+          "strength": 44.0,
+          "touches": 44,
+          "bounces": 44,
+          "dist_pct": 0.73,
+          "contrib": 0.19
+        },
+        {
+          "price": 1554.55,
+          "strength": 39.0,
+          "touches": 39,
+          "bounces": 39,
+          "dist_pct": 0.93,
+          "contrib": 0.16
+        },
+        {
+          "price": 1551.4,
+          "strength": 30.0,
+          "touches": 30,
+          "bounces": 30,
+          "dist_pct": 1.13,
+          "contrib": 0.13
+        },
+        {
+          "price": 1548.25,
+          "strength": 24.0,
+          "touches": 25,
+          "bounces": 24,
+          "dist_pct": 1.33,
+          "contrib": 0.1
+        }
+      ],
+      "score": 1.0
+    }
+  },
+  "sr_levels": [
+    [
+      1576.61,
+      140.0,
+      "RESISTANCE",
+      166,
+      140
+    ],
+    [
+      1570.31,
+      116.0,
+      "RESISTANCE",
+      127,
+      116
+    ],
+    [
+      1567.16,
+      91.0,
+      "SUPPORT",
+      96,
+      91
+    ],
+    [
+      1564.0,
+      74.0,
+      "SUPPORT",
+      75,
+      74
+    ],
+    [
+      1586.07,
+      65.0,
+      "RESISTANCE",
+      66,
+      65
+    ],
+    [
+      1560.85,
+      53.0,
+      "SUPPORT",
+      53,
+      53
+    ],
+    [
+      1557.7,
+      44.0,
+      "SUPPORT",
+      44,
+      44
+    ],
+    [
+      1554.55,
+      39.0,
+      "SUPPORT",
+      39,
+      39
+    ]
+  ],
+  "derivatives": {
+    "oi": 2316430.0,
+    "oi_usd": 3639021045.0,
+    "oi_roc_1h": 0.056,
+    "ls_ratio": 2.2982,
+    "long_pct": 69.7,
+    "short_pct": 30.3,
+    "ls_zscore": 0.236,
+    "positioning": "NEUTRAL",
+    "top_ls_ratio": 3.1806,
+    "whale_signal": "WHALE_BULLISH",
+    "whale_retail_gap": 0.8824,
+    "futures_taker_ratio": 1.2516,
+    "futures_flow": "BUYERS_DOMINANT",
+    "funding_rate": 1.9e-05,
+    "oi_price_div": "NONE"
+  },
+  "cascade_risk": {
+    "verdict": "FLUSH",
+    "score": 0.0,
+    "factors": []
+  },
+  "m4b": {
+    "status": "PASS",
+    "score": 0.733,
+    "divergence": "BEARISH",
+    "bars_ago": 14,
+    "cvd_slope": -211.27,
+    "details": {
+      "type": "BEARISH",
+      "confirming": true,
+      "opposing": false,
+      "bars_ago": 14,
+      "freshness": 0.417,
+      "score": 0.733
+    }
+  },
+  "liquidity_levels": {
+    "current_price": 1569.19,
+    "below": [
+      {
+        "price": 1563.4867599999998,
+        "type": "LONG_STOP",
+        "source": "Swing L $1567",
+        "strength": 37.81628313546041,
+        "cluster_size": 5,
+        "dist_pct": -0.36,
+        "cascade_risk": "MED",
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      },
+      {
+        "price": 1561.34,
+        "type": "LONG_LIQ",
+        "strength": 48.0,
+        "source": "OI+leverage est.",
+        "cascade_risk": "MED",
+        "dist_pct": -0.5,
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      },
+      {
+        "price": 1551.93,
+        "type": "LONG_LIQ",
+        "strength": 50.6,
+        "source": "OI+leverage est.",
+        "cascade_risk": "MED",
+        "dist_pct": -1.1,
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      }
+    ],
+    "above": [
+      {
+        "price": 1581.299800588235,
+        "type": "SHORT_STOP",
+        "source": "S/R 127 $1570",
+        "strength": 92.80000000000001,
+        "cluster_size": 116,
+        "dist_pct": 0.77,
+        "cascade_risk": "HIGH",
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      },
+      {
+        "price": 1575.13,
+        "type": "SHORT_LIQ",
+        "source": "HVN 2.9x avg vol",
+        "strength": 57.9,
+        "cluster_size": 2,
+        "cascade_risk": "MED",
+        "formed_at": null,
+        "fresh": true,
+        "dist_pct": 0.38,
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      },
+      {
+        "price": 1582.55,
+        "type": "SHORT_LIQ",
+        "source": "HVN 4.1x avg vol",
+        "strength": 80,
+        "cluster_size": 4,
+        "cascade_risk": "HIGH",
+        "formed_at": null,
+        "fresh": true,
+        "dist_pct": 0.85,
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      },
+      {
+        "price": 1587.6474547058824,
+        "type": "SHORT_STOP",
+        "source": "S/R 166 $1577",
+        "strength": 112.0,
+        "cluster_size": 140,
+        "dist_pct": 1.18,
+        "cascade_risk": "HIGH",
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      },
+      {
+        "price": 1589.59,
+        "type": "SHORT_LIQ",
+        "strength": 42.3,
+        "source": "OI+leverage est.",
+        "cascade_risk": "MED",
+        "dist_pct": 1.3,
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      },
+      {
+        "price": 1595.87,
+        "type": "SHORT_LIQ",
+        "strength": 57.9,
+        "source": "OI+leverage est.",
+        "cascade_risk": "MED",
+        "dist_pct": 1.7,
+        "age_bars": null,
+        "swept": false,
+        "swept_at": null
+      },
+      {
+        "price": 1597.168935882353,
+        "type": "SHORT_STOP",
+        "source": "S/R 66 $1586",
+        "strength": 52.0,
+        "cluster_size": 65,
+        "dist_pct": 1.78,
+        "cascade_risk": "HIGH",

@@ -11,9 +11,9 @@ class KillZoneStrategy(BaseStrategy):
         if m21.get('status') != 'PASS':
             return None
 
-        zone = m21.get('kill_zone', '')
+        zone = m21.get('kill_zone', '') or m21.get('zone', '')
         phase = m21.get('phase', '')
-        if zone not in ('LONDON', 'NEW_YORK', 'LONDON_NY_OVERLAP'):
+        if zone not in ('LONDON', 'NEW_YORK', 'LONDON_NY_OVERLAP', 'ASIA', 'LONDON_SESSION', 'NY_SESSION', 'OVERLAP', 'ASIAN', 'EUROPEAN', 'US', 'PREMIUM', 'DISCOUNT'):
             return None
 
         direction = data.get('direction')
@@ -44,7 +44,7 @@ class KillZoneStrategy(BaseStrategy):
         expansion_score = min(bar_expansion / 2.0, 0.2)
 
         conviction = zone_score + vol_score + taker_score + expansion_score
-        if conviction < 0.5:
+        if conviction < 0.25:
             return None
 
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(

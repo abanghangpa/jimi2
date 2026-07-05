@@ -1,4 +1,4 @@
-"""JIMI Multi-Strategy System — 22 strategies with order flow."""
+"""JIMI Multi-Strategy System — optimized strategies with targeted fixes."""
 from .base import BaseStrategy, SignalResult
 from .runner import StrategyRunner
 from .s01_failed_breakout import FailedBreakoutStrategy
@@ -23,16 +23,22 @@ from .s19_orderbook_imbalance import OrderBookImbalanceStrategy
 from .s20_liquidation_cascade import LiquidationCascadeStrategy
 from .s21_trade_flow import TradeFlowStrategy
 from .s22_judas_sweep import JudasSweepStrategy
+from .s23_bb_mom6 import BBMom6Strategy
+
+# DISABLED strategies:
+# - RegimeSwitchStrategy: 33.3% WR, LONG at tops
+# - ScalpV2Strategy: 25% WR, ALL LONG in downtrend
+# - MTFConfluenceStrategy: too few signals
 
 ALL_STRATEGIES = [
-    FailedBreakoutStrategy, SqueezeBreakoutStrategy, CascadeStrategy,
-    PositioningFadeStrategy, KillZoneStrategy, LiquidityGrabStrategy,
-    TakerFlowStrategy, RegimeSwitchStrategy, PowerOf3Strategy,
-    StructuralBreakStrategy, CrossAssetStrategy, MacroSurpriseStrategy,
+    BBMom6Strategy,
+    TradeFlowStrategy, CrossAssetStrategy, OrderBookImbalanceStrategy,
+    SqueezeBreakoutStrategy, CascadeStrategy, PositioningFadeStrategy,
+    KillZoneStrategy, LiquidityGrabStrategy, TakerFlowStrategy,
+    PowerOf3Strategy, StructuralBreakStrategy, MacroSurpriseStrategy,
     FundingArbStrategy, WhaleWatchStrategy, VolRotationStrategy,
-    MTFConfluenceStrategy, ScalpV2Strategy, MomentumV2Strategy,
-    OrderBookImbalanceStrategy, LiquidationCascadeStrategy, TradeFlowStrategy,
-    JudasSweepStrategy,
+    MomentumV2Strategy, LiquidationCascadeStrategy,
+    FailedBreakoutStrategy, JudasSweepStrategy,
 ]
 
 def create_runner(config=None) -> StrategyRunner:

@@ -1,39 +1,43 @@
-"""S13: Funding Rate Arb — trade funding rate extremes."""
+"""S13: Funding Rate Arb — trade funding rate extremes.
+Fixes: EMA200 trend filter (12/12 losses were LONG in downtrend)."""
 from .base import BaseStrategy, SignalResult
 
 class FundingArbStrategy(BaseStrategy):
     name = 'funding_arb'
     strategy_type = 'flow'
-    description = 'Trade funding rate extremes — negative funding = long, positive = short'
+    description = 'Trade funding rate extremes with trend alignment'
 
     def check(self, data, df_15m=None, idx=None, **kwargs):
         deriv = data.get('derivatives', {})
         if not deriv:
             return None
 
-        # Get funding-related data
-        oi = deriv.get('oi', 0)
         oi_roc = deriv.get('oi_roc_1h', 0)
         ls_ratio = deriv.get('ls_ratio', 1.0)
 
         price = data.get('price', 0)
         atr = data.get('atr', 0)
+        ema_200 = data.get('ema_200', 0)
         if not price or not atr:
             return None
 
-        # Extreme OI + declining = funding squeeze
         if abs(oi_roc) < 0.02:
             return None
 
         # Direction from OI flow
         if oi_roc < -0.03 and ls_ratio > 1.5:
-            # Longs closing + high L/S = short squeeze potential
             direction = 'LONG'
         elif oi_roc > 0.03 and ls_ratio < 0.7:
-            # Shorts closing + low L/S = long squeeze potential
             direction = 'SHORT'
         else:
             return None
+
+        # CRITICAL FIX: Don't LONG in downtrend (12/12 losses were LONG)
+        if ema_200 and ema_200 > 0:
+            if direction == 'LONG' and price < ema_200:
+                return None  # don't buy below EMA200
+            if direction == 'SHORT' and price > ema_200:
+                return None  # don't short above EMA200
 
         conviction = min(0.35 + abs(oi_roc) * 5, 0.75)
 
@@ -46,7 +50,7 @@ class FundingArbStrategy(BaseStrategy):
             entry=price, sl=sl, tp1=tp1, tp2=tp2, tp3=tp3,
             sl_pct=sl_pct, tp1_pct=tp1_pct,
             size_mult=0.6,
-            reason=f"Funding arb → {direction}: OI_roc={oi_roc:.4f} L/S={ls_ratio:.2f}",
+            reason=f"Funding arb -> {direction}: OI_roc={oi_roc:.4f} L/S={ls_ratio:.2f}",
             bypass_gates=False,
-            details={'oi': oi, 'oi_roc_1h': oi_roc, 'ls_ratio': ls_ratio},
+            details={'oi_roc_1h': oi_roc, 'ls_ratio': ls_ratio},
         )

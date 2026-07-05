@@ -15,9 +15,7 @@ STATE_FILE = "/root/.openclaw/workspace/rotate_keys_state.json"
 # Initial check at start of hour (triggered by cron)
 # If no new data, retry after these intervals from the start time:
 INITIAL_CHECK_DELAY = 0          # run immediately at start of hour
-RETRY_INTERVALS = [10 * 60,      # 10 minutes after start
-                   20 * 60,      # 20 additional minutes (30 total from start)
-                   30 * 60]      # 30 additional minutes (60 total from start)
+RETRY_INTERVALS = []  # No retries for immediate run
 
 def log(msg):
     """Log a message with UTC timestamp."""

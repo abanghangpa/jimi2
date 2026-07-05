@@ -1,0 +1,2517 @@
+{
+  "generated_at": "2026-07-02 07:31:24",
+  "data_points": {
+    "prices": 1826,
+    "signals": 3347,
+    "scans": 1203
+  },
+  "option_a_conviction": {
+    "0.3": {
+      "signals": 3347,
+      "filtered_pct": 0.0,
+      "wins": 1314,
+      "losses": 2005,
+      "win_rate": 39.6,
+      "by_strategy": {
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        },
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "regime_switch": {
+          "n": 477,
+          "wr": 31.9
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        }
+      }
+    },
+    "0.35": {
+      "signals": 3345,
+      "filtered_pct": 0.1,
+      "wins": 1314,
+      "losses": 2003,
+      "win_rate": 39.6,
+      "by_strategy": {
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        },
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "regime_switch": {
+          "n": 477,
+          "wr": 31.9
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        }
+      }
+    },
+    "0.4": {
+      "signals": 3077,
+      "filtered_pct": 8.1,
+      "wins": 1203,
+      "losses": 1848,
+      "win_rate": 39.4,
+      "by_strategy": {
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        },
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "regime_switch": {
+          "n": 211,
+          "wr": 19.4
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        }
+      }
+    },
+    "0.45": {
+      "signals": 3077,
+      "filtered_pct": 8.1,
+      "wins": 1203,
+      "losses": 1848,
+      "win_rate": 39.4,
+      "by_strategy": {
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        },
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "regime_switch": {
+          "n": 211,
+          "wr": 19.4
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        }
+      }
+    },
+    "0.5": {
+      "signals": 3072,
+      "filtered_pct": 8.2,
+      "wins": 1202,
+      "losses": 1844,
+      "win_rate": 39.5,
+      "by_strategy": {
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        },
+        "failed_breakout": {
+          "n": 590,
+          "wr": 36.3
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "regime_switch": {
+          "n": 211,
+          "wr": 19.4
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        }
+      }
+    },
+    "0.55": {
+      "signals": 2572,
+      "filtered_pct": 23.2,
+      "wins": 1051,
+      "losses": 1497,
+      "win_rate": 41.2,
+      "by_strategy": {
+        "cross_asset": {
+          "n": 335,
+          "wr": 44.2
+        },
+        "failed_breakout": {
+          "n": 540,
+          "wr": 35.4
+        },
+        "funding_arb": {
+          "n": 314,
+          "wr": 35.0
+        },
+        "mtf_confluence": {
+          "n": 75,
+          "wr": 45.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "structural_break": {
+          "n": 95,
+          "wr": 42.1
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        }
+      }
+    },
+    "0.6": {
+      "signals": 2087,
+      "filtered_pct": 37.6,
+      "wins": 853,
+      "losses": 1213,
+      "win_rate": 41.3,
+      "by_strategy": {
+        "cross_asset": {
+          "n": 159,
+          "wr": 42.1
+        },
+        "failed_breakout": {
+          "n": 411,
+          "wr": 36.7
+        },
+        "funding_arb": {
+          "n": 298,
+          "wr": 35.9
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "structural_break": {
+          "n": 79,
+          "wr": 39.2
+        },
+        "trade_flow": {
+          "n": 467,
+          "wr": 48.6
+        }
+      }
+    },
+    "0.65": {
+      "signals": 1636,
+      "filtered_pct": 51.1,
+      "wins": 666,
+      "losses": 956,
+      "win_rate": 41.1,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 270,
+          "wr": 35.6
+        },
+        "funding_arb": {
+          "n": 287,
+          "wr": 36.2
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 304,
+          "wr": 34.2
+        },
+        "structural_break": {
+          "n": 78,
+          "wr": 39.7
+        },
+        "trade_flow": {
+          "n": 383,
+          "wr": 47.3
+        }
+      }
+    },
+    "0.7": {
+      "signals": 1212,
+      "filtered_pct": 63.8,
+      "wins": 514,
+      "losses": 690,
+      "win_rate": 42.7,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 142,
+          "wr": 36.6
+        },
+        "funding_arb": {
+          "n": 279,
+          "wr": 35.8
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 128,
+          "wr": 35.9
+        },
+        "structural_break": {
+          "n": 77,
+          "wr": 40.3
+        },
+        "trade_flow": {
+          "n": 288,
+          "wr": 48.3
+        }
+      }
+    }
+  },
+  "option_b_atr_multipliers": {
+    "TP1.0_SL0.8": {
+      "tp_mult": 1.0,
+      "sl_mult": 0.8,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 1.25,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.0_SL1.0": {
+      "tp_mult": 1.0,
+      "sl_mult": 1.0,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 1.0,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.0_SL1.2": {
+      "tp_mult": 1.0,
+      "sl_mult": 1.2,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 0.83,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.0_SL1.5": {
+      "tp_mult": 1.0,
+      "sl_mult": 1.5,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 0.67,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.0_SL2.0": {
+      "tp_mult": 1.0,
+      "sl_mult": 2.0,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 0.5,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.2_SL0.8": {
+      "tp_mult": 1.2,
+      "sl_mult": 0.8,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 1.5,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.2_SL1.0": {
+      "tp_mult": 1.2,
+      "sl_mult": 1.0,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 1.2,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.2_SL1.2": {
+      "tp_mult": 1.2,
+      "sl_mult": 1.2,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 1.0,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.2_SL1.5": {
+      "tp_mult": 1.2,
+      "sl_mult": 1.5,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 0.8,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.2_SL2.0": {
+      "tp_mult": 1.2,
+      "sl_mult": 2.0,
+      "wins": 1798,
+      "losses": 698,
+      "timeouts": 851,
+      "win_rate": 72.0,
+      "settled": 2496,
+      "rr_ratio": 0.6,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 434,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 197,
+          "wr": 75.6
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.5_SL0.8": {
+      "tp_mult": 1.5,
+      "sl_mult": 0.8,
+      "wins": 1796,
+      "losses": 698,
+      "timeouts": 853,
+      "win_rate": 72.0,
+      "settled": 2494,
+      "rr_ratio": 1.88,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 433,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 196,
+          "wr": 75.5
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.5_SL1.0": {
+      "tp_mult": 1.5,
+      "sl_mult": 1.0,
+      "wins": 1796,
+      "losses": 698,
+      "timeouts": 853,
+      "win_rate": 72.0,
+      "settled": 2494,
+      "rr_ratio": 1.5,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 433,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 196,
+          "wr": 75.5
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.5_SL1.2": {
+      "tp_mult": 1.5,
+      "sl_mult": 1.2,
+      "wins": 1796,
+      "losses": 698,
+      "timeouts": 853,
+      "win_rate": 72.0,
+      "settled": 2494,
+      "rr_ratio": 1.25,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 433,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 196,
+          "wr": 75.5
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.5_SL1.5": {
+      "tp_mult": 1.5,
+      "sl_mult": 1.5,
+      "wins": 1796,
+      "losses": 698,
+      "timeouts": 853,
+      "win_rate": 72.0,
+      "settled": 2494,
+      "rr_ratio": 1.0,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 433,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 196,
+          "wr": 75.5
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.5_SL2.0": {
+      "tp_mult": 1.5,
+      "sl_mult": 2.0,
+      "wins": 1796,
+      "losses": 698,
+      "timeouts": 853,
+      "win_rate": 72.0,
+      "settled": 2494,
+      "rr_ratio": 0.75,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 433,
+          "wr": 69.1
+        },
+        "regime_switch": {
+          "n": 320,
+          "wr": 74.4
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 427,
+          "wr": 82.4
+        },
+        "mtf_confluence": {
+          "n": 196,
+          "wr": 75.5
+        },
+        "orderbook_imbalance": {
+          "n": 226,
+          "wr": 78.3
+        },
+        "scalp_v2": {
+          "n": 256,
+          "wr": 62.9
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.8_SL0.8": {
+      "tp_mult": 1.8,
+      "sl_mult": 0.8,
+      "wins": 1764,
+      "losses": 698,
+      "timeouts": 885,
+      "win_rate": 71.6,
+      "settled": 2462,
+      "rr_ratio": 2.25,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 427,
+          "wr": 68.6
+        },
+        "regime_switch": {
+          "n": 314,
+          "wr": 73.9
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 422,
+          "wr": 82.2
+        },
+        "mtf_confluence": {
+          "n": 190,
+          "wr": 74.7
+        },
+        "orderbook_imbalance": {
+          "n": 223,
+          "wr": 78.0
+        },
+        "scalp_v2": {
+          "n": 250,
+          "wr": 62.0
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.8_SL1.0": {
+      "tp_mult": 1.8,
+      "sl_mult": 1.0,
+      "wins": 1764,
+      "losses": 698,
+      "timeouts": 885,
+      "win_rate": 71.6,
+      "settled": 2462,
+      "rr_ratio": 1.8,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 427,
+          "wr": 68.6
+        },
+        "regime_switch": {
+          "n": 314,
+          "wr": 73.9
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 422,
+          "wr": 82.2
+        },
+        "mtf_confluence": {
+          "n": 190,
+          "wr": 74.7
+        },
+        "orderbook_imbalance": {
+          "n": 223,
+          "wr": 78.0
+        },
+        "scalp_v2": {
+          "n": 250,
+          "wr": 62.0
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.8_SL1.2": {
+      "tp_mult": 1.8,
+      "sl_mult": 1.2,
+      "wins": 1764,
+      "losses": 698,
+      "timeouts": 885,
+      "win_rate": 71.6,
+      "settled": 2462,
+      "rr_ratio": 1.5,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 427,
+          "wr": 68.6
+        },
+        "regime_switch": {
+          "n": 314,
+          "wr": 73.9
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 422,
+          "wr": 82.2
+        },
+        "mtf_confluence": {
+          "n": 190,
+          "wr": 74.7
+        },
+        "orderbook_imbalance": {
+          "n": 223,
+          "wr": 78.0
+        },
+        "scalp_v2": {
+          "n": 250,
+          "wr": 62.0
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.8_SL1.5": {
+      "tp_mult": 1.8,
+      "sl_mult": 1.5,
+      "wins": 1764,
+      "losses": 698,
+      "timeouts": 885,
+      "win_rate": 71.6,
+      "settled": 2462,
+      "rr_ratio": 1.2,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 427,
+          "wr": 68.6
+        },
+        "regime_switch": {
+          "n": 314,
+          "wr": 73.9
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 422,
+          "wr": 82.2
+        },
+        "mtf_confluence": {
+          "n": 190,
+          "wr": 74.7
+        },
+        "orderbook_imbalance": {
+          "n": 223,
+          "wr": 78.0
+        },
+        "scalp_v2": {
+          "n": 250,
+          "wr": 62.0
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP1.8_SL2.0": {
+      "tp_mult": 1.8,
+      "sl_mult": 2.0,
+      "wins": 1764,
+      "losses": 698,
+      "timeouts": 885,
+      "win_rate": 71.6,
+      "settled": 2462,
+      "rr_ratio": 0.9,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 427,
+          "wr": 68.6
+        },
+        "regime_switch": {
+          "n": 314,
+          "wr": 73.9
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 245,
+          "wr": 75.5
+        },
+        "trade_flow": {
+          "n": 422,
+          "wr": 82.2
+        },
+        "mtf_confluence": {
+          "n": 190,
+          "wr": 74.7
+        },
+        "orderbook_imbalance": {
+          "n": 223,
+          "wr": 78.0
+        },
+        "scalp_v2": {
+          "n": 250,
+          "wr": 62.0
+        },
+        "cross_asset": {
+          "n": 300,
+          "wr": 66.3
+        }
+      }
+    },
+    "TP2.0_SL0.8": {
+      "tp_mult": 2.0,
+      "sl_mult": 0.8,
+      "wins": 1708,
+      "losses": 704,
+      "timeouts": 935,
+      "win_rate": 70.8,
+      "settled": 2412,
+      "rr_ratio": 2.5,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 416,
+          "wr": 67.8
+        },
+        "regime_switch": {
+          "n": 307,
+          "wr": 73.3
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 241,
+          "wr": 75.1
+        },
+        "trade_flow": {
+          "n": 412,
+          "wr": 81.6
+        },
+        "mtf_confluence": {
+          "n": 181,
+          "wr": 72.9
+        },
+        "orderbook_imbalance": {
+          "n": 222,
+          "wr": 77.5
+        },
+        "scalp_v2": {
+          "n": 243,
+          "wr": 60.9
+        },
+        "cross_asset": {
+          "n": 299,
+          "wr": 65.2
+        }
+      }
+    },
+    "TP2.0_SL1.0": {
+      "tp_mult": 2.0,
+      "sl_mult": 1.0,
+      "wins": 1708,
+      "losses": 704,
+      "timeouts": 935,
+      "win_rate": 70.8,
+      "settled": 2412,
+      "rr_ratio": 2.0,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 416,
+          "wr": 67.8
+        },
+        "regime_switch": {
+          "n": 307,
+          "wr": 73.3
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 241,
+          "wr": 75.1
+        },
+        "trade_flow": {
+          "n": 412,
+          "wr": 81.6
+        },
+        "mtf_confluence": {
+          "n": 181,
+          "wr": 72.9
+        },
+        "orderbook_imbalance": {
+          "n": 222,
+          "wr": 77.5
+        },
+        "scalp_v2": {
+          "n": 243,
+          "wr": 60.9
+        },
+        "cross_asset": {
+          "n": 299,
+          "wr": 65.2
+        }
+      }
+    },
+    "TP2.0_SL1.2": {
+      "tp_mult": 2.0,
+      "sl_mult": 1.2,
+      "wins": 1708,
+      "losses": 704,
+      "timeouts": 935,
+      "win_rate": 70.8,
+      "settled": 2412,
+      "rr_ratio": 1.67,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 416,
+          "wr": 67.8
+        },
+        "regime_switch": {
+          "n": 307,
+          "wr": 73.3
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 241,
+          "wr": 75.1
+        },
+        "trade_flow": {
+          "n": 412,
+          "wr": 81.6
+        },
+        "mtf_confluence": {
+          "n": 181,
+          "wr": 72.9
+        },
+        "orderbook_imbalance": {
+          "n": 222,
+          "wr": 77.5
+        },
+        "scalp_v2": {
+          "n": 243,
+          "wr": 60.9
+        },
+        "cross_asset": {
+          "n": 299,
+          "wr": 65.2
+        }
+      }
+    },
+    "TP2.0_SL1.5": {
+      "tp_mult": 2.0,
+      "sl_mult": 1.5,
+      "wins": 1708,
+      "losses": 704,
+      "timeouts": 935,
+      "win_rate": 70.8,
+      "settled": 2412,
+      "rr_ratio": 1.33,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 416,
+          "wr": 67.8
+        },
+        "regime_switch": {
+          "n": 307,
+          "wr": 73.3
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 241,
+          "wr": 75.1
+        },
+        "trade_flow": {
+          "n": 412,
+          "wr": 81.6
+        },
+        "mtf_confluence": {
+          "n": 181,
+          "wr": 72.9
+        },
+        "orderbook_imbalance": {
+          "n": 222,
+          "wr": 77.5
+        },
+        "scalp_v2": {
+          "n": 243,
+          "wr": 60.9
+        },
+        "cross_asset": {
+          "n": 299,
+          "wr": 65.2
+        }
+      }
+    },
+    "TP2.0_SL2.0": {
+      "tp_mult": 2.0,
+      "sl_mult": 2.0,
+      "wins": 1708,
+      "losses": 704,
+      "timeouts": 935,
+      "win_rate": 70.8,
+      "settled": 2412,
+      "rr_ratio": 1.0,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 416,
+          "wr": 67.8
+        },
+        "regime_switch": {
+          "n": 307,
+          "wr": 73.3
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 241,
+          "wr": 75.1
+        },
+        "trade_flow": {
+          "n": 412,
+          "wr": 81.6
+        },
+        "mtf_confluence": {
+          "n": 181,
+          "wr": 72.9
+        },
+        "orderbook_imbalance": {
+          "n": 222,
+          "wr": 77.5
+        },
+        "scalp_v2": {
+          "n": 243,
+          "wr": 60.9
+        },
+        "cross_asset": {
+          "n": 299,
+          "wr": 65.2
+        }
+      }
+    },
+    "TP2.5_SL0.8": {
+      "tp_mult": 2.5,
+      "sl_mult": 0.8,
+      "wins": 1622,
+      "losses": 712,
+      "timeouts": 1013,
+      "win_rate": 69.5,
+      "settled": 2334,
+      "rr_ratio": 3.12,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 401,
+          "wr": 66.6
+        },
+        "regime_switch": {
+          "n": 298,
+          "wr": 72.5
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 232,
+          "wr": 74.1
+        },
+        "trade_flow": {
+          "n": 400,
+          "wr": 80.8
+        },
+        "mtf_confluence": {
+          "n": 174,
+          "wr": 70.7
+        },
+        "orderbook_imbalance": {
+          "n": 216,
+          "wr": 75.9
+        },
+        "scalp_v2": {
+          "n": 233,
+          "wr": 58.8
+        },
+        "cross_asset": {
+          "n": 289,
+          "wr": 63.3
+        }
+      }
+    },
+    "TP2.5_SL1.0": {
+      "tp_mult": 2.5,
+      "sl_mult": 1.0,
+      "wins": 1622,
+      "losses": 712,
+      "timeouts": 1013,
+      "win_rate": 69.5,
+      "settled": 2334,
+      "rr_ratio": 2.5,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 401,
+          "wr": 66.6
+        },
+        "regime_switch": {
+          "n": 298,
+          "wr": 72.5
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 232,
+          "wr": 74.1
+        },
+        "trade_flow": {
+          "n": 400,
+          "wr": 80.8
+        },
+        "mtf_confluence": {
+          "n": 174,
+          "wr": 70.7
+        },
+        "orderbook_imbalance": {
+          "n": 216,
+          "wr": 75.9
+        },
+        "scalp_v2": {
+          "n": 233,
+          "wr": 58.8
+        },
+        "cross_asset": {
+          "n": 289,
+          "wr": 63.3
+        }
+      }
+    },
+    "TP2.5_SL1.2": {
+      "tp_mult": 2.5,
+      "sl_mult": 1.2,
+      "wins": 1622,
+      "losses": 712,
+      "timeouts": 1013,
+      "win_rate": 69.5,
+      "settled": 2334,
+      "rr_ratio": 2.08,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 401,
+          "wr": 66.6
+        },
+        "regime_switch": {
+          "n": 298,
+          "wr": 72.5
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 232,
+          "wr": 74.1
+        },
+        "trade_flow": {
+          "n": 400,
+          "wr": 80.8
+        },
+        "mtf_confluence": {
+          "n": 174,
+          "wr": 70.7
+        },
+        "orderbook_imbalance": {
+          "n": 216,
+          "wr": 75.9
+        },
+        "scalp_v2": {
+          "n": 233,
+          "wr": 58.8
+        },
+        "cross_asset": {
+          "n": 289,
+          "wr": 63.3
+        }
+      }
+    },
+    "TP2.5_SL1.5": {
+      "tp_mult": 2.5,
+      "sl_mult": 1.5,
+      "wins": 1622,
+      "losses": 712,
+      "timeouts": 1013,
+      "win_rate": 69.5,
+      "settled": 2334,
+      "rr_ratio": 1.67,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 401,
+          "wr": 66.6
+        },
+        "regime_switch": {
+          "n": 298,
+          "wr": 72.5
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 232,
+          "wr": 74.1
+        },
+        "trade_flow": {
+          "n": 400,
+          "wr": 80.8
+        },
+        "mtf_confluence": {
+          "n": 174,
+          "wr": 70.7
+        },
+        "orderbook_imbalance": {
+          "n": 216,
+          "wr": 75.9
+        },
+        "scalp_v2": {
+          "n": 233,
+          "wr": 58.8
+        },
+        "cross_asset": {
+          "n": 289,
+          "wr": 63.3
+        }
+      }
+    },
+    "TP2.5_SL2.0": {
+      "tp_mult": 2.5,
+      "sl_mult": 2.0,
+      "wins": 1622,
+      "losses": 712,
+      "timeouts": 1013,
+      "win_rate": 69.5,
+      "settled": 2334,
+      "rr_ratio": 1.25,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 401,
+          "wr": 66.6
+        },
+        "regime_switch": {
+          "n": 298,
+          "wr": 72.5
+        },
+        "structural_break": {
+          "n": 84,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 232,
+          "wr": 74.1
+        },
+        "trade_flow": {
+          "n": 400,
+          "wr": 80.8
+        },
+        "mtf_confluence": {
+          "n": 174,
+          "wr": 70.7
+        },
+        "orderbook_imbalance": {
+          "n": 216,
+          "wr": 75.9
+        },
+        "scalp_v2": {
+          "n": 233,
+          "wr": 58.8
+        },
+        "cross_asset": {
+          "n": 289,
+          "wr": 63.3
+        }
+      }
+    },
+    "TP3.0_SL0.8": {
+      "tp_mult": 3.0,
+      "sl_mult": 0.8,
+      "wins": 1462,
+      "losses": 730,
+      "timeouts": 1155,
+      "win_rate": 66.7,
+      "settled": 2192,
+      "rr_ratio": 3.75,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 369,
+          "wr": 63.7
+        },
+        "regime_switch": {
+          "n": 286,
+          "wr": 71.3
+        },
+        "structural_break": {
+          "n": 80,
+          "wr": 36.2
+        },
+        "funding_arb": {
+          "n": 216,
+          "wr": 72.2
+        },
+        "trade_flow": {
+          "n": 375,
+          "wr": 77.9
+        },
+        "mtf_confluence": {
+          "n": 164,
+          "wr": 67.7
+        },
+        "orderbook_imbalance": {
+          "n": 199,
+          "wr": 72.9
+        },
+        "scalp_v2": {
+          "n": 216,
+          "wr": 54.6
+        },
+        "cross_asset": {
+          "n": 280,
+          "wr": 60.0
+        }
+      }
+    },
+    "TP3.0_SL1.0": {
+      "tp_mult": 3.0,
+      "sl_mult": 1.0,
+      "wins": 1462,
+      "losses": 730,
+      "timeouts": 1155,
+      "win_rate": 66.7,
+      "settled": 2192,
+      "rr_ratio": 3.0,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 369,
+          "wr": 63.7
+        },
+        "regime_switch": {
+          "n": 286,
+          "wr": 71.3
+        },
+        "structural_break": {
+          "n": 80,
+          "wr": 36.2
+        },
+        "funding_arb": {
+          "n": 216,
+          "wr": 72.2
+        },
+        "trade_flow": {
+          "n": 375,
+          "wr": 77.9
+        },
+        "mtf_confluence": {
+          "n": 164,
+          "wr": 67.7
+        },
+        "orderbook_imbalance": {
+          "n": 199,
+          "wr": 72.9
+        },
+        "scalp_v2": {
+          "n": 216,
+          "wr": 54.6
+        },
+        "cross_asset": {
+          "n": 280,
+          "wr": 60.0
+        }
+      }
+    },
+    "TP3.0_SL1.2": {
+      "tp_mult": 3.0,
+      "sl_mult": 1.2,
+      "wins": 1462,
+      "losses": 730,
+      "timeouts": 1155,
+      "win_rate": 66.7,
+      "settled": 2192,
+      "rr_ratio": 2.5,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 369,
+          "wr": 63.7
+        },
+        "regime_switch": {
+          "n": 286,
+          "wr": 71.3
+        },
+        "structural_break": {
+          "n": 80,
+          "wr": 36.2
+        },
+        "funding_arb": {
+          "n": 216,
+          "wr": 72.2
+        },
+        "trade_flow": {
+          "n": 375,
+          "wr": 77.9
+        },
+        "mtf_confluence": {
+          "n": 164,
+          "wr": 67.7
+        },
+        "orderbook_imbalance": {
+          "n": 199,
+          "wr": 72.9
+        },
+        "scalp_v2": {
+          "n": 216,
+          "wr": 54.6
+        },
+        "cross_asset": {
+          "n": 280,
+          "wr": 60.0
+        }
+      }
+    },
+    "TP3.0_SL1.5": {
+      "tp_mult": 3.0,
+      "sl_mult": 1.5,
+      "wins": 1462,
+      "losses": 730,
+      "timeouts": 1155,
+      "win_rate": 66.7,
+      "settled": 2192,
+      "rr_ratio": 2.0,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 369,
+          "wr": 63.7
+        },
+        "regime_switch": {
+          "n": 286,
+          "wr": 71.3
+        },
+        "structural_break": {
+          "n": 80,
+          "wr": 36.2
+        },
+        "funding_arb": {
+          "n": 216,
+          "wr": 72.2
+        },
+        "trade_flow": {
+          "n": 375,
+          "wr": 77.9
+        },
+        "mtf_confluence": {
+          "n": 164,
+          "wr": 67.7
+        },
+        "orderbook_imbalance": {
+          "n": 199,
+          "wr": 72.9
+        },
+        "scalp_v2": {
+          "n": 216,
+          "wr": 54.6
+        },
+        "cross_asset": {
+          "n": 280,
+          "wr": 60.0
+        }
+      }
+    },
+    "TP3.0_SL2.0": {
+      "tp_mult": 3.0,
+      "sl_mult": 2.0,
+      "wins": 1462,
+      "losses": 730,
+      "timeouts": 1155,
+      "win_rate": 66.7,
+      "settled": 2192,
+      "rr_ratio": 1.5,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 369,
+          "wr": 63.7
+        },
+        "regime_switch": {
+          "n": 286,
+          "wr": 71.3
+        },
+        "structural_break": {
+          "n": 80,
+          "wr": 36.2
+        },
+        "funding_arb": {
+          "n": 216,
+          "wr": 72.2
+        },
+        "trade_flow": {
+          "n": 375,
+          "wr": 77.9
+        },
+        "mtf_confluence": {
+          "n": 164,
+          "wr": 67.7
+        },
+        "orderbook_imbalance": {
+          "n": 199,
+          "wr": 72.9
+        },
+        "scalp_v2": {
+          "n": 216,
+          "wr": 54.6
+        },
+        "cross_asset": {
+          "n": 280,
+          "wr": 60.0
+        }
+      }
+    }
+  },
+  "option_c_filters": {
+    "regime_trending": {
+      "target": "regime_switch",
+      "filtered_out": 481,
+      "wins": 1162,
+      "losses": 1680,
+      "win_rate": 40.9,
+      "settled": 2842,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        }
+      }
+    },
+    "breakout_fresh": {
+      "target": "failed_breakout",
+      "filtered_out": 605,
+      "wins": 1099,
+      "losses": 1625,
+      "win_rate": 40.3,
+      "settled": 2724,
+      "by_strategy": {
+        "regime_switch": {
+          "n": 477,
+          "wr": 31.9
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        }
+      }
+    },
+    "volume_1.2x": {
+      "target": "all",
+      "filtered_out": 3347,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0,
+      "settled": 0,
+      "by_strategy": {}
+    },
+    "trend_aligned": {
+      "target": "all",
+      "filtered_out": 0,
+      "wins": 1314,
+      "losses": 2005,
+      "win_rate": 39.6,
+      "settled": 3319,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "regime_switch": {
+          "n": 477,
+          "wr": 31.9
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        }
+      }
+    },
+    "regime_high_conv": {
+      "target": "regime_switch",
+      "filtered_out": 481,
+      "wins": 1162,
+      "losses": 1680,
+      "win_rate": 40.9,
+      "settled": 2842,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        }
+      }
+    }
+  },
+  "option_d_dynamic_tp": {
+    "baseline": {
+      "skipped": 0,
+      "wins": 1314,
+      "losses": 2005,
+      "win_rate": 39.6,
+      "settled": 3319,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "regime_switch": {
+          "n": 477,
+          "wr": 31.9
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        }
+      }
+    },
+    "skip_low_conv": {
+      "skipped": 270,
+      "wins": 1203,
+      "losses": 1848,
+      "win_rate": 39.4,
+      "settled": 3051,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 595,
+          "wr": 36.1
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 39.3
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 34.8
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 48.3
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 50.3
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 32.9
+        },
+        "regime_switch": {
+          "n": 211,
+          "wr": 19.4
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        }
+      }
+    },
+    "widen_high_conv": {
+      "skipped": 2135,
+      "wins": 465,
+      "losses": 733,
+      "win_rate": 38.8,
+      "settled": 1198,
+      "by_strategy": {
+        "structural_break": {
+          "n": 77,
+          "wr": 39.0
+        },
+        "funding_arb": {
+          "n": 279,
+          "wr": 34.1
+        },
+        "orderbook_imbalance": {
+          "n": 286,
+          "wr": 44.4
+        },
+        "trade_flow": {
+          "n": 288,
+          "wr": 44.1
+        },
+        "failed_breakout": {
+          "n": 141,
+          "wr": 34.0
+        },
+        "scalp_v2": {
+          "n": 125,
+          "wr": 29.6
+        }
+      }
+    },
+    "tighten_low": {
+      "skipped": 3077,
+      "wins": 112,
+      "losses": 156,
+      "win_rate": 41.8,
+      "settled": 268,
+      "by_strategy": {
+        "regime_switch": {
+          "n": 266,
+          "wr": 42.1
+        }
+      }
+    },
+    "widen_all_20pct": {
+      "skipped": 0,
+      "wins": 1194,
+      "losses": 2109,
+      "win_rate": 36.1,
+      "settled": 3303,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 591,
+          "wr": 32.8
+        },
+        "regime_switch": {
+          "n": 474,
+          "wr": 30.0
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 37.9
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 33.2
+        },
+        "trade_flow": {
+          "n": 552,
+          "wr": 44.9
+        },
+        "mtf_confluence": {
+          "n": 245,
+          "wr": 35.5
+        },
+        "orderbook_imbalance": {
+          "n": 286,
+          "wr": 44.4
+        },
+        "scalp_v2": {
+          "n": 331,
+          "wr": 29.6
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 38.4
+        }
+      }
+    },
+    "tighten_all_20pct": {
+      "skipped": 0,
+      "wins": 1457,
+      "losses": 1864,
+      "win_rate": 43.9,
+      "settled": 3321,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 597,
+          "wr": 41.0
+        },
+        "regime_switch": {
+          "n": 477,
+          "wr": 34.2
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 42.1
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 39.4
+        },
+        "trade_flow": {
+          "n": 553,
+          "wr": 52.8
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 40.3
+        },
+        "orderbook_imbalance": {
+          "n": 288,
+          "wr": 53.1
+        },
+        "scalp_v2": {
+          "n": 334,
+          "wr": 37.7
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 53.8
+        }
+      }
+    },
+    "adaptive": {
+      "skipped": 0,
+      "wins": 1254,
+      "losses": 2058,
+      "win_rate": 37.9,
+      "settled": 3312,
+      "by_strategy": {
+        "failed_breakout": {
+          "n": 594,
+          "wr": 35.2
+        },
+        "regime_switch": {
+          "n": 477,
+          "wr": 32.5
+        },
+        "structural_break": {
+          "n": 140,
+          "wr": 38.6
+        },
+        "funding_arb": {
+          "n": 322,
+          "wr": 32.9
+        },
+        "trade_flow": {
+          "n": 552,
+          "wr": 45.3
+        },
+        "mtf_confluence": {
+          "n": 248,
+          "wr": 38.3
+        },
+        "orderbook_imbalance": {
+          "n": 286,
+          "wr": 43.4
+        },
+        "scalp_v2": {
+          "n": 331,
+          "wr": 29.6
+        },
+        "cross_asset": {
+          "n": 346,
+          "wr": 45.4
+        }
+      }
+    }
+  }
+}

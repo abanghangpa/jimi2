@@ -2,6 +2,7 @@
 from .base import BaseStrategy, SignalResult
 
 class CrossAssetStrategy(BaseStrategy):
+    min_vol_ratio = 0.12  # require above-average volume
     name = 'cross_asset'
     strategy_type = 'regime'
     description = 'Trade cross-asset divergences between ETH, BTC, and traditional markets'

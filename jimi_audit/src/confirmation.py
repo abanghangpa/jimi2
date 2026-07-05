@@ -12,14 +12,14 @@ PENDING_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 
 # Strategy-specific hold windows (hours)
 # Based on historical optimal windows from data analysis
 STRATEGY_HOLD_WINDOWS = {
-    'main_pipeline': 2,
-    'failed_breakout': 12,
-    'funding_arb': 6,
-    'orderbook_imbalance': 8,
-    'trade_flow': 24,
+    'main_pipeline': 4,           # was 2h, 46.4% WR — give more room to develop
+    'failed_breakout': 8,         # was 12h, 77.6% WR @ 8h — sweet spot
+    'funding_arb': 4,             # was 6h, 51.9% WR @ 4h — tighten
+    'orderbook_imbalance': 4,     # was 8h, 56.7% WR @ 2h — 8h too long
+    'trade_flow': 4,              # was 24h, 59.2% WR @ 2h — 24h way too long
     'cross_asset': 4,
     'mtf_confluence': 4,
-    'structural_break': 8,
+    'structural_break': 8,        # DISABLED (29.2% WR) — kept for pending signals only
     'scalp_v2': 2,
     'momentum_v2': 4,
     'squeeze_breakout': 4,

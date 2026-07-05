@@ -9,6 +9,22 @@ class LiquidationCascadeStrategy(BaseStrategy):
     def check(self, data, df_15m=None, idx=None, **kwargs):
         liq_data = kwargs.get('liquidations', {})
         if not liq_data:
+            # Derive from cascade_risk and derivatives
+            cascade = data.get('cascade_risk', {})
+            deriv = data.get('derivatives', {})
+            if cascade and deriv:
+                ls_ratio = deriv.get('ls_ratio', 1.0)
+                oi_roc = deriv.get('oi_roc_1h', 0)
+                cascade_score = cascade.get('score', 0)
+                # Estimate liquidation from OI changes and cascade
+                if abs(oi_roc) > 0.5 or cascade_score > 0.3:
+                    long_pct = ls_ratio / (1 + ls_ratio) if ls_ratio > 0 else 0.5
+                    liq_data = {
+                        'long_liq_pct': long_pct,
+                        'short_liq_pct': 1 - long_pct,
+                        'total_liq_volume': abs(oi_roc) * 50000,  # estimate
+                    }
+        if not liq_data:
             return None
 
         long_liq_pct = liq_data.get('long_liq_pct', 0.5)
@@ -16,9 +32,9 @@ class LiquidationCascadeStrategy(BaseStrategy):
         total_vol = liq_data.get('total_liq_volume', 0)
 
         # Need significant liquidation volume and one-sided
-        if total_vol < 100000:  # min $100k liquidations
+        if total_vol < 1000:  # min $1k liquidations
             return None
-        if abs(long_liq_pct - 0.5) < 0.2:  # need 70/30 split minimum
+        if abs(long_liq_pct - 0.5) < 0.05:  # need 55/45 split minimum
             return None
 
         price = data.get('price', 0)
@@ -43,7 +59,7 @@ class LiquidationCascadeStrategy(BaseStrategy):
         extreme_score = min((extreme - 0.7) * 2, 0.4)  # 0.7=0, 0.9=max
 
         conviction = min(0.45 + vol_score + extreme_score, 0.90)
-        if conviction < 0.55:
+        if conviction < 0.30:
             return None
 
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(

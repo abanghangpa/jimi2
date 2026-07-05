@@ -221,3 +221,7 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 ## Related
 
 - [Default AGENTS.md](/reference/AGENTS.default)
+
+## Auto-Log Rule
+
+After any meaningful discussion with a human — decisions, findings, strategy changes, bug diagnoses, implementation plans — automatically log a summary to `memory/YYYY-MM-DD.md`. Don't wait to be asked. If a session log exists (`jimi_audit/reports/session_log_*.md`), the cron extractor handles it. For live conversations, write directly to the memory file or use the sync webhook at `http://localhost:9877/note`.

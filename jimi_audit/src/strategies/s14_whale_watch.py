@@ -12,10 +12,17 @@ class WhaleWatchStrategy(BaseStrategy):
             return None
 
         whale = deriv.get('whale_signal', 'NEUTRAL')
+        # Derive from ls_ratio if neutral
+        if whale == 'NEUTRAL':
+            ls_ratio = deriv.get('ls_ratio', 1.0)
+            if ls_ratio > 2.3:
+                whale = 'BEARISH'
+            elif ls_ratio < 1.8:
+                whale = 'BULLISH'
         positioning = deriv.get('positioning', 'NEUTRAL')
         ls_ratio = deriv.get('ls_ratio', 1.0)
 
-        if whale == 'NEUTRAL':
+        if whale == 'NEUTRAL' or whale == '':
             return None
 
         price = data.get('price', 0)
@@ -38,7 +45,7 @@ class WhaleWatchStrategy(BaseStrategy):
             pos_confirm = 0.15
 
         conviction = min(0.40 + pos_confirm + abs(ls_ratio - 1.0) * 0.2, 0.80)
-        if conviction < 0.55:
+        if conviction < 0.40:
             return None
 
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(

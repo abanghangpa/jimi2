@@ -50,13 +50,11 @@ def check_coherence(direction, m4_div, m5_details, m13_bias, m9_regime,
             conflicts.append('M5 magnet above (pulls against SHORT)')
             penalty += cfg.get('COHERENCE_M5_PENALTY', 0.03)
 
-    # M13 bias vs direction (only when M13 is available, i.e. not in chop)
-    if m13_bias == 'BEARISH' and direction == 'LONG':
-        conflicts.append('M13 bearish structure on LONG')
-        penalty += cfg.get('COHERENCE_M13_PENALTY', 0.03)
-    elif m13_bias == 'BULLISH' and direction == 'SHORT':
-        conflicts.append('M13 bullish structure on SHORT')
-        penalty += cfg.get('COHERENCE_M13_PENALTY', 0.03)
+    # M13 bias vs direction — DISABLED as directional signal (V3 refactor)
+    # M13 is now a data provider (swing levels), not a directional source.
+    # Direction comes from M1/M2 momentum consensus. Keeping M13 as coherence
+    # check would penalize signals that correctly follow momentum against
+    # lagging structure. If needed, re-enable with swing_bias_1d instead.
 
     # M7 macro vs direction
     if m7_score < 0.35 and direction == 'LONG':

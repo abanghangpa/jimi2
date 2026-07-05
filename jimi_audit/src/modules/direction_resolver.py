@@ -216,25 +216,83 @@ def resolve_direction(regime, regime_score, m13_bias, m13_score,
         details['reason'] = f'regime={regime} is in block list'
         return 'NEUTRAL', 0.0, details
 
-    # ── Phase 2: Direction from Structure ──
-    # Primary: M13 HTF structure
+    # ── Phase 2: Direction from Multi-Source Consensus ──
+    # V2: M13 is ONE vote, not THE source. Direction comes from consensus of:
+    #   1. M9 regime directional hint
+    #   2. M13 structure bias
+    #   3. Daily swing bias
+    #   4. Target score tiebreaker
     direction = 'NEUTRAL'
+    long_votes = 0.0
+    short_votes = 0.0
+    vote_details = {}
 
+    # Vote 1: M9 Regime Direction Hint
+    if regime in ('CHOP_MILD_BEAR', 'NEUTRAL_TRENDING_BEAR'):
+        short_votes += 1.0
+        vote_details['regime'] = 'SHORT'
+    elif regime in ('CHOP_MILD_BULL', 'NEUTRAL_TRENDING_BULL'):
+        long_votes += 1.0
+        vote_details['regime'] = 'LONG'
+    elif regime in ('TRENDING',):
+        # Neutral trending — no vote from regime
+        vote_details['regime'] = 'NEUTRAL'
+    else:
+        vote_details['regime'] = 'NEUTRAL'
+
+    # Vote 2: M13 Structure Bias (reduced weight — was primary, now one input)
     if m13_bias in ('BULLISH', 'LEAN_BULL'):
-        direction = 'LONG'
+        long_votes += 0.75  # reduced from 1.0 — M13 is lagging
+        vote_details['m13'] = 'LONG'
     elif m13_bias in ('BEARISH', 'LEAN_BEAR'):
-        direction = 'SHORT'
+        short_votes += 0.75
+        vote_details['m13'] = 'SHORT'
+    else:
+        vote_details['m13'] = 'NEUTRAL'
 
-    # ── Phase 2a: Regime Direction Hint (CHOP_MILD_BEAR/BULL, NEUTRAL_TRENDING_BEAR/BULL) ──
-    # When M13 is NEUTRAL and regime has a directional lean, use it
-    if direction == 'NEUTRAL' and regime in ('CHOP_MILD_BEAR', 'CHOP_MILD_BULL',
-                                               'NEUTRAL_TRENDING_BEAR', 'NEUTRAL_TRENDING_BULL'):
-        if regime in ('CHOP_MILD_BEAR', 'NEUTRAL_TRENDING_BEAR'):
-            direction = 'SHORT'
-            details['regime_direction_hint'] = f'{regime} → SHORT'
-        elif regime in ('CHOP_MILD_BULL', 'NEUTRAL_TRENDING_BULL'):
-            direction = 'LONG'
-            details['regime_direction_hint'] = f'{regime} → LONG'
+    # Vote 3: Daily Swing Bias (if available)
+    if swing_bias_1d is not None:
+        if swing_bias_1d in ('BULLISH', 'LEAN_BULL'):
+            long_votes += 0.50
+            vote_details['daily_swing'] = 'LONG'
+        elif swing_bias_1d in ('BEARISH', 'LEAN_BEAR'):
+            short_votes += 0.50
+            vote_details['daily_swing'] = 'SHORT'
+        else:
+            vote_details['daily_swing'] = 'NEUTRAL'
+
+    # Vote 4: Target Score Tiebreaker
+    if long_target_score is not None and short_target_score is not None:
+        details['long_target_score'] = round(long_target_score, 3)
+        details['short_target_score'] = round(short_target_score, 3)
+        target_delta = long_target_score - short_target_score
+        if abs(target_delta) >= 0.10:
+            if target_delta > 0:
+                long_votes += 0.50
+                vote_details['targets'] = 'LONG'
+            else:
+                short_votes += 0.50
+                vote_details['targets'] = 'SHORT'
+        else:
+            vote_details['targets'] = 'NEUTRAL'
+
+    # Resolve consensus
+    details['votes'] = vote_details
+    details['long_votes'] = round(long_votes, 2)
+    details['short_votes'] = round(short_votes, 2)
+
+    vote_margin = abs(long_votes - short_votes)
+    if long_votes > short_votes and vote_margin >= 0.25:
+        direction = 'LONG'
+        details['direction_source'] = 'consensus'
+    elif short_votes > long_votes and vote_margin >= 0.25:
+        direction = 'SHORT'
+        details['direction_source'] = 'consensus'
+    else:
+        direction = 'NEUTRAL'
+        details['direction_source'] = 'no_consensus'
+        details['action'] = 'SKIP'
+        details['reason'] = f'No direction consensus (L={long_votes:.2f} S={short_votes:.2f})'
 
     # ── Phase 2a-2: Target Tiebreaker ──
     # When direction is still NEUTRAL, use target clarity to pick a side.

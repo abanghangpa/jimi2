@@ -1,0 +1,878 @@
+[
+  {
+    "name": "BASELINE",
+    "wins": 1314,
+    "losses": 2009,
+    "timeouts": 33,
+    "skipped": 0,
+    "settled": 3323,
+    "win_rate": 39.5,
+    "ci_95": [
+      37.9,
+      41.2,
+      39.5
+    ],
+    "signals": 3356,
+    "by_strategy": {
+      "cross_asset": {
+        "n": 346,
+        "wr": 45.4
+      },
+      "failed_breakout": {
+        "n": 597,
+        "wr": 36.0
+      },
+      "funding_arb": {
+        "n": 323,
+        "wr": 34.7
+      },
+      "mtf_confluence": {
+        "n": 248,
+        "wr": 38.3
+      },
+      "orderbook_imbalance": {
+        "n": 288,
+        "wr": 50.3
+      },
+      "regime_switch": {
+        "n": 477,
+        "wr": 31.9
+      },
+      "scalp_v2": {
+        "n": 335,
+        "wr": 32.8
+      },
+      "structural_break": {
+        "n": 140,
+        "wr": 39.3
+      },
+      "trade_flow": {
+        "n": 553,
+        "wr": 48.3
+      }
+    },
+    "by_direction": {
+      "cross_asset_LONG": {
+        "n": 126,
+        "wr": 35.7
+      },
+      "cross_asset_SHORT": {
+        "n": 220,
+        "wr": 50.9
+      },
+      "failed_breakout_LONG": {
+        "n": 462,
+        "wr": 36.1
+      },
+      "failed_breakout_SHORT": {
+        "n": 145,
+        "wr": 35.7
+      },
+      "funding_arb_LONG": {
+        "n": 327,
+        "wr": 34.7
+      },
+      "mtf_confluence_LONG": {
+        "n": 215,
+        "wr": 37.2
+      },
+      "mtf_confluence_SHORT": {
+        "n": 33,
+        "wr": 45.5
+      },
+      "orderbook_imbalance_LONG": {
+        "n": 141,
+        "wr": 44.3
+      },
+      "orderbook_imbalance_SHORT": {
+        "n": 150,
+        "wr": 56.1
+      },
+      "regime_switch_LONG": {
+        "n": 441,
+        "wr": 29.9
+      },
+      "regime_switch_SHORT": {
+        "n": 36,
+        "wr": 55.6
+      },
+      "scalp_v2_LONG": {
+        "n": 199,
+        "wr": 31.8
+      },
+      "scalp_v2_SHORT": {
+        "n": 142,
+        "wr": 34.3
+      },
+      "structural_break_LONG": {
+        "n": 83,
+        "wr": 21.7
+      },
+      "structural_break_SHORT": {
+        "n": 57,
+        "wr": 64.9
+      },
+      "trade_flow_LONG": {
+        "n": 254,
+        "wr": 40.3
+      },
+      "trade_flow_SHORT": {
+        "n": 305,
+        "wr": 55.0
+      }
+    }
+  },
+  {
+    "name": "trend_aligned (EMA200)",
+    "wins": 1314,
+    "losses": 2009,
+    "timeouts": 32,
+    "skipped": 1,
+    "settled": 3323,
+    "win_rate": 39.5,
+    "ci_95": [
+      37.9,
+      41.2,
+      39.5
+    ],
+    "signals": 3355,
+    "by_strategy": {
+      "cross_asset": {
+        "n": 346,
+        "wr": 45.4
+      },
+      "failed_breakout": {
+        "n": 597,
+        "wr": 36.0
+      },
+      "funding_arb": {
+        "n": 323,
+        "wr": 34.7
+      },
+      "mtf_confluence": {
+        "n": 248,
+        "wr": 38.3
+      },
+      "orderbook_imbalance": {
+        "n": 288,
+        "wr": 50.3
+      },
+      "regime_switch": {
+        "n": 477,
+        "wr": 31.9
+      },
+      "scalp_v2": {
+        "n": 335,
+        "wr": 32.8
+      },
+      "structural_break": {
+        "n": 140,
+        "wr": 39.3
+      },
+      "trade_flow": {
+        "n": 553,
+        "wr": 48.3
+      }
+    },
+    "by_direction": {
+      "cross_asset_LONG": {
+        "n": 126,
+        "wr": 35.7
+      },
+      "cross_asset_SHORT": {
+        "n": 220,
+        "wr": 50.9
+      },
+      "failed_breakout_LONG": {
+        "n": 462,
+        "wr": 36.1
+      },
+      "failed_breakout_SHORT": {
+        "n": 145,
+        "wr": 35.7
+      },
+      "funding_arb_LONG": {
+        "n": 327,
+        "wr": 34.7
+      },
+      "mtf_confluence_LONG": {
+        "n": 215,
+        "wr": 37.2
+      },
+      "mtf_confluence_SHORT": {
+        "n": 33,
+        "wr": 45.5
+      },
+      "orderbook_imbalance_LONG": {
+        "n": 141,
+        "wr": 44.3
+      },
+      "orderbook_imbalance_SHORT": {
+        "n": 150,
+        "wr": 56.1
+      },
+      "regime_switch_LONG": {
+        "n": 441,
+        "wr": 29.9
+      },
+      "regime_switch_SHORT": {
+        "n": 36,
+        "wr": 55.6
+      },
+      "scalp_v2_LONG": {
+        "n": 199,
+        "wr": 31.8
+      },
+      "scalp_v2_SHORT": {
+        "n": 142,
+        "wr": 34.3
+      },
+      "structural_break_LONG": {
+        "n": 83,
+        "wr": 21.7
+      },
+      "structural_break_SHORT": {
+        "n": 57,
+        "wr": 64.9
+      },
+      "trade_flow_LONG": {
+        "n": 254,
+        "wr": 40.3
+      },
+      "trade_flow_SHORT": {
+        "n": 304,
+        "wr": 55.0
+      }
+    }
+  },
+  {
+    "name": "trend_aligned_strict (>1%)",
+    "wins": 1314,
+    "losses": 2009,
+    "timeouts": 24,
+    "skipped": 9,
+    "settled": 3323,
+    "win_rate": 39.5,
+    "ci_95": [
+      37.9,
+      41.2,
+      39.5
+    ],
+    "signals": 3347,
+    "by_strategy": {
+      "cross_asset": {
+        "n": 346,
+        "wr": 45.4
+      },
+      "failed_breakout": {
+        "n": 597,
+        "wr": 36.0
+      },
+      "funding_arb": {
+        "n": 323,
+        "wr": 34.7
+      },
+      "mtf_confluence": {
+        "n": 248,
+        "wr": 38.3
+      },
+      "orderbook_imbalance": {
+        "n": 288,
+        "wr": 50.3
+      },
+      "regime_switch": {
+        "n": 477,
+        "wr": 31.9
+      },
+      "scalp_v2": {
+        "n": 335,
+        "wr": 32.8
+      },
+      "structural_break": {
+        "n": 140,
+        "wr": 39.3
+      },
+      "trade_flow": {
+        "n": 553,
+        "wr": 48.3
+      }
+    },
+    "by_direction": {
+      "cross_asset_LONG": {
+        "n": 126,
+        "wr": 35.7
+      },
+      "cross_asset_SHORT": {
+        "n": 220,
+        "wr": 50.9
+      },
+      "failed_breakout_LONG": {
+        "n": 460,
+        "wr": 36.1
+      },
+      "failed_breakout_SHORT": {
+        "n": 145,
+        "wr": 35.7
+      },
+      "funding_arb_LONG": {
+        "n": 325,
+        "wr": 34.7
+      },
+      "mtf_confluence_LONG": {
+        "n": 215,
+        "wr": 37.2
+      },
+      "mtf_confluence_SHORT": {
+        "n": 33,
+        "wr": 45.5
+      },
+      "orderbook_imbalance_LONG": {
+        "n": 140,
+        "wr": 44.3
+      },
+      "orderbook_imbalance_SHORT": {
+        "n": 150,
+        "wr": 56.1
+      },
+      "regime_switch_LONG": {
+        "n": 441,
+        "wr": 29.9
+      },
+      "regime_switch_SHORT": {
+        "n": 36,
+        "wr": 55.6
+      },
+      "scalp_v2_LONG": {
+        "n": 197,
+        "wr": 31.8
+      },
+      "scalp_v2_SHORT": {
+        "n": 142,
+        "wr": 34.3
+      },
+      "structural_break_LONG": {
+        "n": 83,
+        "wr": 21.7
+      },
+      "structural_break_SHORT": {
+        "n": 57,
+        "wr": 64.9
+      },
+      "trade_flow_LONG": {
+        "n": 253,
+        "wr": 40.3
+      },
+      "trade_flow_SHORT": {
+        "n": 304,
+        "wr": 55.0
+      }
+    }
+  },
+  {
+    "name": "vol_ratio > 0.15",
+    "wins": 219,
+    "losses": 406,
+    "timeouts": 11,
+    "skipped": 2720,
+    "settled": 625,
+    "win_rate": 35.0,
+    "ci_95": [
+      31.4,
+      38.9,
+      35.0
+    ],
+    "signals": 636,
+    "by_strategy": {
+      "cross_asset": {
+        "n": 75,
+        "wr": 57.3
+      },
+      "failed_breakout": {
+        "n": 114,
+        "wr": 30.7
+      },
+      "funding_arb": {
+        "n": 73,
+        "wr": 12.3
+      },
+      "mtf_confluence": {
+        "n": 39,
+        "wr": 10.3
+      },
+      "orderbook_imbalance": {
+        "n": 52,
+        "wr": 57.7
+      },
+      "regime_switch": {
+        "n": 74,
+        "wr": 18.9
+      },
+      "scalp_v2": {
+        "n": 74,
+        "wr": 35.1
+      },
+      "structural_break": {
+        "n": 38,
+        "wr": 2.6
+      },
+      "trade_flow": {
+        "n": 85,
+        "wr": 65.9
+      }
+    },
+    "by_direction": {
+      "cross_asset_LONG": {
+        "n": 29,
+        "wr": 0.0
+      },
+      "cross_asset_SHORT": {
+        "n": 46,
+        "wr": 93.5
+      },
+      "failed_breakout_LONG": {
+        "n": 72,
+        "wr": 4.3
+      },
+      "failed_breakout_SHORT": {
+        "n": 45,
+        "wr": 72.7
+      },
+      "funding_arb_LONG": {
+        "n": 75,
+        "wr": 12.3
+      },
+      "mtf_confluence_LONG": {
+        "n": 35,
+        "wr": 2.9
+      },
+      "orderbook_imbalance_LONG": {
+        "n": 26,
+        "wr": 20.0
+      },
+      "orderbook_imbalance_SHORT": {
+        "n": 27,
+        "wr": 92.6
+      },
+      "regime_switch_LONG": {
+        "n": 57,
+        "wr": 1.8
+      },
+      "scalp_v2_LONG": {
+        "n": 37,
+        "wr": 2.9
+      },
+      "scalp_v2_SHORT": {
+        "n": 40,
+        "wr": 64.1
+      },
+      "structural_break_LONG": {
+        "n": 38,
+        "wr": 2.6
+      },
+      "trade_flow_LONG": {
+        "n": 34,
+        "wr": 27.3
+      },
+      "trade_flow_SHORT": {
+        "n": 53,
+        "wr": 90.4
+      }
+    }
+  },
+  {
+    "name": "vol_ratio > 0.20",
+    "wins": 0,
+    "losses": 0,
+    "timeouts": 0,
+    "skipped": 3356,
+    "settled": 0,
+    "win_rate": 0,
+    "ci_95": null,
+    "signals": 0,
+    "by_strategy": {},
+    "by_direction": {}
+  },
+  {
+    "name": "vol_ratio > 0.25",
+    "wins": 0,
+    "losses": 0,
+    "timeouts": 0,
+    "skipped": 3356,
+    "settled": 0,
+    "win_rate": 0,
+    "ci_95": null,
+    "signals": 0,
+    "by_strategy": {},
+    "by_direction": {}
+  },
+  {
+    "name": "trend + vol>0.15",
+    "wins": 219,
+    "losses": 406,
+    "timeouts": 10,
+    "skipped": 2721,
+    "settled": 625,
+    "win_rate": 35.0,
+    "ci_95": [
+      31.4,
+      38.9,
+      35.0
+    ],
+    "signals": 635,
+    "by_strategy": {
+      "cross_asset": {
+        "n": 75,
+        "wr": 57.3
+      },
+      "failed_breakout": {
+        "n": 114,
+        "wr": 30.7
+      },
+      "funding_arb": {
+        "n": 73,
+        "wr": 12.3
+      },
+      "mtf_confluence": {
+        "n": 39,
+        "wr": 10.3
+      },
+      "orderbook_imbalance": {
+        "n": 52,
+        "wr": 57.7
+      },
+      "regime_switch": {
+        "n": 74,
+        "wr": 18.9
+      },
+      "scalp_v2": {
+        "n": 74,
+        "wr": 35.1
+      },
+      "structural_break": {
+        "n": 38,
+        "wr": 2.6
+      },
+      "trade_flow": {
+        "n": 85,
+        "wr": 65.9
+      }
+    },
+    "by_direction": {
+      "cross_asset_LONG": {
+        "n": 29,
+        "wr": 0.0
+      },
+      "cross_asset_SHORT": {
+        "n": 46,
+        "wr": 93.5
+      },
+      "failed_breakout_LONG": {
+        "n": 72,
+        "wr": 4.3
+      },
+      "failed_breakout_SHORT": {
+        "n": 45,
+        "wr": 72.7
+      },
+      "funding_arb_LONG": {
+        "n": 75,
+        "wr": 12.3
+      },
+      "mtf_confluence_LONG": {
+        "n": 35,
+        "wr": 2.9
+      },
+      "orderbook_imbalance_LONG": {
+        "n": 26,
+        "wr": 20.0
+      },
+      "orderbook_imbalance_SHORT": {
+        "n": 27,
+        "wr": 92.6
+      },
+      "regime_switch_LONG": {
+        "n": 57,
+        "wr": 1.8
+      },
+      "scalp_v2_LONG": {
+        "n": 37,
+        "wr": 2.9
+      },
+      "scalp_v2_SHORT": {
+        "n": 40,
+        "wr": 64.1
+      },
+      "structural_break_LONG": {
+        "n": 38,
+        "wr": 2.6
+      },
+      "trade_flow_LONG": {
+        "n": 34,
+        "wr": 27.3
+      },
+      "trade_flow_SHORT": {
+        "n": 52,
+        "wr": 90.4
+      }
+    }
+  },
+  {
+    "name": "trend + vol>0.20",
+    "wins": 0,
+    "losses": 0,
+    "timeouts": 0,
+    "skipped": 3356,
+    "settled": 0,
+    "win_rate": 0,
+    "ci_95": null,
+    "signals": 0,
+    "by_strategy": {},
+    "by_direction": {}
+  },
+  {
+    "name": "trend_dir aligned",
+    "wins": 1314,
+    "losses": 1969,
+    "timeouts": 18,
+    "skipped": 55,
+    "settled": 3283,
+    "win_rate": 40.0,
+    "ci_95": [
+      38.4,
+      41.7,
+      40.0
+    ],
+    "signals": 3301,
+    "by_strategy": {
+      "cross_asset": {
+        "n": 346,
+        "wr": 45.4
+      },
+      "failed_breakout": {
+        "n": 587,
+        "wr": 36.6
+      },
+      "funding_arb": {
+        "n": 316,
+        "wr": 35.4
+      },
+      "mtf_confluence": {
+        "n": 243,
+        "wr": 39.1
+      },
+      "orderbook_imbalance": {
+        "n": 287,
+        "wr": 50.5
+      },
+      "regime_switch": {
+        "n": 477,
+        "wr": 31.9
+      },
+      "scalp_v2": {
+        "n": 324,
+        "wr": 34.0
+      },
+      "structural_break": {
+        "n": 140,
+        "wr": 39.3
+      },
+      "trade_flow": {
+        "n": 547,
+        "wr": 48.8
+      }
+    },
+    "by_direction": {
+      "cross_asset_LONG": {
+        "n": 126,
+        "wr": 35.7
+      },
+      "cross_asset_SHORT": {
+        "n": 220,
+        "wr": 50.9
+      },
+      "failed_breakout_LONG": {
+        "n": 447,
+        "wr": 36.9
+      },
+      "failed_breakout_SHORT": {
+        "n": 145,
+        "wr": 35.7
+      },
+      "funding_arb_LONG": {
+        "n": 316,
+        "wr": 35.4
+      },
+      "mtf_confluence_LONG": {
+        "n": 210,
+        "wr": 38.1
+      },
+      "mtf_confluence_SHORT": {
+        "n": 33,
+        "wr": 45.5
+      },
+      "orderbook_imbalance_LONG": {
+        "n": 139,
+        "wr": 44.6
+      },
+      "orderbook_imbalance_SHORT": {
+        "n": 150,
+        "wr": 56.1
+      },
+      "regime_switch_LONG": {
+        "n": 441,
+        "wr": 29.9
+      },
+      "regime_switch_SHORT": {
+        "n": 36,
+        "wr": 55.6
+      },
+      "scalp_v2_LONG": {
+        "n": 184,
+        "wr": 33.7
+      },
+      "scalp_v2_SHORT": {
+        "n": 142,
+        "wr": 34.3
+      },
+      "structural_break_LONG": {
+        "n": 83,
+        "wr": 21.7
+      },
+      "structural_break_SHORT": {
+        "n": 57,
+        "wr": 64.9
+      },
+      "trade_flow_LONG": {
+        "n": 247,
+        "wr": 41.3
+      },
+      "trade_flow_SHORT": {
+        "n": 305,
+        "wr": 55.0
+      }
+    }
+  },
+  {
+    "name": "EMA200 + trend_dir",
+    "wins": 1314,
+    "losses": 1969,
+    "timeouts": 17,
+    "skipped": 56,
+    "settled": 3283,
+    "win_rate": 40.0,
+    "ci_95": [
+      38.4,
+      41.7,
+      40.0
+    ],
+    "signals": 3300,
+    "by_strategy": {
+      "cross_asset": {
+        "n": 346,
+        "wr": 45.4
+      },
+      "failed_breakout": {
+        "n": 587,
+        "wr": 36.6
+      },
+      "funding_arb": {
+        "n": 316,
+        "wr": 35.4
+      },
+      "mtf_confluence": {
+        "n": 243,
+        "wr": 39.1
+      },
+      "orderbook_imbalance": {
+        "n": 287,
+        "wr": 50.5
+      },
+      "regime_switch": {
+        "n": 477,
+        "wr": 31.9
+      },
+      "scalp_v2": {
+        "n": 324,
+        "wr": 34.0
+      },
+      "structural_break": {
+        "n": 140,
+        "wr": 39.3
+      },
+      "trade_flow": {
+        "n": 547,
+        "wr": 48.8
+      }
+    },
+    "by_direction": {
+      "cross_asset_LONG": {
+        "n": 126,
+        "wr": 35.7
+      },
+      "cross_asset_SHORT": {
+        "n": 220,
+        "wr": 50.9
+      },
+      "failed_breakout_LONG": {
+        "n": 447,
+        "wr": 36.9
+      },
+      "failed_breakout_SHORT": {
+        "n": 145,
+        "wr": 35.7
+      },
+      "funding_arb_LONG": {
+        "n": 316,
+        "wr": 35.4
+      },
+      "mtf_confluence_LONG": {
+        "n": 210,
+        "wr": 38.1
+      },
+      "mtf_confluence_SHORT": {
+        "n": 33,
+        "wr": 45.5
+      },
+      "orderbook_imbalance_LONG": {
+        "n": 139,
+        "wr": 44.6
+      },
+      "orderbook_imbalance_SHORT": {
+        "n": 150,
+        "wr": 56.1
+      },
+      "regime_switch_LONG": {
+        "n": 441,
+        "wr": 29.9
+      },
+      "regime_switch_SHORT": {
+        "n": 36,
+        "wr": 55.6
+      },
+      "scalp_v2_LONG": {
+        "n": 184,
+        "wr": 33.7
+      },
+      "scalp_v2_SHORT": {
+        "n": 142,
+        "wr": 34.3
+      },
+      "structural_break_LONG": {
+        "n": 83,
+        "wr": 21.7
+      },
+      "structural_break_SHORT": {
+        "n": 57,
+        "wr": 64.9
+      },
+      "trade_flow_LONG": {
+        "n": 247,
+        "wr": 41.3
+      },
+      "trade_flow_SHORT": {
+        "n": 304,
+        "wr": 55.0
+      }
+    }
+  }
+]

@@ -1,0 +1,500 @@
+            "action": "London assesses China easing impact on global demand. Commodity bid if cut is aggressive.",
+            "duration": "~6h",
+            "key_signal": "CNY/USD fixing. Commodity prices."
+          },
+          {
+            "session": "US (same day)",
+            "action": "US desks price in China stimulus. Risk-on if cut is meaningful. Property data follows to validate.",
+            "duration": "~8h",
+            "key_signal": "China property developer stress signals."
+          }
+        ],
+        "trading_implication": "PBOC cut = slow-burn catalyst. Effect builds over 1-2 weeks, not immediate. Front-run by credit impulse data."
+      },
+      "eu_ecb": {
+        "release_session": "europe",
+        "release_time_utc": "13:15",
+        "cascade": [
+          {
+            "session": "EUROPE (decision + presser)",
+            "action": "Rate + QT guidance. Lagarde presser = forward guidance. EUR/USD driver.",
+            "duration": "~2h",
+            "key_signal": "Rate vs consensus. Lagarde hawkish/dovish pivot."
+          },
+          {
+            "session": "US (same day)",
+            "action": "NY uses ECB to adjust DXY positioning. ECB hawkish = EUR up = DXY down = ETH bid.",
+            "duration": "~8h",
+            "key_signal": "DXY reaction. EUR/USD direction."
+          },
+          {
+            "session": "ASIA (next day)",
+            "action": "Carry trade adjustment. Global rate differential repricing.",
+            "duration": "~8h",
+            "key_signal": "USD/JPY. Cross-asset flows."
+          }
+        ],
+        "trading_implication": "ECB moves first \u2192 reprices DXY \u2192 FOMC adjusts. Watch for DXY trend reversal."
+      },
+      "jp_boj": {
+        "release_session": "asia",
+        "release_time_utc": "~03:00",
+        "cascade": [
+          {
+            "session": "ASIA (release)",
+            "action": "HIGHEST SINGLE-EVENT RISK. BoJ hike = carry unwind = ETH drops fast. Aug 2024: -20% in 3 days.",
+            "duration": "~4h",
+            "key_signal": "Rate decision. YCC adjustment. Forward guidance."
+          },
+          {
+            "session": "EUROPE (same day)",
+            "action": "London inherits carry unwind. If BoJ hiked \u2192 massive yen strengthening \u2192 global risk-off cascade.",
+            "duration": "~6h",
+            "key_signal": "USD/JPY level. Nikkei direction. Cross-asset contagion."
+          },
+          {
+            "session": "US (same day)",
+            "action": "NY amplifies or fades the move. If carry unwind is happening \u2192 US risk assets sell too.",
+            "duration": "~8h",
+            "key_signal": "VIX spike. Treasury yield reaction. DXY."
+          },
+          {
+            "session": "ASIA (next day)",
+            "action": "Second wave positioning. If initial move was extreme \u2192 potential reversal. If measured \u2192 continuation.",
+            "duration": "~8h",
+            "key_signal": "Nikkei recovery. USD/JPY stabilization."
+          }
+        ],
+        "trading_implication": "BoJ hike = reduce ALL crypto exposure immediately. Carry unwind is the #1 tail risk for ETH."
+      }
+    }
+  },
+  "macro_indicators": {
+    "caixin_mfg_pmi": {
+      "actual": 50.7,
+      "previous": 51.2,
+      "source": "hardcoded_releases",
+      "timestamp": "2026-06-23T06:00:20.269376+00:00",
+      "surprise": "MISS"
+    },
+    "nbs_mfg_pmi": null,
+    "ism_mfg_pmi": null,
+    "ism_svc_pmi": null,
+    "jolts": null,
+    "china_cpi_ppi": null,
+    "uk_cpi": null,
+    "uk_wages": null,
+    "us_retail_sales": null,
+    "us_housing_starts": null,
+    "pboc_lpr": null,
+    "adp_employment": null,
+    "nfp": null,
+    "ifo": null,
+    "ums": null,
+    "germany_cpi": null,
+    "ez_cpi": null,
+    "ez_gdp": null,
+    "us_gdp": null,
+    "us_durables": null,
+    "us_pce": null,
+    "jp_cpi": null,
+    "cb_consumer_confidence": null,
+    "uk_gdp_monthly": null,
+    "rba_rate": null,
+    "au_cpi": null,
+    "china_gdp": null,
+    "treasury_auction": null
+  },
+  "conflict_resolution": {
+    "has_conflict": true,
+    "conflict_type": "DIRECTION_DIVERGENCE",
+    "severity": "LOW",
+    "summary": "SHORT bias conflicted: 1 signals against vs 4 supporting. LOW severity.",
+    "factors_for": [
+      "M13 structure: BEARISH",
+      "Daily swing bias: BEARISH",
+      "M3 VWAP PASS \u2014 price below VWAP zone",
+      "M9 regime: NEUTRAL (favorable)"
+    ],
+    "factors_against": [
+      "Whales WHALE_BULLISH \u2014 smart money against SHORT"
+    ],
+    "precaution": "Direction resolver says SHORT but smart money disagrees.",
+    "action_plan": [
+      "Key level: $1567-$1569 (support_level)",
+      "Watch for resolution:",
+      "  \u2192 WYCKOFF_ACCUMULATION: sweep below + volume recovery",
+      "    \u2022 Price sweeps below $1567",
+      "    \u2022 Volume spike on sweep (capitulation)",
+      "    \u2022 Price recovers above zone within 3 bars",
+      "  \u2192 GENUINE_BREAKDOWN: sweep below + hold below",
+      "    \u2022 Price holds below $1567 for 3+ bars",
+      "    \u2022 Volume expands on breakdown"
+    ],
+    "forward_test": {
+      "key_level_low": 1567.16,
+      "key_level_high": 1569.19,
+      "level_name": "support_level",
+      "resolution": "PENDING",
+      "scenarios": [
+        {
+          "name": "WYCKOFF_ACCUMULATION",
+          "direction": "LONG",
+          "trigger": "sweep below + volume recovery",
+          "conditions": [
+            "Price sweeps below $1567",
+            "Volume spike on sweep (capitulation)",
+            "Price recovers above zone within 3 bars"
+          ],
+          "confidence": 0.7
+        },
+        {
+          "name": "GENUINE_BREAKDOWN",
+          "direction": "SHORT",
+          "trigger": "sweep below + hold below",
+          "conditions": [
+            "Price holds below $1567 for 3+ bars",
+            "Volume expands on breakdown"
+          ],
+          "confidence": 0.5
+        }
+      ]
+    },
+    "historical_pattern": {
+      "position": "mid_range",
+      "pattern_key": [
+        "mid_range",
+        "NEUTRAL",
+        "ACCUMULATION"
+      ],
+      "expected_path": "NO_DOMINANT_PATH",
+      "sweep_rate": 0.5,
+      "bounce_rate": 0.31,
+      "avg_sweep_bars": 12,
+      "avg_bounce_rr": 1.1,
+      "confidence": "LOW",
+      "sample_size": 0,
+      "description": "No dominant pattern at mid-range \u2014 wait for edge",
+      "regime_mult": 1.05,
+      "phase0_mult": 0.85,
+      "resolution_hint": "NEUTRAL"
+    }
+  },
+  "power_of_3": {
+    "phase": "MANIPULATION",
+    "confidence": 0.3,
+    "direction": "LONG",
+    "narrative": "Phase ambiguous \u2014 insufficient signal alignment. \n\u23f3 Sweep PENDING \u2014 momentum heading toward $1561. Watch for volume spike at the level to confirm sweep. \ud83d\udcca M4b: momentum still pushing toward sweep level.",
+    "signals_for": [
+      "Structure BEARISH but whales WHALE_BULLISH \u2014 order flow divergence"
+    ],
+    "signals_against": [
+      "ACCUMULATION score=0.15",
+      "MARKDOWN score=0.10",
+      "DISTRIBUTION score=0.05"
+    ],
+    "key_level": 1561.34,
+    "key_level_name": "judas_sweep_target",
+    "trade_bias": "WAIT",
+    "sweep_status": "PENDING",
+    "sweep_level": 1561.34,
+    "reversal_target": null,
+    "reversal_target_name": "",
+    "timing_signal": "SWEEP_IMMINENT",
+    "entry_zone_low": null,
+    "entry_zone_high": null,
+    "invalidation": null,
+    "target_tiers": [
+      {
+        "price": 1563.4867599999998,
+        "type": "LONG_STOP",
+        "strength": 37.81628313546041,
+        "distance_pct": 0.13749471607720665,
+        "reasoning": "Long stops (str=37.81628313546041, cascade=LOW)",
+        "is_primary": false
+      },
+      {
+        "price": 1561.34,
+        "type": "LONG_LIQ",
+        "strength": 48.0,
+        "distance_pct": 0.0,
+        "reasoning": "Long liquidations (str=48.0, cascade=LOW)",
+        "is_primary": false
+      },
+      {
+        "price": 1557.7,
+        "type": "SUPPORT",
+        "strength": 44.0,
+        "distance_pct": -0.23313307799709693,
+        "reasoning": "Support (44 touches)",
+        "is_primary": false
+      },
+      {
+        "price": 1554.55,
+        "type": "SUPPORT",
+        "strength": 39.0,
+        "distance_pct": -0.434882857033059,
+        "reasoning": "Support (39 touches)",
+        "is_primary": false
+      },
+      {
+        "price": 1551.93,
+        "type": "LONG_LIQ",
+        "strength": 50.6,
+        "distance_pct": -0.6026874351518474,
+        "reasoning": "Long liquidations (str=50.6, cascade=LOW)",
+        "is_primary": false
+      },
+      {
+        "price": 1542.916188,
+        "type": "STAT_MEDIAN",
+        "strength": 0,
+        "distance_pct": -1.18,
+        "reasoning": "Historical median drop (1.18% from sweep high)",
+        "is_primary": true
+      },
+      {
+        "price": 1535.1094879999998,
+        "type": "STAT_AVERAGE",
+        "strength": 0,
+        "distance_pct": -1.68,
+        "reasoning": "Historical avg drop (1.68% from sweep high)",
+        "is_primary": true
+      }
+    ],
+    "sweep_completeness": null,
+    "zone_sweep": {
+      "zone_swept": false,
+      "zone_high": 1567.47,
+      "swept_levels": [
+        {
+          "type": "SR",
+          "price": 1564.0,
+          "strength": 74.0,
+          "hit": false
+        },
+        {
+          "type": "SR",
+          "price": 1560.85,
+          "strength": 53.0,
+          "hit": false
+        },
+        {
+          "type": "SR",
+          "price": 1557.7,
+          "strength": 44.0,
+          "hit": false
+        },
+        {
+          "type": "LIQ",
+          "price": 1563.4867599999998,
+          "strength": 37.81628313546041,
+          "hit": false
+        },
+        {
+          "type": "LIQ",
+          "price": 1561.34,
+          "strength": 48.0,
+          "hit": false
+        }
+      ],
+      "bars_ago": 0,
+      "is_fresh": true,
+      "zone_center": 1561.34
+    },
+    "judas_sweep_stats": {
+      "estimated_sweep_pct": 0.0,
+      "depth_match": {
+        "depth_label": "shallow (0.1-0.2%)",
+        "depth_count": 314,
+        "depth_reversal_rate": 0.799,
+        "depth_avg_drop": 1.68,
+        "overall_reversal_rate": 0.825,
+        "overall_avg_drop": 1.68,
+        "overall_median_drop": 1.18,
+        "avg_extension": 2.45,
+        "median_time_bars": 6,
+        "mean_time_bars": 10,
+        "p75_time_bars": 15,
+        "recent_reversal_rate": 0.796,
+        "recent_avg_drop": 1.96
+      },
+      "historical": {
+        "count": 526,
+        "reversal_gt_03": 0.825,
+        "reversal_gt_05": 0.684,
+        "reversal_gt_10": 0.475,
+        "avg_drop": 1.68,
+        "median_drop": 1.18,
+        "avg_extension": 2.45
+      },
+      "time_to_reversal": {
+        "median_bars": 6,
+        "mean_bars": 10,
+        "p75_bars": 15,
+        "max_bars": 48
+      },
+      "recent": {
+        "count": 142,
+        "reversal_gt_03": 0.796,
+        "reversal_gt_05": 0.641,
+        "reversal_gt_10": 0.423,
+        "avg_drop": 1.96,
+        "median_drop": 1.15
+      }
+    }
+  }
+}
+
+══════════════════════════════════════════════════════════════════════
+  📅 MACRO CALENDAR v2 — GLOBAL DATA RELEASE TRACKER
+══════════════════════════════════════════════════════════════════════
+
+  Now: 2026-06-28T19:07:27.184353+00:00
+  Phase: 📊 LATE_MONTH — Tokyo CPI, Core PCE, PMI prep
+  Next major: Month-end PMIs → next NFP
+  Regime: NEUTRAL
+
+  ⚡ NEXT 24 HOURS:
+    🟡     4h 52m  Germany CPI                              🇩🇪 Germany
+
+  📋 UPCOMING EVENTS (next 30 days):
+      #  Countdown  Event                                    Country      Impact  
+    ─── ──────────  ──────────────────────────────────────── ──────────── ────────
+     10 🟡     4h 52m  Germany CPI                              🇩🇪 Germany   MEDIUM  
+     11 🟡     1d 14h  Eurozone CPI Flash                       🇪🇺 Eurozone  MEDIUM  
+     02 🟡      2d 5h  NBS Manufacturing + Services PMI         🇨🇳 China     MEDIUM  
+     01 🟡      2d 6h  China Caixin Manufacturing PMI           🇨🇳 China     MEDIUM  
+     16 ⚪     2d 17h  ADP Employment Report                    🇺🇸 US        LOW     
+     05 🟡     2d 18h  US ISM Manufacturing PMI                 🇺🇸 US        MEDIUM  
+     17 🟡     3d 18h  Jobless Claims (Initial + Continuing)    🇺🇸 US        MEDIUM  
+     18 🟠     4d 18h  Non-Farm Payrolls (NFP)                  🇺🇸 US        HIGH    
+     06 🟡     4d 18h  US ISM Services PMI                      🇺🇸 US        MEDIUM  
+     19 ⚪     4d 18h  JOLTS Job Openings                       🇺🇸 US        LOW     
+     09 ⚪      8d 8h  RBA Rate Decision                        🇦🇺 Australia LOW     
+      — ⚪      9d 7h  China Trade Balance                      🇨🇳 China     LOW     
+     34 ⚪    10d 23h  FOMC Meeting Minutes                     🇺🇸 US        LOW     
+     15 🟡     11d 6h  China CPI + PPI                          🇨🇳 China     MEDIUM  
+      — 🟡     13d 4h  China Credit Data (TSF)                  🇨🇳 China     MEDIUM  
+     13 🔴    13d 18h  US CPI (Headline + Core)                 🇺🇸 US        HIGHEST 
+     35 ⚪    14d 10h  UK GDP Monthly                           🇬🇧 UK        LOW     
+     14 🟡    14d 18h  US PPI (Producer Price Index)            🇺🇸 US        MEDIUM  
+     27 ⚪    15d 18h  Michigan Consumer Sentiment              🇺🇸 US        LOW     
+     28 🟡    16d 18h  US Retail Sales                          🇺🇸 US        MEDIUM  
+     36 ⚪    18d 18h  US Housing Starts + Building Permits     🇺🇸 US        LOW     
+     30 🟡     19d 7h  China GDP (Quarterly)                    🇨🇳 China     MEDIUM  
+     12 🟡    19d 10h  UK CPI                                   🇬🇧 UK        MEDIUM  
+     31 🟠     21d 6h  PBoC LPR Decision                        🇨🇳 China     HIGH    
+     03 🟡    23d 12h  Eurozone Flash PMI (Composite)           🇪🇺 Eurozone  MEDIUM  
+
+  🔗 WHAT COMES NEXT (next 3 events):
+
+    🟡 Germany CPI  (4h 52m)
+      → Eurozone CPI Flash — released 1-2 days later, Germany leads the number
+      → ECB Rate Decision — hot German CPI = ECB hawkish pressure
+      → EUR/USD direction — strong CPI = ECB tightening = EUR up = DXY down
+
+    🟡 Eurozone CPI Flash  (1d 14h)
+      → ECB Rate Decision — CPI is #1 input, hot = hold/hike, cool = cut
+      → US CPI — released ~2 weeks later, global inflation comparison
+      → Core PCE (US) — US PCE follows ~4 weeks later, confirms/diverges
+
+    🟡 NBS Manufacturing + Services PMI  (2d 5h)
+      → Caixin Services PMI — private services side, divergence from official
+      → RBA Rate Decision — Australia reacts to China data (top trade partner)
+      → Eurozone Flash PMI — Europe PMI drops same week, narrative chain
+
+  🌐 SESSION CASCADE (how data flows across trading desks):
+
+    🟡 NBS Manufacturing + Services PMI  (2d 5h)
+      ASIA (release): Official state survey. Larger sample than Caixin. Divergence from Caixin = government vs p
+      EUROPE (same day): European desks use NBS + Caixin together. Agreement = strong signal. Disagreement = wait f
+      US (same day): US uses China PMI cluster to position for ISM. Strong China = commodity bid, risk-on.
+      💡 NBS vs Caixin divergence = reduced conviction. Agreement = high conviction directional.
+
+    🟡 China Caixin Manufacturing PMI  (2d 6h)
+      ASIA (release): First mover. BEAT = slight bearish bias (-0.14% avg). MISS = slight bullish (+0.34% avg). 
+      EUROPE (same day): London inherits Asia direction 81% of the time. Front-runs upcoming Eurozone Flash PMI. St
+      US (same day): New York calibrates baseline for US ISM Manufacturing PMI (~2 days later). US session is w
+      ASIA RE-OPEN (next day): NBS PMI drops. Caixin/NBS divergence does NOT reliably cause reversal (only 10-16% rate). 
+      💡 BEAT = BUY (+1.3%, 67% WR). MISS = BUY (+0.4%, 50% WR). STRONG_BEAT = flat (avoid). Phase0 < 0.15 = AVOID entirely. Phase0 0.15-0.30 + MISS = best setup.
+
+    🟠 Non-Farm Payrolls (NFP)  (4d 18h)
+      US (release): Biggest single release. Immediate ±1.2% avg move. Employment + wages + unemployment = full
+      ASIA (next day): Asian desks digest NFP. If strong → Fed hawkish repricing → USD up → ETH pressure. If weak
+      EUROPE (next day): London confirms or fades Asia interpretation. ECB positioning adjusts to Fed expectations 
+      US (next day, 2nd pass): Full digestion. Fed speeches begin. Market reprices rate path. CPI (2nd week) becomes the 
+      💡 NFP sets tone for 1-2 weeks. Extreme reactions fade after 4h. Wait for 2nd US session for trend confirmation.
+
+  🔗 NARRATIVE CHAINS:
+
+    🔥 INFLATION CHAIN (most ETH-sensitive)
+      China CPI/PPI → Germany CPI → Eurozone CPI Flash → US CPI (headline + core) → US PPI → Core PCE → ...
+      Sensitivity: HIGHEST | CPI is the #1 ETH macro mover. Core PCE is the Fed's actual target.
+
+    👷 LABOUR CHAIN
+      JOLTS Job Openings → ADP Employment → Jobless Claims → NFP + Unemployment + Wages → Fed speeches → CME FedWatch repricing → ...
+      Sensitivity: HIGH | NFP sets the tone, CPI confirms. Claims is weekly context.
+
+    📈 GROWTH CHAIN
+      China GDP → Eurozone GDP Flash → Germany GDP → US GDP Advance → Corporate earnings backdrop → Risk-on / risk-off regime
+      Sensitivity: MEDIUM | GDP is quarterly — sets macro backdrop, not a trade trigger.
+
+    🏦 CENTRAL BANK CHAIN
+      BoJ decision (carry trade) → ECB decision (EUR/USD) → BoE decision (GBP/USD) → FOMC decision (DXY) → Powell presser → 10Y yield → ...
+      Sensitivity: HIGH | BoJ is the tail risk (carry unwind). FOMC is the primary driver.
+
+  📡 REAL-TIME SIGNALS (watch alongside scheduled data):
+    📈 USD/JPY                Yen spike = carry unwind = ETH drops fast  (direct)
+    📉 DXY (Dollar Index)     Strong dollar = crypto headwind  (inverse)
+    📉 10Y Treasury Yield     Yield spike = risk-off = ETH sells  (inverse)
+    📉 VIX (Fear Gauge)       Above 20 = caution, above 30 = panic  (inverse)
+    📉 WTI / Brent Crude      Oil spike = inflation fear = ETH pressure  (inverse)
+    ↔️ Gold                   Safe haven, often co-moves with BTC/ETH  (correlated)
+    📈 CME FedWatch           Real-time rate cut/hike probability  (direct)
+    📈 ETH Funding Rate       Internal crypto signal for leverage bias  (direct)
+
+  📍 CURRENT WEEK:
+    WEEK 4 (22nd–31st) — End-of-month — PCE, PMI prep, cycle reset
+    💡 Core PCE (Fed target!) + Tokyo CPI → BOJ risk. Germany CPI previews EU CPI.
+
+  🏗️ EVENT CLASSIFICATION (how events move ETH):
+
+    🔴 REGIME BREAKERS (setup invalidation risk)
+      CPI/FOMC events cause regime shifts — repricing trend changes. Powell pressers cause second-leg volatility after the decision.
+      💡 Do NOT hold directional positions through these. Wait for dust to settle.
+
+    💥 DIRECTIONAL TRIGGERS (trend acceleration or reversal)
+      NFP sets directional volatility. Jobs + wages = full picture.
+      💡 Avg ±1.2% on release, sets tone for 1-2 weeks. Fade extreme reactions after 4h.
+
+    📊 TRANSMISSION VARIABLES (trend drivers)
+      10Y yield and DXY are not "events" — they are continuous structure. They determine whether setups like SMC, FVG, or BOS are valid or fragile.
+      💡 Monitor continuously. Rising DXY + rising yields = crypto headwind regardless of on-chain signals.
+
+    🔄 CONTINUOUS SENTIMENT / POSITIONING (filters)
+      VIX, FedWatch, funding rates. Not news events — positioning pressure gauges.
+      💡 Use as filters, not triggers. VIX >20 = caution, >30 = panic.
+
+    ⚡ MICRO CATALYSTS (often overlooked)
+      Treasury auctions, jobless claims, PPI. Short-lived unless reinforcing a broader trend. More of a confirmation catalyst than primary driver.
+      💡 Auction impact is usually short-lived unless it reinforces a broader yield trend. Claims trend over 4 weeks matters more than single print.
+
+  📐 REGIME HIERARCHY (most → least impact):
+    • CPI / FOMC — Regime breakers — setup invalidation risk
+    • NFP — Directional volatility trigger — trend acceleration or reversal
+    • DXY + 10Y — Structure of liquidity — decides whether SMC works
+    • VIX / futures — Positioning pressure — risk appetite gauge
+    • Auctions / claims / PPI — Secondary confirmation signals
+
+  🔗 TRANSMISSION CHAIN:
+    Data release → Rate expectations (FedWatch) → DXY/10Y yield → Global risk appetite → ETH/USDT price
+
+  📍 WHERE ARE WE IN THE CYCLE?
+    Phase: 📊 LATE_MONTH
+    Tokyo CPI, Core PCE, PMI prep
+    💡 Core PCE (Fed target!) + Tokyo CPI → BOJ risk. Germany CPI previews EU CPI.
+
+══════════════════════════════════════════════════════════════════════
+
+  📊 Derivatives snapshot #872: OI=$3.64B  L/S=2.2982  taker=1.2516  fr=0.000019

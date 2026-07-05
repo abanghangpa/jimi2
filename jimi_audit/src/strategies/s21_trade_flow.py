@@ -1,10 +1,13 @@
-"""S21: Trade Flow Momentum — follow aggressive recent trade flow."""
+"""S21: Trade Flow Momentum — follow aggressive recent trade flow.
+Fixes: Don't SHORT when price > EMA200 (uptrend), don't LONG when price < EMA200 (downtrend).
+Reduced SHORT sensitivity."""
 from .base import BaseStrategy, SignalResult
 
 class TradeFlowStrategy(BaseStrategy):
+    min_vol_ratio = 0.15
     name = 'trade_flow'
     strategy_type = 'flow'
-    description = 'Follow aggressive trade flow when recent trades show strong directional pressure'
+    description = 'Follow aggressive trade flow with trend alignment'
 
     def check(self, data, df_15m=None, idx=None, **kwargs):
         trade_data = kwargs.get('trade_flow', {})
@@ -18,10 +21,11 @@ class TradeFlowStrategy(BaseStrategy):
 
         price = data.get('price', 0)
         atr = data.get('atr', 0)
+        ema_200 = data.get('ema_200', 0)
         if not price or not atr:
             return None
 
-        # Need strong directional flow
+        # Direction from flow
         if taker_ratio > 0.60 and net_flow > 0:
             direction = 'LONG'
         elif taker_ratio < 0.40 and net_flow < 0:
@@ -29,11 +33,16 @@ class TradeFlowStrategy(BaseStrategy):
         else:
             return None
 
-        # Conviction from flow strength
-        flow_strength = abs(taker_ratio - 0.5) * 2  # 0-1
+        # Trend alignment: only trade in direction of EMA200
+        if ema_200 and ema_200 > 0:
+            if direction == 'LONG' and price < ema_200 * 0.98:
+                return None  # too far below EMA for long
+            if direction == 'SHORT' and price > ema_200 * 1.02:
+                return None  # too far above EMA for short
+
+        flow_strength = abs(taker_ratio - 0.5) * 2
         flow_score = min(flow_strength * 0.4, 0.35)
 
-        # Large trade confirmation
         if direction == 'LONG' and large_buys > large_sells:
             large_bonus = min((large_buys - large_sells) * 0.05, 0.2)
         elif direction == 'SHORT' and large_sells > large_buys:
@@ -54,9 +63,7 @@ class TradeFlowStrategy(BaseStrategy):
             entry=price, sl=sl, tp1=tp1, tp2=tp2, tp3=tp3,
             sl_pct=sl_pct, tp1_pct=tp1_pct,
             size_mult=0.8,
-            reason=f"Trade flow → {direction}: taker={taker_ratio:.3f} "
-                   f"net=${net_flow/1000:.0f}k large(B={large_buys}/S={large_sells})",
+            reason=f"Trade flow -> {direction}: taker={taker_ratio:.3f} net=${net_flow/1000:.0f}k",
             bypass_gates=True,
-            details={'taker_ratio': taker_ratio, 'net_flow': net_flow,
-                     'large_buys': large_buys, 'large_sells': large_sells},
+            details={'taker_ratio': taker_ratio, 'net_flow': net_flow},
         )

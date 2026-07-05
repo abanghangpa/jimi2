@@ -22,12 +22,18 @@ class MacroSurpriseStrategy(BaseStrategy):
                 if surprise in ('BEAT', 'MISS', 'BIG_BEAT', 'BIG_MISS'):
                     surprises.append((key, surprise, ind))
 
+        # Derive surprise from lifecycle phase if no explicit surprise
+        if not surprises and lifecycle:
+            phase = lifecycle.get('phase', '')
+            release_type = lifecycle.get('release_type', '')
+            if phase in ('RELEASE', 'IMMEDIATE', 'LONDON_DECISION') and release_type:
+                surprises.append((release_type, 'BEAT', {'surprise': 'BEAT'}))
         if not surprises:
             return None
 
         # Check if within trade window (24h of release)
         hours_since = lifecycle.get('hours_since', 999)
-        if hours_since > 24:
+        if hours_since > 48:
             return None
 
         price = data.get('price', 0)
@@ -53,7 +59,7 @@ class MacroSurpriseStrategy(BaseStrategy):
         freshness_bonus = max(0, 0.2 - hours_since / 24 * 0.2)
 
         conviction = min(surprise_score + cascade_bonus + freshness_bonus, 0.85)
-        if conviction < 0.45:
+        if conviction < 0.25:
             return None
 
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(

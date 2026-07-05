@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
 """
-JIMI Deep Analysis Pre-Processor v2
-Timeframe-aware evaluation with signal type tagging.
+JIMI Deep Analysis Pre-Processor v3
+Signal direction accuracy with honest data quality reporting.
 """
 
 import json
 import glob
 import os
+import sys
+import math
+import bisect
 import statistics
 from datetime import datetime, timedelta
 from collections import Counter, defaultdict
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from outcome_calculator import load_price_series, load_fired_signals, check_outcome, wilson_interval, compute_outcomes_summary
 
 SCAN_DIR = "/root/.openclaw/workspace/jimi_audit/data/scans"
+SIGNAL_FILE = "/root/.openclaw/workspace/jimi_audit/data/strategy_signals.jsonl"
 OUTPUT = "/root/.openclaw/workspace/jimi_audit/data/deep_analysis_summary.json"
-MIN_SAMPLES = 15  # Don't report win rates below this
+MIN_SAMPLES = 30
+CONFIDENCE_MIN = 50
 
-# Signal type → recommended hold window (hours)
 HOLD_WINDOWS = {
     "strategy:scalp_v2": 1,
     "strategy:orderbook_imbalance": 2,
@@ -26,6 +32,9 @@ HOLD_WINDOWS = {
     "main_pipeline": 2,
     "unknown": 4,
 }
+
+EXPECTED_FILTER_FIELDS = ["ensemble_passes", "sweep_blocked", "m20_blocked", "confirmation_status"]
+
 
 def load_scans():
     files = sorted(glob.glob(os.path.join(SCAN_DIR, "scan_*.json")))
@@ -40,20 +49,71 @@ def load_scans():
             print(f"  Skip {f}: {e}")
     return scans
 
+
+def load_actual_signals():
+    signals = []
+    if not os.path.exists(SIGNAL_FILE):
+        return signals
+    with open(SIGNAL_FILE) as f:
+        for line in f:
+            try:
+                signals.append(json.loads(line.strip()))
+            except:
+                pass
+    return signals
+
+
 def get_hold_window(source):
-    """Get recommended hold hours for a signal source."""
     return HOLD_WINDOWS.get(source, 4)
 
+
 def classify_regime(scan):
-    """Classify market regime: trending_down, trending_up, ranging."""
     trend = scan.get("trend_dir", "UNKNOWN")
-    swing = scan.get("swing_bias", "UNKNOWN")
     if "STRONG_DOWN" in trend or "DOWN" in trend:
         return "trending_down"
     elif "STRONG_UP" in trend or "UP" in trend:
         return "trending_up"
     else:
         return "ranging"
+
+
+def wilson_lower(wins, total, z=1.96):
+    if total == 0:
+        return 0
+    p = wins / total
+    denom = 1 + z**2 / total
+    center = p + z**2 / (2 * total)
+    spread = z * math.sqrt((p * (1 - p) + z**2 / (4 * total)) / total)
+    return round((center - spread) / denom * 100, 1)
+
+
+def wilson_upper(wins, total, z=1.96):
+    if total == 0:
+        return 0
+    p = wins / total
+    denom = 1 + z**2 / total
+    center = p + z**2 / (2 * total)
+    spread = z * math.sqrt((p * (1 - p) + z**2 / (4 * total)) / total)
+    return round((center + spread) / denom * 100, 1)
+
+
+def check_filter_data_quality(scans):
+    field_presence = {field: 0 for field in EXPECTED_FILTER_FIELDS}
+    total = len(scans)
+    for s in scans:
+        for field in EXPECTED_FILTER_FIELDS:
+            if field in s:
+                field_presence[field] += 1
+    return {
+        field: {
+            "present_in": count,
+            "missing_from": total - count,
+            "coverage_pct": round(count / total * 100, 1) if total else 0,
+            "status": "tracked" if count > total * 0.5 else "not_tracked"
+        }
+        for field, count in field_presence.items()
+    }
+
 
 def compute_ics_stats(scans):
     ics_vals = [s["ics"] for s in scans if "ics" in s and s["ics"] is not None]
@@ -90,6 +150,7 @@ def compute_ics_stats(scans):
         "weekly_trend": weekly_avg,
     }
 
+
 def compute_direction_stats(scans):
     dir_counts = Counter()
     resolver_counts = Counter()
@@ -124,8 +185,8 @@ def compute_direction_stats(scans):
         "signals": signals,
     }
 
+
 def compute_signal_accuracy(scans, signals):
-    """Timeframe-aware accuracy: measure at each signal's recommended hold window."""
     price_by_ts = {}
     for s in scans:
         ts = s.get("timestamp")
@@ -133,35 +194,33 @@ def compute_signal_accuracy(scans, signals):
         if ts and price:
             price_by_ts[ts] = price
     sorted_ts = sorted(price_by_ts.keys())
+    sorted_prices = [price_by_ts[t] for t in sorted_ts]
 
     def find_price_at_offset(base_ts, hours):
         try:
             base_dt = datetime.strptime(base_ts, "%Y-%m-%d %H:%M:%S")
             target = base_dt + timedelta(hours=hours)
+            target_str = target.strftime("%Y-%m-%d %H:%M:%S")
+            idx = bisect.bisect_left(sorted_ts, target_str)
             best = None
             best_diff = timedelta(hours=999)
-            for t in sorted_ts:
-                dt = datetime.strptime(t, "%Y-%m-%d %H:%M:%S")
-                diff = abs(dt - target)
-                if diff < best_diff:
-                    best_diff = diff
-                    best = price_by_ts[t]
+            for candidate in [idx - 1, idx, idx + 1]:
+                if 0 <= candidate < len(sorted_ts):
+                    dt = datetime.strptime(sorted_ts[candidate], "%Y-%m-%d %H:%M:%S")
+                    diff = abs(dt - target)
+                    if diff < best_diff:
+                        best_diff = diff
+                        best = sorted_prices[candidate]
             if best_diff < timedelta(hours=2):
                 return best
         except: pass
         return None
 
-    # Results by signal type × hold window
     by_type = defaultdict(lambda: {"wins": 0, "losses": 0, "total": 0, "pct_changes": []})
-    # Results by direction × hold window
     by_dir_window = defaultdict(lambda: {"wins": 0, "losses": 0, "total": 0, "pct_changes": []})
-    # Results by regime × direction
     by_regime_dir = defaultdict(lambda: {"wins": 0, "losses": 0, "total": 0, "pct_changes": []})
-    # Results by ICS bucket × hold window
     by_ics_bucket = defaultdict(lambda: {"wins": 0, "losses": 0, "total": 0, "pct_changes": []})
-    # Results by direction × ICS bucket (at recommended hold)
     by_dir_ics = defaultdict(lambda: {"wins": 0, "losses": 0, "total": 0, "pct_changes": []})
-    # Also compute at fixed timeframes for comparison
     fixed_tf = {"1h": defaultdict(lambda: {"wins": 0, "losses": 0, "total": 0}),
                 "4h": defaultdict(lambda: {"wins": 0, "losses": 0, "total": 0}),
                 "24h": defaultdict(lambda: {"wins": 0, "losses": 0, "total": 0})}
@@ -178,7 +237,6 @@ def compute_signal_accuracy(scans, signals):
         if not ts or not price:
             continue
 
-        # ICS bucket
         if ics < 0.40: bucket = "<0.40"
         elif ics < 0.50: bucket = "0.40-0.50"
         elif ics < 0.55: bucket = "0.50-0.55"
@@ -186,7 +244,6 @@ def compute_signal_accuracy(scans, signals):
         elif ics < 0.65: bucket = "0.60-0.65"
         else: bucket = "0.65+"
 
-        # At recommended hold window
         future = find_price_at_offset(ts, hold_hours)
         if future is not None:
             pct = (future - price) / price * 100
@@ -222,7 +279,6 @@ def compute_signal_accuracy(scans, signals):
             if win: by_dir_ics[dir_ics_key]["wins"] += 1
             else: by_dir_ics[dir_ics_key]["losses"] += 1
 
-        # Also at fixed timeframes for comparison
         for tf, hours in [("1h", 1), ("4h", 4), ("24h", 24)]:
             tf_future = find_price_at_offset(ts, hours)
             if tf_future is not None:
@@ -232,23 +288,30 @@ def compute_signal_accuracy(scans, signals):
                 if tf_win: fixed_tf[tf][source]["wins"] += 1
 
     def safe_wr(d):
-        if d["total"] >= MIN_SAMPLES:
-            return {
-                "total": d["total"],
+        n = d["total"]
+        if n >= MIN_SAMPLES:
+            wr = round(d["wins"]/n*100, 1)
+            result = {
+                "n": n,
                 "wins": d["wins"],
-                "losses": d["total"] - d["wins"],
-                "win_rate": round(d["wins"]/d["total"]*100, 1),
+                "losses": n - d["wins"],
+                "win_rate": wr,
                 "avg_pct": round(statistics.mean(d["pct_changes"]), 4) if d["pct_changes"] else 0,
                 "median_pct": round(statistics.median(d["pct_changes"]), 4) if d["pct_changes"] else 0,
             }
+            if n >= CONFIDENCE_MIN:
+                result["wr_95ci"] = [wilson_lower(d["wins"], n), wilson_upper(d["wins"], n)]
+            return result
         else:
-            return {"total": d["total"], "insufficient_data": True}
+            return {"n": n, "insufficient_data": True, "note": f"Need {MIN_SAMPLES - n} more samples"}
+
+    filter_quality = check_filter_data_quality(scans)
 
     return {
         "by_signal_type": {k: safe_wr(v) for k, v in sorted(by_type.items())},
         "by_direction_window": {k: safe_wr(v) for k, v in sorted(by_dir_window.items())},
         "by_regime_direction": {k: safe_wr(v) for k, v in sorted(by_regime_dir.items())},
-        # New architecture filter stats
+        "filter_data_quality": filter_quality,
         "filter_stats": {
             "total_signals": len(signals),
             "ensemble_blocked": sum(1 for s in signals if not s.get("ensemble_passes", True)),
@@ -257,6 +320,7 @@ def compute_signal_accuracy(scans, signals):
             "confirmed": sum(1 for s in signals if s.get("confirmation_status") == "CONFIRMED"),
             "pending": sum(1 for s in signals if s.get("confirmation_status") == "PENDING"),
             "expired": sum(1 for s in signals if s.get("confirmation_status") == "EXPIRED"),
+            "_note": "If all values are 0, check filter_data_quality — fields may not be persisted in scan files"
         },
         "ensemble_stats": {
             "consensus_distribution": dict(Counter(s.get("ensemble_consensus", "NONE") for s in signals)),
@@ -267,11 +331,41 @@ def compute_signal_accuracy(scans, signals):
         "by_ics_bucket_window": {k: safe_wr(v) for k, v in sorted(by_ics_bucket.items())},
         "by_direction_ics": {k: safe_wr(v) for k, v in sorted(by_dir_ics.items())},
         "fixed_timeframe_by_source": {
-            tf: {src: {"total": d["total"], "wins": d["wins"], "win_rate": round(d["wins"]/d["total"]*100, 1) if d["total"] >= MIN_SAMPLES else "insufficient"}
+            tf: {src: {"n": d["total"], "wins": d["wins"],
+                        "win_rate": round(d["wins"]/d["total"]*100, 1) if d["total"] >= MIN_SAMPLES else None,
+                        "insufficient": d["total"] < MIN_SAMPLES}
                  for src, d in sorted(srcs.items())}
             for tf, srcs in fixed_tf.items()
         },
     }
+
+
+def compute_actual_signal_stats(actual_signals):
+    fired = [s for s in actual_signals if s.get("fired")]
+    by_strategy = defaultdict(lambda: {"fired": 0, "total": 0, "convictions": []})
+    for s in actual_signals:
+        strat = s.get("strategy", "unknown")
+        by_strategy[strat]["total"] += 1
+        if s.get("fired"):
+            by_strategy[strat]["fired"] += 1
+            if s.get("conviction"):
+                by_strategy[strat]["convictions"].append(s["conviction"])
+    result = {}
+    for strat, d in sorted(by_strategy.items()):
+        entry = {"total_evaluated": d["total"], "fired": d["fired"]}
+        if d["fired"] > 0:
+            entry["fire_rate"] = round(d["fired"] / d["total"] * 100, 1)
+        if d["convictions"]:
+            entry["avg_conviction"] = round(statistics.mean(d["convictions"]), 3)
+            entry["median_conviction"] = round(statistics.median(d["convictions"]), 3)
+        result[strat] = entry
+    return {
+        "total_signals": len(actual_signals),
+        "total_fired": len(fired),
+        "overall_fire_rate": round(len(fired) / len(actual_signals) * 100, 1) if actual_signals else 0,
+        "by_strategy": result,
+    }
+
 
 def compute_module_stats(scans):
     module_ids = ["m1", "m2", "m3", "m4", "m5", "m7", "m8", "m9", "m10", "m11", "m12", "m13", "m14", "m17", "m20", "m21", "m22", "m23", "m72"]
@@ -319,8 +413,8 @@ def compute_module_stats(scans):
             correlation[key] = {"total": v["total"], "agree_rate": round(v["agree"]/v["total"]*100, 1)}
     return {"modules": module_stats, "correlation": correlation}
 
+
 def compute_regime_stats(scans):
-    """Performance segmented by market regime."""
     regime_counts = Counter()
     regime_dir = defaultdict(lambda: Counter())
     for s in scans:
@@ -332,6 +426,7 @@ def compute_regime_stats(scans):
         "regime_pcts": {k: round(v/len(scans)*100, 1) for k, v in regime_counts.items()},
         "direction_by_regime": {k: dict(v) for k, v in regime_dir.items()},
     }
+
 
 def compute_squeeze_stats(scans):
     squeeze_types = Counter()
@@ -349,65 +444,67 @@ def compute_squeeze_stats(scans):
         if d: squeeze_dirs[d] += 1
     return {"total_scans_with_squeeze": total, "squeeze_types": dict(squeeze_types), "squeeze_directions": dict(squeeze_dirs), "entry_triggered_count": triggered, "entry_triggered_rate": round(triggered/total*100, 1) if total else 0}
 
+
 def compute_derivatives_stats(scans):
     positioning = Counter()
     whale_signals = Counter()
-    ls_ratios = []
-    funding_rates = []
     for s in scans:
         deriv = s.get("derivatives", {})
-        if not deriv: continue
-        positioning[deriv.get("positioning", "UNKNOWN")] += 1
-        whale_signals[deriv.get("whale_signal", "UNKNOWN")] += 1
-        ls = deriv.get("ls_ratio")
-        if ls: ls_ratios.append(ls)
-        fr = deriv.get("funding_rate")
-        if fr is not None: funding_rates.append(fr)
-    return {
-        "positioning_counts": dict(positioning),
-        "whale_signal_counts": dict(whale_signals),
-        "ls_ratio": {"mean": round(statistics.mean(ls_ratios), 4) if ls_ratios else None, "median": round(statistics.median(ls_ratios), 4) if ls_ratios else None, "min": round(min(ls_ratios), 4) if ls_ratios else None, "max": round(max(ls_ratios), 4) if ls_ratios else None},
-        "funding_rate": {"mean": round(statistics.mean(funding_rates), 8) if funding_rates else None, "min": round(min(funding_rates), 8) if funding_rates else None, "max": round(max(funding_rates), 8) if funding_rates else None},
-    }
+        if not deriv or not isinstance(deriv, dict): continue
+        pos = deriv.get("positioning")
+        if pos: positioning[pos] += 1
+        whale = deriv.get("whale_signal")
+        if whale: whale_signals[whale] += 1
+    return {"positioning_counts": dict(positioning), "whale_signal_counts": dict(whale_signals)}
+
 
 def compute_conflict_stats(scans):
-    conflicts = 0
-    total = 0
+    conflicts = Counter()
     for s in scans:
-        c = s.get("conflict", {})
-        if not c: continue
-        total += 1
-        if c.get("is_conflict"): conflicts += 1
-    return {"total": total, "conflicts": conflicts, "conflict_rate": round(conflicts/total*100, 1) if total else 0}
+        c = s.get("conflict")
+        if c:
+            key = json.dumps(c, sort_keys=True) if isinstance(c, dict) else str(c)
+            conflicts[key] += 1
+    return {"conflict_counts": dict(conflicts)}
+
 
 def compute_strategy_stats(scans):
-    strategy_counts = Counter()
-    strategy_dirs = Counter()
-    convictions = []
+    strategies = defaultdict(lambda: {"total": 0, "wins": 0, "losses": 0, "pct_changes": []})
     for s in scans:
-        ms = s.get("multi_strategy", {})
-        if not ms: continue
-        best = ms.get("best", {})
-        if best:
-            strategy_counts[best.get("strategy", "unknown")] += 1
-            strategy_dirs[best.get("direction", "UNKNOWN")] += 1
-            c = best.get("conviction")
-            if c is not None: convictions.append(c)
-        for sig in ms.get("all_signals", []):
-            strategy_counts[sig.get("strategy", "unknown")] += 1
-    return {"strategy_frequency": dict(strategy_counts.most_common(20)), "direction_distribution": dict(strategy_dirs), "conviction": {"mean": round(statistics.mean(convictions), 4) if convictions else None, "median": round(statistics.median(convictions), 4) if convictions else None}}
+        strat = s.get("strategy")
+        if not strat or not isinstance(strat, dict): continue
+        name = strat.get("name", "unknown")
+        strategies[name]["total"] += 1
+        outcome = strat.get("outcome")
+        if outcome == "WIN": strategies[name]["wins"] += 1
+        elif outcome == "LOSS": strategies[name]["losses"] += 1
+        pct = strat.get("pct_change")
+        if pct is not None: strategies[name]["pct_changes"].append(pct)
+    result = {}
+    for name, d in sorted(strategies.items()):
+        entry = {"total": d["total"]}
+        if d["total"] >= MIN_SAMPLES:
+            entry["win_rate"] = round(d["wins"]/d["total"]*100, 1)
+            entry["avg_pct"] = round(statistics.mean(d["pct_changes"]), 4) if d["pct_changes"] else 0
+            entry["median_pct"] = round(statistics.median(d["pct_changes"]), 4) if d["pct_changes"] else 0
+        else:
+            entry["insufficient_data"] = True
+        result[name] = entry
+    return result
+
 
 def compute_price_context(scans):
+    prices = [s.get("price") for s in scans if s.get("price")]
     trend_dirs = Counter()
     swing_biases = Counter()
-    prices = []
     for s in scans:
-        trend_dirs[s.get("trend_dir", "UNKNOWN")] += 1
-        swing_biases[s.get("swing_bias", "UNKNOWN")] += 1
-        p = s.get("price")
-        if p: prices.append(p)
+        td = s.get("trend_dir")
+        if td: trend_dirs[td] += 1
+        sb = s.get("swing_bias")
+        if sb: swing_biases[sb] += 1
     price_range = max(prices) - min(prices) if prices else 0
     return {"trend_direction_counts": dict(trend_dirs), "swing_bias_counts": dict(swing_biases), "price_range": {"min": round(min(prices), 2) if prices else None, "max": round(max(prices), 2) if prices else None, "range_usd": round(price_range, 2), "range_pct": round(price_range / min(prices) * 100, 2) if prices else None}, "total_scans": len(scans)}
+
 
 def compute_timeframe_stats(scans):
     by_hour = defaultdict(lambda: {"signals": 0, "total": 0, "ics_sum": 0})
@@ -438,6 +535,7 @@ def compute_timeframe_stats(scans):
             dow_stats[d] = {"total": v["total"], "signals": v["signals"], "signal_rate": round(v["signals"]/v["total"]*100, 1) if v["total"] else 0, "avg_ics": round(v["ics_sum"]/v["total"], 4) if v["total"] else 0}
     return {"by_hour_utc": hour_stats, "by_day_of_week": dow_stats}
 
+
 def main():
     print("Loading scans...")
     scans = load_scans()
@@ -449,25 +547,52 @@ def main():
     date_range = {"first": min(timestamps), "last": max(timestamps)}
     print(f"Range: {date_range['first']} to {date_range['last']}")
 
+    print("Loading actual signals from strategy_signals.jsonl...")
+    actual_signals = load_actual_signals()
+    print(f"Loaded {len(actual_signals)} actual signal records")
+
     print("Computing direction stats...")
     direction_stats = compute_direction_stats(scans)
-    signals = direction_stats.pop("signals")  # Extract signals for accuracy calc
+    signals = direction_stats.pop("signals")
 
-    print(f"Computing signal accuracy ({len(signals)} signals, hold-window-aware)...")
+    print(f"Computing signal accuracy ({len(signals)} signals)...")
     signal_accuracy = compute_signal_accuracy(scans, signals)
+
+    print("Computing actual signal cross-reference...")
+    actual_signal_stats = compute_actual_signal_stats(actual_signals)
 
     print("Computing regime stats...")
     regime_stats = compute_regime_stats(scans)
+
+    print("Computing trade outcomes (signal=trade)...")
+    try:
+        ts_list, price_list = load_price_series()
+        fired = load_fired_signals()
+        outcome_results = compute_outcomes_summary(ts_list, price_list, fired)
+        print(f"  {outcome_results['total_trades_evaluated']} trades evaluated")
+    except Exception as e:
+        outcome_results = {"error": str(e)}
+        print(f"  Outcome calculation failed: {e}")
 
     summary = {
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
         "scan_count": len(scans),
         "date_range": date_range,
         "min_samples_threshold": MIN_SAMPLES,
+        "confidence_min": CONFIDENCE_MIN,
         "hold_windows": HOLD_WINDOWS,
+        "data_quality_notes": [
+            f"MIN_SAMPLES = {MIN_SAMPLES} (metrics below this threshold are marked insufficient)",
+            f"CONFIDENCE_MIN = {CONFIDENCE_MIN} (95% Wilson CI only shown for n >= this)",
+            "filter_stats: check filter_data_quality first — 0 values may mean 'not tracked', not 'not blocking'",
+            "signal_accuracy: measures direction prediction from scan signals, not actual trade P&L",
+            "actual_signal_stats: cross-reference with strategy_signals.jsonl for actual fired signals",
+        ],
         "ics_stats": compute_ics_stats(scans),
         "direction_stats": direction_stats,
         "signal_accuracy": signal_accuracy,
+        "actual_signal_stats": actual_signal_stats,
+        "trade_outcomes": outcome_results,
         "regime_stats": regime_stats,
         "module_stats": compute_module_stats(scans),
         "squeeze_stats": compute_squeeze_stats(scans),
@@ -483,6 +608,7 @@ def main():
     size_kb = os.path.getsize(OUTPUT) / 1024
     print(f"Summary written to {OUTPUT} ({size_kb:.1f} KB)")
     print(f"{len(scans)} scans analyzed, {len(signals)} signals evaluated")
+    print(f"Filter data quality: {json.dumps(check_filter_data_quality(scans), indent=2)}")
 
 if __name__ == "__main__":
     main()

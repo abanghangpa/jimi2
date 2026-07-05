@@ -109,9 +109,9 @@ class JudasSweepStrategy(BaseStrategy):
 
         # ── Dynamic thresholds based on ATR ──
         atr_pct = atr / current_price
-        sweep_min_pct = max(0.0005, atr_pct * 0.3)   # 0.3x ATR minimum sweep
+        sweep_min_pct = max(0.0003, atr_pct * 0.2)   # 0.2x ATR minimum sweep (lower)
         sweep_max_pct = min(0.02, atr_pct * 3.0)      # 3x ATR maximum sweep
-        compression_max_pct = atr_pct * 50             # 50x ATR% as compression ceiling
+        compression_max_pct = atr_pct * 100            # 100x ATR% as compression ceiling (wider)
         compression_bars = max(24, int(48 / max(atr_pct / 0.003, 0.5)))  # dynamic lookback
 
         # ── Step 1: Compression check ──
@@ -138,8 +138,8 @@ class JudasSweepStrategy(BaseStrategy):
         sh_vols = volumes[swing_highs] if swing_highs else np.array([])
         sl_vols = volumes[swing_lows] if swing_lows else np.array([])
 
-        resistance_clusters = _cluster_levels(sh_prices, sh_vols, cluster_pct=0.002, min_touches=2)
-        support_clusters = _cluster_levels(sl_prices, sl_vols, cluster_pct=0.002, min_touches=2)
+        resistance_clusters = _cluster_levels(sh_prices, sh_vols, cluster_pct=0.003, min_touches=1)
+        support_clusters = _cluster_levels(sl_prices, sl_vols, cluster_pct=0.003, min_touches=1)
 
         # ── Step 3: Detect sweep direction ──
         direction = None

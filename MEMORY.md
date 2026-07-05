@@ -1,21 +1,48 @@
-# Long-Term Memory
+# MEMORY.md — JIMI Framework Knowledge
 
-## Active Systems
+## TP/SL Rules (learned 2026-07-02)
+- TP=SL=$15 (1:1 R:R) does NOT work — 46% WR, coin flip
+- $15 is noise-level for ETH ($1,600 asset, $66 daily range)
+- Wide SL ($30) is required to survive intraday noise before $15 TP is hit
+- Production config: TP=$15 SL=$30 → 74% WR, +$3.30/trade expected
+- 70% WR with equal TP/SL is NOT achievable at $15 granularity
 
-### 🔄 Automated LLM Fallback System (Unified Proxy)
-- **Description**: A transparent proxy that provides free LLM access via a third-party GitHub repo, with automatic fallback to production Google Gemini keys if the free keys fail (401/429). Runs on `localhost:8821`.
-- **Components**:
-    - `unified_proxy.py`: Custom Python-based OpenAI-compatible proxy running on `localhost:8821`.
-    - `rotate_keys.py`: Script that scrapes the GitHub repo for fresh keys.
-    - `cron`: Scheduled to run every hour to ensure key freshness.
-    - `.env`: Stores `PROD_API_KEY` for the proxy.
-- **Configuration**: `openclaw.json` is configured to use `http://localhost:8821/v1` as the `free-proxy` provider.
+## Signal Quality (learned 2026-07-02)
+- Only 2 strategies are profitable: orderbook_imbalance (+0.254 avg_RR) and trade_flow (+0.214)
+- regime_switch is the worst: 31.9% WR, fires 100% of scans, should be disabled or capped
+- SHORT signals outperform LONG in downtrend periods
+- Higher conviction correlates with higher WR (43% for 0.7+ vs 37.6% for 0.5-0.7)
+- Simulated direction accuracy (price moved right way) is very different from actual trade outcomes (TP hit before SL)
 
-## Lessons Learned
+## Data Quality (learned 2026-07-02)
+- Filter fields (ensemble_passes, sweep_blocked, m20_blocked) are NOT persisted in scan files
+- Without these fields, filter analysis is meaningless — always check filter_data_quality first
+- strategy_signals.jsonl has actual fired signals with entry/SL/TP — use this for outcome analysis, not scan files
 
-- **Pathing in Background Processes**: When running commands via `nohup` or background tasks, always use absolute paths for scripts and configuration files to avoid "File not found" errors due to shell context differences.
-- **Atomic Config Updates**: When programmatically modifying JSON configuration files (like `openclaw.json`), always use an atomic write pattern (write to temp file $\rightarrow$ move) to prevent corruption during crashes.
-- **Schema Strictness**: OpenClaw configuration is strictly validated; adding extra fields (like `key` directly into an auth profile) can cause the gateway to reject the entire config.
-- **Event Loop Starvation (Gateway)**: Periodic polling for a local Ollama instance on port 11434 can cause synchronous socket timeouts, starving the Node.js event loop and triggering "post-turn maintenance" errors.
-- **Ollama Spoof Solution**: Running a dummy HTTP server (`spoof_ollama.py`) on port 11434 that returns instant 404s neutralizes this lag and stabilizes the gateway.
-- **Session Lock Management**: Use `safe_unlock.sh` to clear zombie locks without killing active TUI sessions.
+## Cron Job Config
+- JIMI Deep Analysis: 08:10 UTC, model=free-proxy/qwen/qwen3.6-27b
+- Model was changed from openrouter/free due to rate limiting
+
+## TP/SL Update (2026-07-02)
+- Changed from TP=$15 SL=$30 to TP=$12 SL=$36 (1:3 R:R)
+- Backtest: 79.8% WR, $2.30 EV/trade (vs 72.1% WR, $2.44 EV with old config)
+- Rationale: wider SL survives noise, tighter TP hits more often
+- Also deployed: strategy-specific volume gating (orderbook_imbalance, trade_flow, cross_asset require vol_ratio > 0.12-0.15)
+- Also deployed: EMA200 + vol_ratio in scan output and signal logging
+
+## Session Updates (2026-07-02)
+### TP/SL
+- TP=$12 SL=$36 (1:3 R:R) replacing TP=$15 SL=$30
+- TP: use liquidity pool if beyond $12 minimum
+- SL: always enforce $36 minimum
+
+### Volume Gating
+- orderbook_imbalance, trade_flow: 0.15
+- cross_asset: 0.12
+
+### Scanner Fixes
+- EMA200 + vol_ratio in output
+- Flip prevention (1h window)
+- Entry/SL/TP always shown
+- Power of 3 phase-direction fix
+- BaseStrategy cfg init fix
