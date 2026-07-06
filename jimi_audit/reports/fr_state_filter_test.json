@@ -1,0 +1,222 @@
+[
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "baseline",
+    "strategy": "failed_breakout",
+    "config": "baseline"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+FR confirm",
+    "strategy": "failed_breakout",
+    "config": "+FR confirm"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+FR>0",
+    "strategy": "failed_breakout",
+    "config": "+FR>0"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+FR<0",
+    "strategy": "failed_breakout",
+    "config": "+FR<0"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+FR extreme",
+    "strategy": "failed_breakout",
+    "config": "+FR extreme"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale",
+    "strategy": "failed_breakout",
+    "config": "+whale"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale+FR confirm",
+    "strategy": "failed_breakout",
+    "config": "+whale+FR confirm"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale+FR>0",
+    "strategy": "failed_breakout",
+    "config": "+whale+FR>0"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale+FR<0",
+    "strategy": "failed_breakout",
+    "config": "+whale+FR<0"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale+FR extreme",
+    "strategy": "failed_breakout",
+    "config": "+whale+FR extreme"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "baseline",
+    "strategy": "judas_sweep",
+    "config": "baseline"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+FR confirm",
+    "strategy": "judas_sweep",
+    "config": "+FR confirm"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+FR>0",
+    "strategy": "judas_sweep",
+    "config": "+FR>0"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+FR<0",
+    "strategy": "judas_sweep",
+    "config": "+FR<0"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+FR extreme",
+    "strategy": "judas_sweep",
+    "config": "+FR extreme"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale",
+    "strategy": "judas_sweep",
+    "config": "+whale"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale+FR confirm",
+    "strategy": "judas_sweep",
+    "config": "+whale+FR confirm"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale+FR>0",
+    "strategy": "judas_sweep",
+    "config": "+whale+FR>0"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale+FR<0",
+    "strategy": "judas_sweep",
+    "config": "+whale+FR<0"
+  },
+  {
+    "trades": 0,
+    "wr": 0,
+    "pf": 0,
+    "pnl": 0,
+    "max_dd": 0,
+    "signals": 0,
+    "label": "+whale+FR extreme",
+    "strategy": "judas_sweep",
+    "config": "+whale+FR extreme"
+  }
+]
