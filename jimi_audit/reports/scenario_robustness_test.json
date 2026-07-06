@@ -1,0 +1,662 @@
+[
+  {
+    "scenario": "real_data",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "real_data",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "real_data",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "real_data",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "real_data",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "real_data",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "extreme_bear",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "extreme_bear",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "extreme_bear",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "extreme_bear",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "extreme_bear",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "extreme_bear",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "extreme_bull",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "extreme_bull",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "extreme_bull",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "extreme_bull",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "extreme_bull",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "extreme_bull",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "high_ls_range",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "high_ls_range",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "high_ls_range",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "high_ls_range",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "high_ls_range",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "high_ls_range",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "high_oi_crash",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "high_oi_crash",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "high_oi_crash",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "high_oi_crash",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "high_oi_crash",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "high_oi_crash",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "low_ls_range",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "low_ls_range",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "low_ls_range",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "low_ls_range",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "low_ls_range",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "low_ls_range",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "mean",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "mean",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "mean",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "mean",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "mean",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "mean",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "median",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "median",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "median",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "median",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "median",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "median",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "neutral_low_vol",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "neutral_low_vol",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "neutral_low_vol",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "neutral_low_vol",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "neutral_low_vol",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "neutral_low_vol",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "regime_transitions",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "regime_transitions",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "regime_transitions",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "regime_transitions",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "regime_transitions",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "regime_transitions",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  },
+  {
+    "scenario": "worst_case_adverse",
+    "config": "baseline",
+    "trades": 17,
+    "wins": 9,
+    "losses": 8,
+    "wr": 52.9,
+    "pf": 7.78,
+    "pnl": 8.4139
+  },
+  {
+    "scenario": "worst_case_adverse",
+    "config": "sweep>=0.05",
+    "trades": 6,
+    "wins": 4,
+    "losses": 2,
+    "wr": 66.7,
+    "pf": 8.44,
+    "pnl": 1.6707
+  },
+  {
+    "scenario": "worst_case_adverse",
+    "config": "sweep>=0.08",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 14.46,
+    "pnl": 1.7642
+  },
+  {
+    "scenario": "worst_case_adverse",
+    "config": "FR>=5e-5",
+    "trades": 9,
+    "wins": 5,
+    "losses": 4,
+    "wr": 55.6,
+    "pf": 11.97,
+    "pnl": 5.6409
+  },
+  {
+    "scenario": "worst_case_adverse",
+    "config": "FR>=8e-5",
+    "trades": 5,
+    "wins": 4,
+    "losses": 1,
+    "wr": 80.0,
+    "pf": 31.16,
+    "pnl": 4.5236
+  },
+  {
+    "scenario": "worst_case_adverse",
+    "config": "sw>=0.05+FR>=5e-5",
+    "trades": 3,
+    "wins": 2,
+    "losses": 1,
+    "wr": 66.7,
+    "pf": 9.71,
+    "pnl": 1.1421
+  }
+]

@@ -46,3 +46,15 @@
 - Entry/SL/TP always shown
 - Power of 3 phase-direction fix
 - BaseStrategy cfg init fix
+
+
+## Strategy Optimization Bug (discovered 2026-07-05)
+The scanner optimization on 2026-07-05 broke strategy TP/SL multipliers. All strategies reported as "PF ≥ 2.0" are actually losing money because the optimization degraded their R:R ratios.
+
+**Root cause:** _calc_levels() in base.py was called with wrong tp_mults/sl_mult values.
+- whale_watch: tp_mults changed from (1.5,2.5,4.0) to (0.3,1.5,2.5), sl_mult from 1.0 to 2.0
+- This made R:R go from 1.5:1 to 0.15:1 (10x worse)
+
+**Fix plan:** Revert all strategies to .bak_pre_opt versions, verify R:R ≥ 1.0, re-backtest with 15m data.
+
+**Lesson:** Always verify R:R ratio before deploying. Small TP/SL multiplier changes destroy edge completely.
