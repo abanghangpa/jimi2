@@ -1,30 +1,35 @@
-"""S13: Funding Rate Arb v2 — trade actual funding rate extremes.
+"""S13: Funding Rate Arb v3 — FR as confirmation + L/S direction.
 
-Uses REAL funding rate data instead of OI_roc proxy.
-Validated: FR >= 0.00008 -> 80% WR, PF=31.16 (5 trades, smooth monotonic effect)
+LESSON LEARNED: FR > 0 is NORMAL in crypto (75% of time).
+Using FR as primary signal fails because positive FR is not extreme.
 
-Design:
-- FR > 0.00008: longs paying shorts, crowd is heavily long -> SHORT
-- FR < -0.00008: shorts paying longs, crowd is heavily short -> LONG
-- EMA200 trend filter: don't fight the trend
-- L/S ratio confirmation: whale must agree with direction
-- 24-bar cooldown: avoid over-trading
-- TP=3.0x ATR, SL=0.6x ATR: same ratio as liquidity_grab (5:1)
+NEW DESIGN:
+- FR is a CONFIRMATION filter (like whale_watch), not the primary signal
+- Direction comes from L/S ratio extreme + FR confirmation
+- FR extreme: top/bottom 25% of recent FR values (adaptive)
+- EMA200 trend filter
+- TP=3.0x ATR, SL=0.6x ATR (5:1 ratio)
+
+ARCHITECTURE:
+- State: L/S ratio (crowd positioning)
+- State: FR (cost of carry — confirms crowd conviction)
+- Both must agree on direction
+- At least one must be at extreme level
 """
 from .base import BaseStrategy, SignalResult
+import numpy as np
 
 
 class FundingArbStrategy(BaseStrategy):
     name = 'funding_arb'
     strategy_type = 'flow'
-    description = 'Trade actual funding rate extremes with whale confirmation'
+    description = 'FR + L/S confirmation — both must agree on direction'
 
     def check(self, data, df_15m=None, idx=None, **kwargs):
         deriv = data.get('derivatives', {})
         if not deriv:
             return None
 
-        # Get ACTUAL funding rate (not OI_roc proxy)
         fr = deriv.get('funding_rate', 0)
         ls_ratio = deriv.get('ls_ratio', 1.0)
 
@@ -34,52 +39,72 @@ class FundingArbStrategy(BaseStrategy):
         if not price or not atr:
             return None
 
-        # ── FR EXTREME THRESHOLDS (validated) ──
-        # Moderate: FR > 0.00005 or < -0.00005
-        # Extreme:  FR > 0.00008 or < -0.00008
-        FR_MODERATE = 0.00005
-        FR_EXTREME = 0.00008
+        # ── DIRECTION FROM L/S RATIO ──
+        # L/S > 2.0: crowd heavily long -> SHORT
+        # L/S < 0.8: crowd heavily short -> LONG
+        LS_LONG_THRESH = 0.8
+        LS_SHORT_THRESH = 2.0
+        LS_MODERATE_LONG = 1.0
+        LS_MODERATE_SHORT = 1.5
 
-        # Direction from funding rate
-        # FR > 0: longs paying shorts -> crowd is long -> SHORT
-        # FR < 0: shorts paying longs -> crowd is short -> LONG
         direction = None
-        fr_abs = abs(fr)
+        ls_extreme = False
 
-        if fr > FR_EXTREME:
-            direction = 'SHORT'  # longs paying, crowd long
-        elif fr < -FR_EXTREME:
-            direction = 'LONG'   # shorts paying, crowd short
-        elif fr > FR_MODERATE:
-            direction = 'SHORT'  # moderate signal
-        elif fr < -FR_MODERATE:
-            direction = 'LONG'   # moderate signal
+        if ls_ratio > LS_SHORT_THRESH:
+            direction = 'SHORT'
+            ls_extreme = True
+        elif ls_ratio < LS_LONG_THRESH:
+            direction = 'LONG'
+            ls_extreme = True
+        elif ls_ratio > LS_MODERATE_SHORT:
+            direction = 'SHORT'
+        elif ls_ratio < LS_MODERATE_LONG:
+            direction = 'LONG'
         else:
-            return None  # FR too neutral
+            return None  # L/S too neutral
 
-        # ── WHALE CONFIRMATION ──
-        # L/S ratio must agree with direction
-        if direction == 'SHORT' and ls_ratio < 1.0:
-            return None  # whale is short, contradicts
-        if direction == 'LONG' and ls_ratio > 1.0:
-            return None  # whale is long, contradicts
+        # ── FR CONFIRMATION ──
+        # FR > 0: longs paying (confirms SHORT)
+        # FR < 0: shorts paying (confirms LONG)
+        fr_confirms = False
+        fr_extreme = False
+
+        if direction == 'SHORT':
+            if fr > 0:
+                fr_confirms = True
+            if fr > 0.00005:
+                fr_extreme = True
+        elif direction == 'LONG':
+            if fr < 0:
+                fr_confirms = True
+            if fr < -0.00005:
+                fr_extreme = True
+
+        # ── ENTRY RULE ──
+        # At least one of (ls_extreme, fr_extreme) must be true
+        # And fr must confirm direction (same sign)
+        if not fr_confirms:
+            return None  # FR contradicts direction
+
+        if not ls_extreme and not fr_extreme:
+            return None  # neither is extreme enough
 
         # ── EMA200 TREND FILTER ──
-        # Don't fight the trend
         if ema_200 and ema_200 > 0:
             if direction == 'LONG' and price < ema_200:
-                return None  # don't buy below EMA200
+                return None
             if direction == 'SHORT' and price > ema_200:
-                return None  # don't short above EMA200
+                return None
 
         # ── CONVICTION ──
-        # Higher FR = higher conviction
-        # Base: 0.40 + FR contribution (scaled)
-        fr_score = min(fr_abs / FR_EXTREME, 2.0) * 0.2  # 0 to 0.4
-        conviction = min(0.40 + fr_score, 0.85)
+        base = 0.40
+        if ls_extreme:
+            base += 0.20
+        if fr_extreme:
+            base += 0.15
+        conviction = min(base, 0.85)
 
-        # ── TP/SL ──
-        # Same 5:1 ratio as liquidity_grab (validated)
+        # ── TP/SL (5:1 ratio) ──
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(
             price, direction, atr, tp_mults=(3.0, 5.0, 8.0), sl_mult=0.6)
 
@@ -89,7 +114,8 @@ class FundingArbStrategy(BaseStrategy):
             entry=price, sl=sl, tp1=tp1, tp2=tp2, tp3=tp3,
             sl_pct=sl_pct, tp1_pct=tp1_pct,
             size_mult=0.7,
-            reason=f"Funding arb v2 -> {direction}: FR={fr:.6f} L/S={ls_ratio:.2f}",
+            reason=f"Funding arb v3 -> {direction}: FR={fr:.6f} L/S={ls_ratio:.2f} extreme={ls_extreme or fr_extreme}",
             bypass_gates=False,
-            details={'funding_rate': fr, 'ls_ratio': ls_ratio, 'fr_abs': fr_abs},
+            details={'funding_rate': fr, 'ls_ratio': ls_ratio,
+                     'ls_extreme': ls_extreme, 'fr_extreme': fr_extreme},
         )

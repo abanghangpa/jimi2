@@ -30,7 +30,7 @@ STRATEGY_CONFIGS = {
     },
     "funding_arb": {
         "tp_pct": 2.0, "sl_pct": 0.5, "hold_hours": 12,
-        "direction": None, "enabled": True,
+        "direction": None, "enabled": False,
         "min_conviction": 0.4,
     },
     "orderbook_imbalance": {
@@ -67,7 +67,7 @@ STRATEGY_CONFIGS = {
     "squeeze_breakout": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": False},  # Only 10 signals — not proven
     "bb_mom6": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # PF 1.86
     "momentum_v2": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # PF 1.68
-    "cross_asset": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 4, "direction": None, "enabled": False},  # PF 1.61
+    "cross_asset": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 4, "direction": None, "enabled": True, "min_conviction": 0.5},  # PF 1.61
     "scalp_v2": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # PF 1.11
     "power_of_3": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # No signals
     "macro_surprise": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # No data
