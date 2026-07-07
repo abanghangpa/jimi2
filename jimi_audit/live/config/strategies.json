@@ -24,8 +24,8 @@
       "bb_std": 2.0,
       "tp_pct": 0.002,
       "sl_pct": 0.001,
-      "leverage": 20,
-      "risk_pct": 0.05,
+      "leverage": 25,
+      "risk_pct": 0.1,
       "hold_hours": 8,
       "optimized": true,
       "optimization_date": "2026-07-04",
@@ -35,8 +35,10 @@
         "TP=0.2% SL=0.1% optimal R:R ratio",
         "EU+US overlap (14-16 UTC) best entry time",
         "Tue-Wed-Thu best days",
-        "2025 pattern match: expect Jul-Aug rally, Sep-Oct pullback, Nov dump risk"
-      ]
+        "2025 pattern match: expect Jul-Aug rally, Sep-Oct pullback, Nov dump risk",
+        "Optimized v2: lev25 risk10pct gate1pct (backtested 61.6% WR PF 2.08 100% hit rate)"
+      ],
+      "vol_gate_threshold": 0.01
     }
   },
   "withdrawal": {

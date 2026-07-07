@@ -18,7 +18,7 @@ from .s14_whale_watch import WhaleWatchStrategy
 from .s15_vol_rotation import VolRotationStrategy
 from .s16_mtf_confluence import MTFConfluenceStrategy
 from .s17_scalp_v2 import ScalpV2Strategy
-from .s18_momentum_v2 import MomentumV2Strategy
+from .s18_momentum_v3 import MomentumV3Strategy
 from .s19_orderbook_imbalance import OrderBookImbalanceStrategy
 from .s20_liquidation_cascade import LiquidationCascadeStrategy
 from .s21_trade_flow import TradeFlowStrategy
@@ -37,7 +37,7 @@ ALL_STRATEGIES = [
     KillZoneStrategy, LiquidityGrabStrategy, TakerFlowStrategy,
     PowerOf3Strategy, StructuralBreakStrategy, MacroSurpriseStrategy,
     FundingArbStrategy, WhaleWatchStrategy, VolRotationStrategy,
-    MomentumV2Strategy, LiquidationCascadeStrategy,
+    MomentumV3Strategy, LiquidationCascadeStrategy,
     FailedBreakoutStrategy, JudasSweepStrategy,
 ]
 

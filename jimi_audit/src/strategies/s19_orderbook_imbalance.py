@@ -1,100 +1,140 @@
-"""S19: Order Book Imbalance — trade multi-exchange order book pressure.
-Fixes: 2h cooldown after loss, direction persistence (no flip within2h), max loss cap at1.5%."""
+"""S19: Order Book Imbalance v2 — Enterprise Grade
+
+REDESIGN based on analysis of 502 trades:
+- Session filter: good hours {0,1,7,10,12,15,21}, bad hours {5,11,13,14,23}
+- Direction: LONG only (+6.3pp WR over SHORT)
+- Volume: skip vol_ratio 1.0-1.5 (32.8% WR zone)
+- EMA200: prefer price 1-3% above (54.4% WR)
+- Momentum: avoid recent selloffs (mom_5 < -0.01 = 30% WR)
+
+ARCHITECTURE:
+- State: Order book buy/sell imbalance detection
+- Quality: session + direction + volume + EMA filters built-in
+- TP: 2.5x ATR (let winners run)
+- SL: structure-based (recent swing low)
+"""
 from .base import BaseStrategy, SignalResult
-from datetime import datetime, timezone, timedelta
+import numpy as np
+
+# Best hours from analysis (UTC)
+GOOD_HOURS = {0, 1, 7, 10, 12, 15, 21}
+BAD_HOURS = {5, 11, 13, 14, 23}
+
 
 class OrderBookImbalanceStrategy(BaseStrategy):
-    min_vol_ratio = 0.15
+    min_vol_ratio = 0.12
     name = 'orderbook_imbalance'
     strategy_type = 'flow'
-    description = 'Trade when order book shows strong buy/sell imbalance'
-
-    _last_trade_time = None
-    _last_direction = None
-    _last_loss_time = None
-    COOLDOWN_MINUTES = 120  # 2h cooldown after any trade
-    LOSS_COOLDOWN_MINUTES = 180  # 3h cooldown after loss
-    MAX_LOSS_PCT = 1.5  # wider SL cap (was getting stopped at3.38%)
+    description = 'Enterprise OB imbalance: session + LONG only + volume + EMA filters'
 
     def check(self, data, df_15m=None, idx=None, **kwargs):
-        now = datetime.now(timezone.utc)
-
-        # Cooldown after loss
-        if self._last_loss_time and (now - self._last_loss_time).total_seconds() < self.LOSS_COOLDOWN_MINUTES * 60:
-            return None
-
-        # Cooldown after any trade
-        if self._last_trade_time and (now - self._last_trade_time).total_seconds() < self.COOLDOWN_MINUTES * 60:
-            return None
-
-        ob_data = kwargs.get('order_flow', {})
-        if not ob_data:
-            return None
-
-        imbalance = ob_data.get('avg_imbalance', 1.0)
-        consensus = ob_data.get('consensus', 'NEUTRAL')
-        bullish_ex = ob_data.get('bullish_exchanges', 0)
-        bearish_ex = ob_data.get('bearish_exchanges', 0)
-
-        if consensus == 'NEUTRAL':
-            return None
-
         price = data.get('price', 0)
         atr = data.get('atr', 0)
-        if not price or not atr:
+        ema_200 = data.get('ema_200', 0)
+        if not price or not atr or df_15m is None or idx is None:
             return None
 
-        if consensus == 'BULLISH':
-            direction = 'LONG'
-            extreme = imbalance - 1.0
+        # ── SESSION FILTER ──
+        ts = data.get('timestamp', '')
+        if ts:
+            try:
+                hour = int(ts[11:13])
+                if hour in BAD_HOURS:
+                    return None
+            except (ValueError, IndexError):
+                pass
+
+        # ── DIRECTION: LONG only ──
+        # Data shows LONG 48.4% WR vs SHORT 42.1% WR
+        direction = 'LONG'
+
+        # ── QUALITY FILTER 1: Volume ──
+        vol_ratio = data.get('vol_ratio', 1.0) or 1.0
+        if 1.0 <= vol_ratio < 1.5:
+            return None  # Dead zone: 32.8% WR
+
+        # ── QUALITY FILTER 2: EMA200 ──
+        if ema_200 and ema_200 > 0:
+            dist_ema = (price - ema_200) / ema_200
+            if dist_ema < -0.01:
+                return None  # Below EMA200 by >1%: 38.1% WR
+            # Prefer 1-3% above (54.4% WR)
+            ema_bonus = 0.10 if 0.01 < dist_ema < 0.03 else 0.0
         else:
-            direction = 'SHORT'
-            extreme = 1.0 - imbalance
+            ema_bonus = 0.0
 
-        # Direction persistence: don't flip within2h
-        if self._last_direction and self._last_direction != direction:
-            if self._last_trade_time and (now - self._last_trade_time).total_seconds() < self.COOLDOWN_MINUTES * 60:
+        # ── QUALITY FILTER 3: Momentum ──
+        if idx >= 5:
+            mom_5 = (float(df_15m['Close'].iloc[idx]) - float(df_15m['Close'].iloc[idx-5])) / float(df_15m['Close'].iloc[idx-5])
+            if mom_5 < -0.01:
+                return None  # Recent selloff: 30% WR
+            mom_bonus = 0.05 if 0 < mom_5 < 0.01 else 0.0
+        else:
+            mom_bonus = 0.0
+
+        # ── OB IMBALANCE DETECTION ──
+        ob = data.get('ob_imbalance', {})
+        if not ob:
+            # Fallback: check order_flow data
+            order_flow = data.get('order_flow', {})
+            if order_flow:
+                ob_ratio = order_flow.get('ob_imbalance', 0)
+            else:
                 return None
+        else:
+            ob_ratio = ob.get('ratio', 0)
 
-        imbalance_score = min(extreme * 2, 0.4)
-        exchange_score = min(max(bullish_ex, bearish_ex) / 3, 0.3)
-
-        exchanges = ob_data.get('exchanges', {})
-        wall_bonus = 0
-        for ex_name, ex_data in exchanges.items():
-            if direction == 'LONG' and ex_data.get('bid_wall_count', 0) > 0:
-                wall_bonus = 0.15; break
-            elif direction == 'SHORT' and ex_data.get('ask_wall_count', 0) > 0:
-                wall_bonus = 0.15; break
-
-        conviction = min(0.40 + imbalance_score + exchange_score + wall_bonus, 0.90)
-        if conviction < 0.55:
+        # Need significant imbalance
+        if abs(ob_ratio) < 0.15:
             return None
 
-        # Wider SL for OB strategy (order flow whipsaws)
-        sl_mult = 1.5  # wider than default1.0
-        sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(
-            price, direction, atr, tp_mults=(0.3, 1.5, 3.0), sl_mult=sl_mult)
+        # For LONG: need buy-side imbalance
+        if ob_ratio < 0:
+            return None  # Sell-side dominant
 
-        # Cap max loss at1.5%
-        if sl_pct > self.MAX_LOSS_PCT:
+        # ── CONVICTION ──
+        base = 0.50
+        if abs(ob_ratio) > 0.30:
+            base += 0.15
+        if abs(ob_ratio) > 0.50:
+            base += 0.10
+        conviction = min(base + ema_bonus + mom_bonus, 0.90)
+
+        if conviction < 0.50:
             return None
 
-        self._last_trade_time = now
-        self._last_direction = direction
+        # ── STRUCTURE-BASED SL ──
+        if idx >= 20:
+            swing_low = float(df_15m['Low'].iloc[idx-20:idx].min())
+        else:
+            swing_low = price - 1.5 * atr
+
+        sl_dist = price - swing_low
+        if sl_dist <= 0:
+            sl_dist = 1.0 * atr
+        if sl_dist > 1.5 * atr:
+            sl_dist = 1.5 * atr
+
+        sl = price - sl_dist
+        tp1 = price + 2.5 * atr
+        tp2 = price + 4.0 * atr
+        tp3 = price + 6.0 * atr
+
+        sl_pct = (sl_dist / price) * 100
+        tp1_pct = (2.5 * atr / price) * 100
 
         return SignalResult(
             strategy_name=self.name, strategy_type=self.strategy_type,
             direction=direction, conviction=conviction,
             entry=price, sl=sl, tp1=tp1, tp2=tp2, tp3=tp3,
             sl_pct=sl_pct, tp1_pct=tp1_pct,
-            size_mult=0.8,  # smaller size (wider stops)
-            reason=f"OB {consensus} -> {direction}: imbalance={imbalance:.3f} ({bullish_ex}B/{bearish_ex}S)",
-            bypass_gates=True,
-            details={'imbalance': imbalance, 'consensus': consensus},
+            size_mult=0.8,
+            reason=f"OB imbalance v2 -> {direction}: ob_ratio={ob_ratio:.3f} "
+                   f"vol={vol_ratio:.2f} dist_ema={dist_ema*100:.2f}%",
+            bypass_gates=False,
+            details={
+                'ob_ratio': ob_ratio, 'vol_ratio': vol_ratio,
+                'dist_ema200': dist_ema * 100 if ema_200 else 0,
+                'sl_type': 'structure',
+            },
         )
-
-    def record_outcome(self, outcome):
-        """Call this when a trade closes to update cooldown state."""
-        if outcome in ('LOSS', 'SL_HIT', 'TIMEOUT'):
-            self._last_loss_time = datetime.now(timezone.utc)

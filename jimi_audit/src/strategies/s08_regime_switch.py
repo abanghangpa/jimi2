@@ -57,7 +57,7 @@ class RegimeSwitchStrategy(BaseStrategy):
             return None
 
         sl, tp1, tp2, tp3, sl_pct, tp1_pct = self._calc_levels(
-            price, direction, atr, tp_mults=(0.3, 1.0, 2.0), sl_mult=1.5)
+            price, direction, atr, tp_mults=(1.5, 2.5, 4.0), sl_mult=1.0)
 
         return SignalResult(
             strategy_name=self.name, strategy_type=self.strategy_type,

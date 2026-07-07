@@ -100,10 +100,10 @@ class BaseStrategy:
             pass  # Don't let logging crash the strategy
 
     def _calc_levels(self, price, direction, atr, tp_mults=(1.6, 2.5, 4.0), sl_mult=1.0,
-                     tp_min_dollar=10.0, sl_min_dollar=30.0):
+                     tp_min_dollar=None, sl_min_dollar=None):
         """Calculate SL/TP levels from ATR with minimum dollar floors."""
-        tp1_dist = max(atr * tp_mults[0], tp_min_dollar) if tp_min_dollar else atr * tp_mults[0]
-        sl_dist = max(atr * sl_mult, sl_min_dollar) if sl_min_dollar else atr * sl_mult
+        tp1_dist = atr * tp_mults[0]
+        sl_dist = atr * sl_mult
         if direction == 'LONG':
             sl = price - sl_dist
             tp1 = price + tp1_dist

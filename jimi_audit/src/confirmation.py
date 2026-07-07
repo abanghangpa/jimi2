@@ -21,7 +21,7 @@ STRATEGY_HOLD_WINDOWS = {
     'mtf_confluence': 4,
     'structural_break': 8,        # DISABLED (29.2% WR) — kept for pending signals only
     'scalp_v2': 2,
-    'momentum_v2': 4,
+    'momentum_v3': 4,
     'squeeze_breakout': 4,
     'positioning_fade': 2,
     'kill_zone': 4,

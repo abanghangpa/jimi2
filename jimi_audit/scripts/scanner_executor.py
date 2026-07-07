@@ -26,59 +26,69 @@ STRATEGY_CONFIGS = {
     "whale_watch": {
         "tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8,
         "direction": "LONG", "enabled": False,
+        "group": "B",
         "min_conviction": 0.5,
     },
     "funding_arb": {
-        "tp_pct": 2.0, "sl_pct": 0.5, "hold_hours": 12,
-        "direction": None, "enabled": False,
-        "min_conviction": 0.4,
+        "tp_pct": 1.0, "sl_pct": 1.0, "hold_hours": 16,
+        "direction": None, "enabled": True,
+        "group": "B",
+        "min_conviction": 0.50,
     },
     "orderbook_imbalance": {
         "tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 12,
         "direction": "LONG", "enabled": True,
+        "group": "A",
         "min_conviction": 0.5,
     },
     "failed_breakout": {
-        "tp_pct": 0.5, "sl_pct": 0.5, "hold_hours": 8,
-        "direction": "SHORT", "enabled": True,
+        "tp_pct": 2.5, "sl_pct": 1.0, "hold_hours": 32,
+        "direction": None, "enabled": False,
         "min_conviction": 0.7,
+        "group": "A",
     },
     "positioning_fade": {
-        "tp_pct": 1.0, "sl_pct": 1.0, "hold_hours": 8,
+        "tp_pct": 1.0, "sl_pct": 1.0, "hold_hours": 16,
         "direction": "LONG", "enabled": True,
-        "min_conviction": 0.5,
+        "group": "A",
+        "min_conviction": 0.35,
     },
     "trade_flow": {
         "tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 12,
         "direction": "LONG", "enabled": True,
+        "group": "A",
         "min_conviction": 0.5,
     },
     "structural_break": {
         "tp_pct": 0.5, "sl_pct": 0.5, "hold_hours": 8,
-        "direction": "SHORT", "enabled": True,
+        "direction": "SHORT", "enabled": False,
+        "group": "A",
         "min_conviction": 0.5,
     },
     "regime_switch": {
         "tp_pct": 1.0, "sl_pct": 1.0, "hold_hours": 8,
-        "direction": "SHORT", "enabled": True,
+        "direction": "SHORT", "enabled": False,
+        "group": "A",
         "min_conviction": 0.5,
     },
     # === DISABLED: PF < 2.0 or insufficient data ===
-    "squeeze_breakout": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": False},  # Only 10 signals — not proven
-    "bb_mom6": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # PF 1.86
-    "momentum_v2": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # PF 1.68
-    "cross_asset": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 4, "direction": None, "enabled": True, "min_conviction": 0.5},  # PF 1.61
-    "scalp_v2": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # PF 1.11
-    "power_of_3": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # No signals
-    "macro_surprise": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # No data
-    "liquidation_cascade": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # No data
-    "judas_sweep": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # Rarely fires
-    "taker_flow": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # Only 7 signals
-    "vol_rotation": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # Only 8 signals
-    "kill_zone": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # PF 0.99
-    "liquidity_grab": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # Limited signals
-    "cascade": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # No data
-    "mtf_confluence": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False},  # PF 1.15
+    "squeeze_breakout": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": True, "group": "B"},  # Co-occurrence filter: confirms OBI (80% WR, PF=3.16)
+    "bb_mom6": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # PF 1.86
+    "cross_asset": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 4, "direction": None, "enabled": True,
+        "group": "B", "min_conviction": 0.5},  # PF 1.61
+    "scalp_v2": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # PF 1.11
+    "power_of_3": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # No signals
+    "macro_surprise": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # No data
+    "liquidation_cascade": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # No data
+    "judas_sweep": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # Rarely fires
+    "taker_flow": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # Only 7 signals
+    "vol_rotation": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "B", },  # Only 8 signals
+    "kill_zone": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # PF 0.99
+    "liquidity_grab": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # Limited signals
+    "cascade": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # No data
+    "mtf_confluence": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", },  # PF 1.15
+    "momentum_v3": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": True, "group": "B"},  # State filter: exhaustion - confirms Group A signals
+    "momentum_v2": {"tp_pct": 1.0, "sl_pct": 1.0, "hold_hours": 16, "direction": None, "enabled": True, "group": "B"},  # Co-occurrence filter: confirms OBI (62.5% WR, PF=3.14)
 }
 
 # === EXECUTION PARAMS ===
@@ -168,6 +178,36 @@ def get_latest_signals():
         single_strat = single.get("strategy", "")
         if not any(s.get("strategy") == single_strat for s in all_signals):
             all_signals.append(single)
+
+    # === GROUP A/B VOTING ===
+    # Collect all fired signals by group
+    group_a_fired = []  # event strategies
+    group_b_fired = []  # state filters
+    for sig_data in all_signals:
+        if not isinstance(sig_data, dict):
+            continue
+        strat_name = sig_data.get("strategy", "")
+        cfg = STRATEGY_CONFIGS.get(strat_name)
+        if not cfg:
+            continue
+        direction = sig_data.get("direction")
+        conviction = sig_data.get("conviction", 0) or 0
+        if not direction or conviction < 0.1:
+            continue
+        grp = cfg.get("group", "A")
+        if grp == "A":
+            group_a_fired.append(sig_data)
+        elif grp == "B":
+            group_b_fired.append(sig_data)
+
+    # Build set of (direction) confirmed by Group B
+    b_directions = set()
+    for sig in group_b_fired:
+        d = sig.get("direction")
+        if d:
+            b_directions.add(d)
+
+    # === BUILD SIGNALS ===
     signals = []
     for sig_data in all_signals:
         if not isinstance(sig_data, dict):
@@ -176,6 +216,8 @@ def get_latest_signals():
         cfg = STRATEGY_CONFIGS.get(strat_name)
         if not cfg or not cfg["enabled"]:
             continue
+        if cfg.get("group") == "B":
+            continue  # Group B don't trade standalone
         direction = sig_data.get("direction")
         conviction = sig_data.get("conviction", 0) or 0
         entry = sig_data.get("entry", price)
@@ -186,11 +228,21 @@ def get_latest_signals():
             continue
         if cfg["direction"] and direction != cfg["direction"]:
             continue
+
+        # Check if Group B confirms this direction
+        group_boost = 1.0
+        confirmed_by = []
+        if direction in b_directions:
+            group_boost = 1.5  # 50% size boost when B confirms
+            confirmed_by = [s.get("strategy") for s in group_b_fired if s.get("direction") == direction]
+
         signals.append({
             "strategy": strat_name, "timestamp": ts, "direction": direction,
             "conviction": conviction, "entry": entry or price,
             "sl": sl, "tp1": tp1, "price": price, "cfg": cfg,
             "scan_status": status,
+            "group_boost": group_boost,
+            "confirmed_by": confirmed_by,
         })
     return signals
 
@@ -300,7 +352,9 @@ def main():
 
                 sl_pct = abs(fill_price - sl) / fill_price
                 if sl_pct <= 0: continue
-                size = (state["capital"] * RISK_PCT) / (sl_pct * LEVERAGE)
+                # Apply group boost (A+B confirmation = larger size)
+                group_boost = sig.get("group_boost", 1.0)
+                size = (state["capital"] * RISK_PCT * group_boost) / (sl_pct * LEVERAGE)
                 if size < 0.001: continue
 
                 pos = {
@@ -314,7 +368,9 @@ def main():
                     "order_id": f"dry_{int(now.timestamp())}" if dry_run else None,
                 }
                 state["open_positions"].append(pos)
-                log(f"{'DRY RUN: ' if dry_run else ''}OPEN {sig['direction']} {size:.4f} ETH @ ${fill_price:.2f} TP=${tp1:.2f} SL=${sl:.2f} [{sig['strategy']}]")
+                confirmed = sig.get("confirmed_by", [])
+                conf_str = f" +B:{','.join(confirmed)}" if confirmed else " (solo)"
+                log(f"{'DRY RUN: ' if dry_run else ''}OPEN {sig['direction']} {size:.4f} ETH @ ${fill_price:.2f} TP=${tp1:.2f} SL=${sl:.2f} [{sig['strategy']}]{conf_str} boost={group_boost:.1f}x")
                 log(f"POSITION OPENED: {sig['strategy']} {sig['direction']} {size:.4f} ETH @ ${fill_price:.2f} TP=${tp1:.2f} SL=${sl:.2f}")
 
             save_state(state)

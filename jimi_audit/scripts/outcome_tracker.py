@@ -19,7 +19,7 @@ DEFAULT_HOLD_WINDOWS = {
     "main_pipeline": 2, "failed_breakout": 8, "funding_arb": 4,
     "orderbook_imbalance": 2, "trade_flow": 2, "cross_asset": 4,
     "mtf_confluence": 4, "structural_break": 8, "scalp_v2": 1,
-    "momentum_v2": 4, "squeeze_breakout": 4, "positioning_fade": 2,
+    "momentum_v3": 4, "squeeze_breakout": 4, "positioning_fade": 2,
     "kill_zone": 4, "liquidity_grab": 4, "taker_flow": 2,
     "regime_switch": 4, "power_of_3": 4, "cascade": 4,
     "macro_surprise": 8, "whale_watch": 4, "vol_rotation": 4,

@@ -1,5 +1,6 @@
 """
-Historical Derivatives Loader v2 — loads derivatives data from CSV for backtesting.
+Historical Derivatives Loader v3 — loads derivatives data from CSV for backtesting.
+Includes computed fields: whale_signal, positioning, oi_roc_1h.
 """
 import csv
 import os
@@ -7,6 +8,7 @@ from datetime import datetime, timedelta
 
 _cache = {}
 _cache_loaded = False
+_oi_history = {}  # ts -> oi for ROC computation
 
 DERIV_CSV = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -22,6 +24,7 @@ def _load_cache():
     try:
         with open(DERIV_CSV) as f:
             reader = csv.DictReader(f)
+            rows = []
             for row in reader:
                 ts_raw = row.get("timestamp", "")
                 ts = ts_raw[:16].replace("T", " ")
@@ -40,6 +43,45 @@ def _load_cache():
                         "top_ls_ratio": tls, "top_long_pct": tlp, "top_short_pct": tsp,
                         "funding_rate": fr, "oi": oi, "oi_usd": oi_usd,
                     }
+                    _oi_history[ts] = oi
+        
+        # Compute derived fields for all cached entries
+        sorted_ts = sorted(_cache.keys())
+        for i, ts in enumerate(sorted_ts):
+            d = _cache[ts]
+            ls = d["ls_ratio"]
+            
+            # whale_signal: derive from ls_ratio
+            if ls > 2.1:
+                d["whale_signal"] = "BEARISH"
+            elif ls < 1.9:
+                d["whale_signal"] = "BULLISH"
+            else:
+                d["whale_signal"] = "NEUTRAL"
+            
+            # positioning: derive from ls_ratio extremes
+            if ls > 2.5:
+                d["positioning"] = "EXTREME_LONG"
+            elif ls > 2.2:
+                d["positioning"] = "BULLISH"
+            elif ls < 1.5:
+                d["positioning"] = "EXTREME_SHORT"
+            elif ls < 1.8:
+                d["positioning"] = "BEARISH"
+            else:
+                d["positioning"] = "NEUTRAL"
+            
+            # oi_roc_1h: compute from OI change over ~1 hour (look back 4 entries at 15min intervals)
+            if i >= 4:
+                prev_ts = sorted_ts[i-4]
+                prev_oi = _oi_history.get(prev_ts, 0)
+                if prev_oi > 0:
+                    d["oi_roc_1h"] = (d["oi"] - prev_oi) / prev_oi
+                else:
+                    d["oi_roc_1h"] = 0
+            else:
+                d["oi_roc_1h"] = 0
+                
     except Exception:
         pass
     _cache_loaded = True
@@ -69,3 +111,4 @@ def get_historical_derivatives(timestamp_str):
         pass
 
     return None
+

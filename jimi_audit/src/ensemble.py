@@ -14,7 +14,7 @@ STRATEGY_WEIGHTS = {
     "liquidity_grab": 1.0, "taker_flow": 0.8, "power_of_3": 1.0,
     "cascade": 1.0, "macro_surprise": 1.0, "whale_watch": 1.0,
     "vol_rotation": 1.0, "liquidation_cascade": 1.0, "judas_sweep": 1.0,
-    "momentum_v2": 1.0,
+    "momentum_v3": 1.0,
 }
 
 def evaluate_ensemble(strategy_signals, m10_details=None):

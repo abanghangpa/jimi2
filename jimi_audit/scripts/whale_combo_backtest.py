@@ -46,7 +46,7 @@ EVENT_STRATEGIES = [
     "taker_flow",
     "vol_rotation",
     "scalp_v2",
-    "momentum_v2",
+    "momentum_v3",
     "cross_asset",
     "mtf_confluence",
     "power_of_3",

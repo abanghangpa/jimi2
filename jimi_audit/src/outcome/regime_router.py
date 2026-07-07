@@ -23,7 +23,7 @@ DEFAULT_MATRIX = {
             "funding_arb",          # contrarian, works in downtrends
             "whale_watch",          # sentiment-based
             "liquidity_grab",       # structural
-            "momentum_v2",          # momentum, can catch reversals
+            "momentum_v3",          # momentum, can catch reversals
         ],
         "blocked": [
             "structural_break",     # 29.2% WR — actively harmful
@@ -42,7 +42,7 @@ DEFAULT_MATRIX = {
             "funding_arb",
             "whale_watch",
             "liquidity_grab",
-            "momentum_v2",
+            "momentum_v3",
             "squeeze_breakout",     # can work in mild downtrends
             "kill_zone",            # time-based, regime-flexible
             "power_of_3",           # structural
@@ -64,7 +64,7 @@ DEFAULT_MATRIX = {
             "funding_arb",
             "whale_watch",
             "liquidity_grab",
-            "momentum_v2",
+            "momentum_v3",
             "squeeze_breakout",
             "kill_zone",
             "power_of_3",
@@ -90,7 +90,7 @@ DEFAULT_MATRIX = {
             "funding_arb",
             "whale_watch",
             "liquidity_grab",
-            "momentum_v2",
+            "momentum_v3",
             "squeeze_breakout",
             "kill_zone",
             "power_of_3",
@@ -118,7 +118,7 @@ DEFAULT_MATRIX = {
             "funding_arb",
             "whale_watch",
             "liquidity_grab",
-            "momentum_v2",
+            "momentum_v3",
             "squeeze_breakout",
             "kill_zone",
             "power_of_3",
