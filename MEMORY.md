@@ -95,3 +95,52 @@ The scanner optimization on 2026-07-05 broke strategy TP/SL multipliers. All str
 - +momentum_v2: 47.1% WR, PF=1.24 (87 trades) — solid, profitable
 - +momentum_v3: 77.8% WR, PF=2.02 (9 trades) — exhaustion confirms
 - Standalone: losing (39% WR) — needs Group B confirmation
+
+### Trading System Evaluation (2026-07-12)
+
+**Key Findings:**
+- bb_mom6 is dead (negative returns across all regimes, even with extreme positioning confluence)
+- failed_breakout is regime-specific (works in ranging/chop, fails in trending bears)
+- positioning_fade + whale_watch only work in bearish/stress regimes
+- trade_flow is the strongest by event count (6/9 scenarios PASS)
+- 16 remaining strategies are fundamentally dead (0 signals with synthetic data)
+
+**Architecture:**
+- RegimeClassifier v2 uses multi-signal approach (derivatives + vol + macro + taker + cascade)
+- Regime filters protect strategies from unfavorable conditions
+- Position sizing capped by margin (80% of available)
+- Executor runs6 strategies with data-driven regime filters
+
+**Lessons:**
+- Pooling events across eras hides regime-specific behavior (bb_mom6 looked mediocre pooled, negative in all regimes when stratified)
+-13 events is not enough for a gate claim (bb_mom6 earlier result was noise)
+- "Buy the paint" principle: use direct data when available, don't build inference engines
+- Regime testing is mandatory before claiming an edge
+
+**Files:**
+- config/isolation_gate_results.json (regime-specific results)
+- reports/scenario_gating.json (10 scenario results)
+- reports/all_strats_scenario_gate.json (16 strategy results)
+- reports/trade_flow_gate.json (trade_flow results)
+- reports/bb_mom6_confluence_backtest.json (bb_mom6 confluence results)
+
+
+### System Cleanup & State Reset (2026-07-14)
+
+**Problem:** Executor crashed at 17:36 UTC on Jul 13 with `total_pnl` KeyError, then capital corrupted to -$1,064. Memory files were outdated — showed $-30 capital, executor "RUNNING" (actually DEAD), and old strategy statuses.
+
+**Root Cause:** `load_state()` default dict was missing `pnl_total` key. When executor loaded an older state file, the KeyError cascaded into capital corruption.
+
+**Fixes Applied:**
+1. **Regime matrix cleaned** — removed 15 killed strategies, kept only 7 gate-passed (trade_flow, funding_arb, judas_sweep, orderbook_imbalance, positioning_fade, whale_watch, cross_asset)
+2. **Executor configs updated** — trade_flow and orderbook_imbalance now direction-agnostic (was LONG-only), RISK_PCT reduced from 3% to 2%
+3. **State files reset** — capital reset to $200, clean slate, all required keys present (total_pnl, pnl_total, total_fees)
+4. **load_state() patched** — added missing `pnl_total` key to prevent future KeyErrors
+5. **4 strategies enabled:** trade_flow, funding_arb, judas_sweep, orderbook_imbalance
+
+**Current Gate Status (verified 2026-07-14):**
+- PASS: trade_flow (623e, p=0.003, +0.214%), funding_arb (226e, p=0.054, +0.21%), judas_sweep (1895e, p=0.040, +0.103%), orderbook_imbalance (847e, p=0.001, +0.254%), positioning_fade (512e, p=0.045, +0.18%), whale_watch (340e, p=0.038, +0.16%), cross_asset (82e, p=0.0, +0.661%)
+- KILLED (15): bb_mom6, momentum_v3, squeeze_breakout, scalp_v2, power_of_3, macro_surprise, liquidation_cascade, taker_flow, liquidity_grab, cascade, mtf_confluence, vol_rotation, kill_zone, structural_break, regime_switch
+
+**Executor Status:** STOPPED (needs manual restart after fixes verified)
+**Smart Proxy:** RUNNING but g4f returning 404 for qwen-3.6-27b model

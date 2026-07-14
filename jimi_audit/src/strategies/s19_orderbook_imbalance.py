@@ -1,31 +1,42 @@
-"""S19: Order Book Imbalance v2 — Enterprise Grade
+"""S19: Order Book Imbalance v3 — with persistence, delta, spoofing, and SHORT support.
 
-REDESIGN based on analysis of 502 trades:
-- Session filter: good hours {0,1,7,10,12,15,21}, bad hours {5,11,13,14,23}
-- Direction: LONG only (+6.3pp WR over SHORT)
-- Volume: skip vol_ratio 1.0-1.5 (32.8% WR zone)
-- EMA200: prefer price 1-3% above (54.4% WR)
-- Momentum: avoid recent selloffs (mom_5 < -0.01 = 30% WR)
+v2 → v3 CHANGES:
+1. SHORT direction added with separate filters (below EMA200 + seller-dominated + high vol)
+2. OB persistence: requires imbalance held for 3+ minutes (not just a snapshot)
+3. Wall delta: tracks if imbalance is strengthening or weakening
+4. Spoofing penalty: reduces conviction if recent spoof detected
+5. Reads live OB data from data/ob_history/ob_state.json
 
-ARCHITECTURE:
-- State: Order book buy/sell imbalance detection
-- Quality: session + direction + volume + EMA filters built-in
-- TP: 2.5x ATR (let winners run)
-- SL: structure-based (recent swing low)
+DATA SOURCE: ob_collector.py (systemd timer, every 60s)
 """
 from .base import BaseStrategy, SignalResult
+import json, os
 import numpy as np
 
-# Best hours from analysis (UTC)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+OB_STATE = os.path.join(BASE_DIR, "data", "ob_history", "ob_state.json")
+
+# Best/worst hours from analysis (UTC)
 GOOD_HOURS = {0, 1, 7, 10, 12, 15, 21}
 BAD_HOURS = {5, 11, 13, 14, 23}
+
+
+def _read_ob_state():
+    """Read latest OB state from collector."""
+    if not os.path.exists(OB_STATE):
+        return None
+    try:
+        with open(OB_STATE) as f:
+            return json.load(f)
+    except Exception:
+        return None
 
 
 class OrderBookImbalanceStrategy(BaseStrategy):
     min_vol_ratio = 0.12
     name = 'orderbook_imbalance'
     strategy_type = 'flow'
-    description = 'Enterprise OB imbalance: session + LONG only + volume + EMA filters'
+    description = 'v3: persistence + delta + spoofing + SHORT support'
 
     def check(self, data, df_15m=None, idx=None, **kwargs):
         price = data.get('price', 0)
@@ -44,84 +55,171 @@ class OrderBookImbalanceStrategy(BaseStrategy):
             except (ValueError, IndexError):
                 pass
 
-        # ── DIRECTION: LONG only ──
-        # Data shows LONG 48.4% WR vs SHORT 42.1% WR
-        direction = 'LONG'
-
-        # ── QUALITY FILTER 1: Volume ──
-        vol_ratio = data.get('vol_ratio', 1.0) or 1.0
-        if 1.0 <= vol_ratio < 1.5:
-            return None  # Dead zone: 32.8% WR
-
-        # ── QUALITY FILTER 2: EMA200 ──
-        if ema_200 and ema_200 > 0:
-            dist_ema = (price - ema_200) / ema_200
-            if dist_ema < -0.01:
-                return None  # Below EMA200 by >1%: 38.1% WR
-            # Prefer 1-3% above (54.4% WR)
-            ema_bonus = 0.10 if 0.01 < dist_ema < 0.03 else 0.0
-        else:
-            ema_bonus = 0.0
-
-        # ── QUALITY FILTER 3: Momentum ──
-        if idx >= 5:
-            mom_5 = (float(df_15m['Close'].iloc[idx]) - float(df_15m['Close'].iloc[idx-5])) / float(df_15m['Close'].iloc[idx-5])
-            if mom_5 < -0.01:
-                return None  # Recent selloff: 30% WR
-            mom_bonus = 0.05 if 0 < mom_5 < 0.01 else 0.0
-        else:
-            mom_bonus = 0.0
-
-        # ── OB IMBALANCE DETECTION ──
-        ob = data.get('ob_imbalance', {})
-        if not ob:
-            # Fallback: check order_flow data
-            order_flow = data.get('order_flow', {})
-            if order_flow:
-                ob_ratio = order_flow.get('ob_imbalance', 0)
-            else:
-                return None
-        else:
-            ob_ratio = ob.get('ratio', 0)
-
-        # Need significant imbalance
-        if abs(ob_ratio) < 0.15:
+        # ── READ OB STATE ──
+        ob_state = _read_ob_state()
+        if not ob_state:
             return None
 
-        # For LONG: need buy-side imbalance
-        if ob_ratio < 0:
-            return None  # Sell-side dominant
+        snapshot = ob_state.get("snapshot", {})
+        metrics = ob_state.get("metrics", {})
+        recent_spoofs = ob_state.get("recent_spoofs", 0)
+
+        ob_ratio = snapshot.get("ob_ratio", 0)
+        top5_ratio = snapshot.get("top5_ratio", 0)
+        persistence = metrics.get("persistence_minutes", 0)
+        ob_delta = metrics.get("ob_delta_5m", 0)
+        top5_delta = metrics.get("top5_delta_5m", 0)
+        trend = metrics.get("trend", "NEUTRAL")
+
+        # ── PERSISTENCE FILTER (new) ──
+        # Require imbalance held for at least 3 minutes
+        if persistence < 3:
+            return None
+
+        # ── VOLUME FILTER ──
+        vol_ratio = data.get('vol_ratio', 1.0) or 1.0
+
+        # ── MOMENTUM FILTER ──
+        mom_5 = 0
+        if idx >= 5:
+            mom_5 = (float(df_15m['Close'].iloc[idx]) - float(df_15m['Close'].iloc[idx-5])) / float(df_15m['Close'].iloc[idx-5])
+
+        # ── DIRECTION LOGIC ──
+        direction = None
+        direction_filters = {}
+
+        # LONG: bid-heavy OB + conditions
+        if ob_ratio > 0.10 and top5_ratio > 0.05:
+            # Standard LONG filters
+            if 1.0 <= vol_ratio < 1.5:
+                return None  # Dead zone
+            if ema_200 and ema_200 > 0:
+                dist_ema = (price - ema_200) / ema_200
+                if dist_ema < -0.01:
+                    return None  # Below EMA200 by >1%
+            if mom_5 < -0.01:
+                return None  # Recent selloff
+
+            direction = 'LONG'
+            direction_filters = {
+                'ob_ratio': ob_ratio,
+                'top5_ratio': top5_ratio,
+                'vol_ratio': vol_ratio,
+                'dist_ema': dist_ema if ema_200 else 0,
+            }
+
+        # SHORT: ask-heavy OB + different conditions (stricter)
+        elif ob_ratio < -0.15 and top5_ratio < -0.08:
+            # SHORT needs stronger signal (42% WR baseline, need more filters)
+            if vol_ratio < 1.5:
+                return None  # Need high volume for SHORT
+            if ema_200 and ema_200 > 0:
+                dist_ema = (price - ema_200) / ema_200
+                if dist_ema > -0.005:
+                    return None  # Must be below EMA200 (or very close)
+            if mom_5 > 0.005:
+                return None  # Don't SHORT if price rising
+
+            # Taker flow confirmation for SHORT
+            taker = data.get('raw_taker_ratio', 0.5)
+            if taker > 0.45:
+                return None  # Need seller-dominated taker flow
+
+            direction = 'SHORT'
+            direction_filters = {
+                'ob_ratio': ob_ratio,
+                'top5_ratio': top5_ratio,
+                'vol_ratio': vol_ratio,
+                'dist_ema': dist_ema if ema_200 else 0,
+                'taker': taker,
+            }
+
+        if not direction:
+            return None
 
         # ── CONVICTION ──
-        base = 0.50
-        if abs(ob_ratio) > 0.30:
-            base += 0.15
-        if abs(ob_ratio) > 0.50:
-            base += 0.10
-        conviction = min(base + ema_bonus + mom_bonus, 0.90)
+        base = 0.45
+
+        # OB strength bonus
+        if direction == 'LONG':
+            ob_strength = min(abs(ob_ratio) / 0.3, 0.20)
+            top5_strength = min(abs(top5_ratio) / 0.2, 0.10)
+        else:
+            ob_strength = min(abs(ob_ratio) / 0.4, 0.20)  # Higher bar for SHORT
+            top5_strength = min(abs(top5_ratio) / 0.3, 0.10)
+
+        # Persistence bonus (longer = more real)
+        persist_bonus = min(persistence / 30, 0.15)  # max at 30 minutes
+
+        # Delta bonus (strengthening imbalance)
+        if direction == 'LONG' and ob_delta > 0.03:
+            delta_bonus = 0.10
+        elif direction == 'SHORT' and ob_delta < -0.03:
+            delta_bonus = 0.10
+        else:
+            delta_bonus = 0
+
+        # EMA bonus
+        ema_bonus = 0
+        if ema_200 and ema_200 > 0:
+            dist_ema = (price - ema_200) / ema_200
+            if direction == 'LONG' and 0.01 < dist_ema < 0.03:
+                ema_bonus = 0.10
+            elif direction == 'SHORT' and -0.03 < dist_ema < -0.01:
+                ema_bonus = 0.05
+
+        # Momentum bonus
+        mom_bonus = 0
+        if direction == 'LONG' and 0 < mom_5 < 0.01:
+            mom_bonus = 0.05
+
+        conviction = min(base + ob_strength + top5_strength + persist_bonus + delta_bonus + ema_bonus + mom_bonus, 0.90)
+
+        # ── SPOOFING PENALTY (new) ──
+        if recent_spoofs > 0:
+            conviction *= 0.85  # 15% penalty if spoof detected recently
 
         if conviction < 0.50:
             return None
 
-        # ── STRUCTURE-BASED SL ──
-        if idx >= 20:
-            swing_low = float(df_15m['Low'].iloc[idx-20:idx].min())
+        # ── TP/SL ──
+        if direction == 'LONG':
+            # Structure-based SL (recent swing low)
+            if idx >= 20:
+                swing_low = float(df_15m['Low'].iloc[idx-20:idx].min())
+            else:
+                swing_low = price - 1.5 * atr
+            sl_dist = price - swing_low
+            if sl_dist <= 0:
+                sl_dist = 1.0 * atr
+            if sl_dist > 1.5 * atr:
+                sl_dist = 1.5 * atr
+            sl = price - sl_dist
         else:
-            swing_low = price - 1.5 * atr
+            # SHORT: structure-based SL (recent swing high)
+            if idx >= 20:
+                swing_high = float(df_15m['High'].iloc[idx-20:idx].max())
+            else:
+                swing_high = price + 1.5 * atr
+            sl_dist = swing_high - price
+            if sl_dist <= 0:
+                sl_dist = 1.0 * atr
+            if sl_dist > 1.5 * atr:
+                sl_dist = 1.5 * atr
+            sl = price + sl_dist
 
-        sl_dist = price - swing_low
-        if sl_dist <= 0:
-            sl_dist = 1.0 * atr
-        if sl_dist > 1.5 * atr:
-            sl_dist = 1.5 * atr
-
-        sl = price - sl_dist
-        tp1 = price + 2.5 * atr
-        tp2 = price + 4.0 * atr
-        tp3 = price + 6.0 * atr
+        tp1_dist = 2.5 * atr
+        if direction == 'LONG':
+            tp1 = price + tp1_dist
+            tp2 = price + 4.0 * atr
+            tp3 = price + 6.0 * atr
+        else:
+            tp1 = price - tp1_dist
+            tp2 = price - 4.0 * atr
+            tp3 = price - 6.0 * atr
 
         sl_pct = (sl_dist / price) * 100
-        tp1_pct = (2.5 * atr / price) * 100
+        tp1_pct = (tp1_dist / price) * 100
 
         return SignalResult(
             strategy_name=self.name, strategy_type=self.strategy_type,
@@ -129,12 +227,15 @@ class OrderBookImbalanceStrategy(BaseStrategy):
             entry=price, sl=sl, tp1=tp1, tp2=tp2, tp3=tp3,
             sl_pct=sl_pct, tp1_pct=tp1_pct,
             size_mult=0.8,
-            reason=f"OB imbalance v2 -> {direction}: ob_ratio={ob_ratio:.3f} "
-                   f"vol={vol_ratio:.2f} dist_ema={dist_ema*100:.2f}%",
+            reason=f"OB v3 {direction}: ratio={ob_ratio:.3f} top5={top5_ratio:.3f} "
+                   f"persist={persistence}m delta={ob_delta:.4f} trend={trend}",
             bypass_gates=False,
             details={
-                'ob_ratio': ob_ratio, 'vol_ratio': vol_ratio,
-                'dist_ema200': dist_ema * 100 if ema_200 else 0,
-                'sl_type': 'structure',
+                'ob_ratio': ob_ratio, 'top5_ratio': top5_ratio,
+                'persistence_min': persistence, 'ob_delta_5m': ob_delta,
+                'top5_delta_5m': top5_delta, 'trend': trend,
+                'recent_spoofs': recent_spoofs,
+                'vol_ratio': vol_ratio,
+                'version': 'v3',
             },
         )
