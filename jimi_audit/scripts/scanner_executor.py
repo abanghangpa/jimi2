@@ -623,7 +623,7 @@ STRATEGY_CONFIGS = {
     # === PROVEN STRATEGIES (PF >= 2.0, WR >= 70%) ===
     "whale_watch": {
         "tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8,
-        "direction": "LONG", "enabled": False,
+        "direction": None, "enabled": True,
         "group": "B",
         "min_conviction": 0.5,
     },
