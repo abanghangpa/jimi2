@@ -144,3 +144,52 @@ The scanner optimization on 2026-07-05 broke strategy TP/SL multipliers. All str
 
 **Executor Status:** STOPPED (needs manual restart after fixes verified)
 **Smart Proxy:** RUNNING but g4f returning 404 for qwen-3.6-27b model
+
+
+### Strategy Overhaul Session (2026-07-14)
+
+**Objective:** Audit all strategies, fix what's fixable, kill what's dead.
+
+**Starting state:** 4 strategies enabled, capital -$1,064, executor dead.
+**Ending state:** 13 strategies enabled, capital $200, executor running dry-run.
+
+**Strategies upgraded (v2/v3):**
+- S04 positioning_fade v3: rolling L/S stats, time-in-position filter, gate validated
+- S07 taker_flow v3: df_15m fallback, regime-aware EMA, freshness check
+- S13 funding_arb v6: 72h cumulative FR, SHORT support, no FR cap
+- S19 orderbook_imbalance v3: SHORT direction, persistence, spoofing detection
+- S20 liquidation_cascade v3: lower thresholds, OI shock, price-level awareness
+- S21 trade_flow v3: z-score thresholds, flow acceleration, session filter
+- S24 forced_movement v2: lower thresholds, basis widening, OI fallback
+
+**Strategies built from scratch:**
+- S01 failed_breakout v2: independent detection from df_15m, quality grading
+- S02 squeeze_breakout v2: independent ATR/BB squeeze, Q>=0.80, 63% WR, p=0.0049
+- S06 liquidity_grab v2: OB collector + independent S/R + persistence + spoofing
+- S10 structural_break v2: independent BOS/ChoCH detection
+- S14 whale_watch v2: real Etherscan on-chain data, contrarian L/S
+
+**Executor improvements:**
+- Kill zone session bonus: +0.08 London/NY overlap, +0.05 active sessions
+- Regime matrix cleaned: removed 15 killed strategies
+- Capital reset to $200 (was -$1,064 from total_pnl KeyError)
+- RISK_PCT reduced from 3% to 2%
+
+**Data collectors deployed:**
+- fm-collector.timer: funding/OI/basis from Bybit every 5 min
+- fm-liq-stream.service: Bybit liquidation websocket
+- ob-collector.timer: orderbook snapshots every 60s
+
+**Strategies killed (confirmed dead):**
+- cross_asset: extended backtest (5000 bars, 1784 events) showed -0.018% mean, p=0.311
+- bb_mom6: -0.714% mean return
+- regime_switch: 31.9% WR, fires 100%
+- scalp_v2, power_of_3, mtf_confluence, momentum_v3: synthetic confirmed dead
+- vol_rotation, kill_zone, cascade, macro_surprise: no edge or missing data
+
+**Key lessons:**
+- 82 events is NOT enough for a gate claim (cross_asset was noise)
+- Static thresholds don't adapt to market conditions (use z-score)
+- Pipeline dependencies cause silent failures (always have fallback)
+- Session timing is a filter, not a strategy
+- Squeeze detection works when using ATR/BB compression (not module-dependent)
