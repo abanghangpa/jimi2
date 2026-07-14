@@ -678,7 +678,7 @@ STRATEGY_CONFIGS = {
         "min_conviction": 0.5,
     },
     # === DISABLED: PF < 2.0 or insufficient data ===
-    "squeeze_breakout": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": False, "group": "B"},
+    "squeeze_breakout": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": True, "group": "B", "min_conviction": 0.55, "notes": "v2: ATR/BB squeeze Q>=0.80, 63% WR, p=0.0049. Bypasses gates."},
     "bb_mom6": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", "min_conviction": 0.5, "confluence_with": "extreme_positioning", "notes": "Only fires with extreme positioning confluence. HC only."},
     "cross_asset": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 12, "direction": None, "enabled": False, "group": "A", "min_conviction": 0.5, "confluence_with": "orderbook_imbalance", "notes": "Confluence with OBI LONG. p=0.0000, mean=0.661%."},
     "judas_sweep": {"tp_pct": 2.5, "sl_pct": 1.5, "hold_hours": 24, "direction": None, "enabled": True, "group": "A", "min_conviction": 0.5, "notes": "v3 multi-factor: daily/session H/L sweep + rejection wick + volume. Gate PASS: 1895 events, +0.10%, p=0.040."},
@@ -701,6 +701,44 @@ RISK_PCT = 0.02
 LEVERAGE = 25
 MAX_SLIPPAGE_PCT = 0.30
 BLOCKED_HOURS = {19, 20, 21}
+
+# === KILL ZONE SESSION BONUS ===
+# London/NY overlap = highest volume, tightest spreads
+# Asia dead zone = lowest volume, widest spreads
+KZ_BONUS = {
+    0: 0.03,   # Asia active
+    1: 0.03,
+    2: 0.05,   # London open
+    3: 0.05,
+    4: 0.02,   # London mid
+    5: 0.00,   # Dead zone
+    6: 0.00,
+    7: 0.05,   # London active
+    8: 0.05,
+    9: 0.08,   # London/NY overlap — BEST
+    10: 0.08,
+    11: 0.05,  # NY active
+    12: 0.05,
+    13: 0.05,
+    14: 0.03,  # NY mid
+    15: 0.05,  # NY afternoon
+    16: 0.05,
+    17: 0.03,  # NY close
+    18: 0.02,
+    19: 0.00,  # Dead zone
+    20: 0.00,
+    21: 0.02,  # Asia open
+    22: 0.02,
+    23: 0.02,
+}
+
+def get_session_bonus(ts_str):
+    """Get conviction bonus based on session (kill zone)."""
+    try:
+        hour = int(ts_str[11:13])
+        return KZ_BONUS.get(hour, 0.0)
+    except (ValueError, IndexError, TypeError):
+        return 0.0
 BLOCKED_DAYS = {"Sat"}
 MAX_POSITIONS = 3
 SIGNAL_MAX_AGE_SEC = 1200
@@ -845,7 +883,9 @@ def get_latest_signals(gate, monitor):
             rejected["conviction"].append(f"{strat_name}(conv={conviction:.2f}<{min_conv})")
             continue
 
-        # === SESSION FILTER (removed — module has own filter) ===
+        # === SESSION BONUS (Kill Zone) ===
+        session_bonus = get_session_bonus(sig_data.get("timestamp", "") or data.get("timestamp", ""))
+        conviction = min(conviction + session_bonus, 0.95)
 
         # === REGIME FILTER: failed_breakout only in ranging markets ===
         if strat_name == "failed_breakout":
