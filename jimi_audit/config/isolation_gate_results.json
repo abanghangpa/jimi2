@@ -36,13 +36,14 @@
     "notes": "v2: real on-chain whale data + contrarian L/S + time-in-position."
   },
   "cross_asset": {
-    "passed": true,
-    "p_value": 0.0,
-    "effect_direction": "correct",
-    "mean_return_pct": 0.661,
-    "events": 82,
-    "date": "2026-07-12",
-    "notes": "Group A. Below 500 event threshold but strong effect."
+    "passed": false,
+    "p_value": 0.311,
+    "effect_direction": "backwards",
+    "mean_return_pct": -0.0182,
+    "events": 1784,
+    "date": "2026-07-14",
+    "killed": true,
+    "notes": "KILLED. Extended backtest (5000 bars, 1784 events) showed negative mean return. Original 82-event result was noise."
   },
   "cross_asset_plus_obi": {
     "passed": true,
