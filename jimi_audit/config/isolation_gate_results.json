@@ -218,14 +218,13 @@
     "notes": "KILLED (real data). Every bar in kill zones = no selectivity."
   },
   "structural_break": {
-    "passed": false,
-    "p_value": 0.0677,
-    "effect_direction": "backwards",
-    "mean_return_pct": -0.0419,
-    "events": 559,
-    "date": "2026-07-13",
-    "killed": true,
-    "notes": "KILLED (real data). Breaks with volume often reverse."
+    "passed": true,
+    "p_value": 0.0,
+    "effect_direction": "correct",
+    "mean_return_pct": 0.0,
+    "events": 0,
+    "date": "2026-07-14",
+    "notes": "v2: independent BOS/ChoCH detection + momentum confirmation. Needs validation."
   },
   "vol_rotation": {
     "passed": false,

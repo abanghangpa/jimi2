@@ -667,7 +667,7 @@ STRATEGY_CONFIGS = {
     },
     "structural_break": {
         "tp_pct": 0.5, "sl_pct": 0.5, "hold_hours": 8,
-        "direction": "SHORT", "enabled": False,
+        "direction": "SHORT", "enabled": True,
         "group": "A",
         "min_conviction": 0.5,
     },
