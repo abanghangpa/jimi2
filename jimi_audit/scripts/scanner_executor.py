@@ -644,7 +644,7 @@ STRATEGY_CONFIGS = {
     },
     "failed_breakout": {
         "tp_pct": 2.5, "sl_pct": 1.5, "hold_hours": 24,
-        "direction": None, "enabled": False,
+        "direction": None, "enabled": True,
         "group": "A",
         "min_conviction": 0.5,
         "structural_tpsl": True,
@@ -690,7 +690,7 @@ STRATEGY_CONFIGS = {
     "taker_flow": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": True, "group": "A", "min_conviction": 0.50, "notes": "v2: z-score thresholds + session filter + flow acceleration. Needs gate validation."},
     "vol_rotation": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "B"},
     "kill_zone": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
-    "liquidity_grab": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
+    "liquidity_grab": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 12, "direction": None, "enabled": True, "group": "A", "min_conviction": 0.45, "notes": "v2: OB collector + S/R levels + persistence + spoofing."},
     "cascade": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
     "mtf_confluence": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
     "momentum_v3": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "B"},
