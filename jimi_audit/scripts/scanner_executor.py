@@ -9,6 +9,23 @@ import json, os, sys, time, math, argparse
 from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 
+# === MULTI-AGENT SYSTEM ===
+_AGENTS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src")
+if _AGENTS_PATH not in sys.path:
+    sys.path.insert(0, _AGENTS_PATH)
+from agents.orchestrator import Orchestrator
+# V2 UPGRADE: Import upgraded agents with momentum/cooldown/dedup
+try:
+    from scripts.agents_v2 import OrchestratorV2
+    V2_AVAILABLE = True
+except ImportError:
+    V2_AVAILABLE = False
+from agents.validation_agent import ValidationAgent
+
+# === MULTI-AGENT SYSTEM ===
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
+from src.agents.orchestrator import Orchestrator
+
 
 
 
@@ -64,6 +81,7 @@ LOG_FILE = os.path.join(BASE, "live", "logs", "executor.log")
 KEYS_FILE = os.path.join(BASE, "config", "exchange_keys.json")
 ISOLATION_GATE_FILE = os.path.join(BASE, "config", "isolation_gate_results.json")
 BACKTEST_BENCH_FILE = os.path.join(BASE, "config", "backtest_benchmarks.json")
+OB_LIQUIDITY_FILE = os.path.join(BASE, "data", "ob_history", "ob_snapshots.jsonl")
 
 SYMBOL = "ETH/USDT:USDT"
 INITIAL_CAPITAL = 200.0
@@ -325,7 +343,10 @@ class ConfluenceChecker:
             with open(self.DERIV_FILE) as f:
                 for row in csv.DictReader(f):
                     ts_raw = row.get("timestamp", "")
-                    dt = datetime.strptime(ts_raw[:19], "%Y-%m-%dT%H:%M:%S")
+                    try:
+                        dt = datetime.strptime(ts_raw[:19], "%Y-%m-%dT%H:%M:%S")
+                    except ValueError:
+                        dt = datetime.strptime(ts_raw[:19], "%Y-%m-%d %H:%M:%S")
                     ts_str = dt.replace(minute=(dt.minute//15)*15, second=0, microsecond=0).strftime("%Y-%m-%d %H:%M:%S")
                     self.deriv_by_ts[ts_str] = {
                         "ts": ts_str,
@@ -387,6 +408,104 @@ class ConfluenceChecker:
                     return True, evt["direction"], evt["conviction"]
         return False, None, 0
 
+
+
+
+
+# === OB-BASED TP TARGETING ===
+def get_liquidity_tp(direction, entry_price, sl_price, min_rr=1.0):
+    """
+    Find the best TP target from orderbook liquidity snapshots.
+    For LONG: targets ask walls (resistance) above entry.
+    For SHORT: targets bid walls (support) below entry.
+
+    Picks the level with highest (strength * volume) that satisfies min_rr.
+    Falls back to nearest qualifying level if no OB data.
+
+    Returns: tp_price or None if no valid target found.
+    """
+    import json as _json
+
+    # Strategy 1: Use scan liquidity_levels (richer data with strength + cluster)
+    scan_dir = os.path.join(BASE, "data", "scans")
+    try:
+        scan_files = sorted(
+            [f for f in os.listdir(scan_dir) if f.startswith("scan_") and f.endswith(".json")],
+            reverse=True
+        )
+        if scan_files:
+            with open(os.path.join(scan_dir, scan_files[0])) as f:
+                scan_data = _json.load(f)
+            liq = scan_data.get("liquidity_levels", {})
+            levels = liq.get("above", []) if direction == "LONG" else liq.get("below", [])
+
+            sl_dist = abs(entry_price - sl_price)
+            best_tp = None
+            best_score = 0
+
+            for level in levels:
+                tp_price = level.get("price", 0)
+                if not tp_price:
+                    continue
+
+                # Check direction: LONG needs TP above entry, SHORT needs TP below
+                if direction == "LONG" and tp_price <= entry_price:
+                    continue
+                if direction == "SHORT" and tp_price >= entry_price:
+                    continue
+
+                tp_dist = abs(tp_price - entry_price)
+                rr = tp_dist / sl_dist if sl_dist > 0 else 0
+
+                if rr < min_rr:
+                    continue
+
+                # Score: strength * cluster_size (prefer strong, clustered liquidity)
+                strength = level.get("strength", 0)
+                cluster = level.get("cluster_size", 1)
+                score = strength * max(cluster, 1)
+
+                # Prefer higher score (bigger liquidity pool)
+                if score > best_score:
+                    best_score = score
+                    best_tp = tp_price
+
+            if best_tp:
+                return best_tp
+    except Exception:
+        pass
+
+    # Strategy 2: Use OB snapshots (max bid/ask walls)
+    try:
+        if os.path.exists(OB_LIQUIDITY_FILE):
+            with open(OB_LIQUIDITY_FILE) as f:
+                lines = f.readlines()
+            if lines:
+                latest = _json.loads(lines[-1])
+                sl_dist = abs(entry_price - sl_price)
+
+                if direction == "LONG":
+                    # Target the biggest ask wall (resistance)
+                    tp_price = latest.get("max_ask_price", 0)
+                    ask_vol = latest.get("max_ask_vol", 0)
+                    if tp_price > entry_price:
+                        tp_dist = abs(tp_price - entry_price)
+                        rr = tp_dist / sl_dist if sl_dist > 0 else 0
+                        if rr >= min_rr:
+                            return tp_price
+                else:
+                    # Target the biggest bid wall (support)
+                    tp_price = latest.get("max_bid_price", 0)
+                    bid_vol = latest.get("max_bid_vol", 0)
+                    if tp_price < entry_price:
+                        tp_dist = abs(tp_price - entry_price)
+                        rr = tp_dist / sl_dist if sl_dist > 0 else 0
+                        if rr >= min_rr:
+                            return tp_price
+    except Exception:
+        pass
+
+    return None
 
 
 # === ENHANCED REAL-TIME REGIME CLASSIFIER ===
@@ -619,6 +738,172 @@ class RegimeClassifier:
 
 
 # === OPTIMIZED STRATEGY CONFIGS (from 2026-07-05 optimization, PF >= 2.0) ===
+
+# === DIRECTIONAL CONSENSUS GATE ===
+class DirectionalConsensusGate:
+    """
+    5-metric directional consensus gate.
+    Blocks or flips signals that disagree with market direction.
+    
+    Metrics (weighted):
+    - Price vs EMA200: 1.0 (structural)
+    - EMA200 slope (4-bar): 1.0 (trend)
+    - Regime classifier: 1.0 (multi-factor)
+    - Price momentum (4-bar ROC): 1.0 (real-time)
+    - Swing bias: 0.5 (unreliable — half weight)
+    
+    Rules:
+    - 0-1.0 veto weight = ALLOW
+    - 2.0-2.9 veto weight = BLOCK
+    - 3.0+ veto weight = FLIP to opposite direction
+    """
+    VETO_WEIGHTS = {
+        'ema_distance': 1.0,
+        'slope': 1.0,
+        'regime': 1.0,
+        'momentum': 1.0,
+    }
+    BLOCK_THRESHOLD = 2.0
+    FLIP_THRESHOLD = 3.0
+    
+    def __init__(self, ema_by_ts, slope_by_ts, mom_by_ts, regime_classifier=None):
+        self.ema_by_ts = ema_by_ts
+        self.slope_by_ts = slope_by_ts
+        self.mom_by_ts = mom_by_ts
+        self.regime_classifier = regime_classifier
+    
+    def evaluate(self, ts, direction, price, swing_bias='?'):
+        """
+        Returns (action, new_direction, details)
+        action: 'ALLOW', 'BLOCK', 'FLIP'
+        new_direction: original direction if ALLOW, flipped if FLIP, None if BLOCK
+        """
+        opposite = 'SHORT' if direction == 'LONG' else 'LONG'
+        veto_weight = 0.0
+        veto_details = {}
+        agree_details = {}
+        
+        # Metric 1: Distance-weighted Price vs EMA200
+        ema = self.ema_by_ts.get(ts, 0)
+        if ema > 0:
+            dist_pct = (price - ema) / ema * 100
+            if direction == 'SHORT':
+                if dist_pct > 3:
+                    veto_weight += 1.0
+                    veto_details['ema_distance'] = f'LONG({dist_pct:.1f}%)'
+                elif dist_pct > 0.5:
+                    veto_weight += 0.5
+                    veto_details['ema_distance'] = f'LONG({dist_pct:.1f}%)'
+            else:
+                if dist_pct < -3:
+                    veto_weight += 1.0
+                    veto_details['ema_distance'] = f'SHORT({dist_pct:.1f}%)'
+                elif dist_pct < -0.5:
+                    veto_weight += 0.5
+                    veto_details['ema_distance'] = f'SHORT({dist_pct:.1f}%)'
+        
+        # Metric 2: EMA200 slope
+        slope = self.slope_by_ts.get(ts, 0)
+        if abs(slope) > 0.02:
+            slope_dir = 'LONG' if slope > 0 else 'SHORT'
+            if slope_dir == opposite:
+                veto_weight += self.VETO_WEIGHTS['slope']
+                veto_details['slope'] = slope_dir
+            elif slope_dir == direction:
+                agree_details['slope'] = slope_dir
+        
+        # Metric 3: Regime classifier
+        regime = '?'
+        if self.regime_classifier:
+            try:
+                regime, _, _ = self.regime_classifier.classify()
+            except:
+                regime = '?'
+        if regime in ('BULL',) and direction == 'SHORT':
+            veto_weight += self.VETO_WEIGHTS['regime']
+            veto_details['regime'] = 'LONG'
+        elif regime in ('BEAR', 'STRESS') and direction == 'LONG':
+            veto_weight += self.VETO_WEIGHTS['regime']
+            veto_details['regime'] = 'SHORT'
+        elif regime in ('BULL',) and direction == 'LONG':
+            agree_details['regime'] = 'LONG'
+        elif regime in ('BEAR', 'STRESS') and direction == 'SHORT':
+            agree_details['regime'] = 'SHORT'
+        
+        # Metric 4: Price momentum (4-bar ROC)
+        mom = self.mom_by_ts.get(ts, 0)
+        if abs(mom) > 0.1:
+            mom_dir = 'LONG' if mom > 0 else 'SHORT'
+            if mom_dir == opposite:
+                veto_weight += self.VETO_WEIGHTS['momentum']
+                veto_details['momentum'] = mom_dir
+            elif mom_dir == direction:
+                agree_details['momentum'] = mom_dir
+        
+        # Metric 5: Removed (replaced by distance-weighted EMA)
+        
+        # Decision
+        if veto_weight >= self.FLIP_THRESHOLD:
+            action = 'FLIP'
+            new_dir = opposite
+            reason = f"FLIP {direction}->{opposite}: {veto_weight:.1f} veto weight ({', '.join(f'{k}={v}' for k,v in veto_details.items())})"
+        elif veto_weight >= self.BLOCK_THRESHOLD:
+            action = 'BLOCK'
+            new_dir = None
+            reason = f"BLOCK {direction}: {veto_weight:.1f} veto weight ({', '.join(f'{k}={v}' for k,v in veto_details.items())})"
+        else:
+            action = 'ALLOW'
+            new_dir = direction
+            reason = f"ALLOW {direction}: {veto_weight:.1f} veto, {len(agree_details)} agree"
+        
+        return action, new_dir, {
+            'veto_weight': veto_weight,
+            'veto_details': veto_details,
+            'agree_details': agree_details,
+            'reason': reason,
+            'ema': ema,
+            'slope': slope,
+            'regime': regime,
+            'momentum': mom,
+            'swing': swing_bias,
+        }
+
+# === EMA200 + SLOPE + MOMENTUM BUILDER ===
+def build_gate_metrics(ohlcv_data):
+    """Build EMA200, slope, momentum lookup dicts from OHLCV data."""
+    if not ohlcv_data:
+        return {}, {}, {}
+    
+    close = [bar['close'] for bar in ohlcv_data]
+    ts_list = [bar['ts'] for bar in ohlcv_data]
+    n = len(close)
+    
+    # EMA200
+    ema = [0.0] * n
+    k = 2.0 / 201
+    ema[0] = close[0]
+    for i in range(1, n):
+        ema[i] = close[i] * k + ema[i-1] * (1 - k)
+    
+    # Slope (4-bar)
+    slope = [0.0] * n
+    for i in range(4, n):
+        if ema[i-4] > 0:
+            slope[i] = (ema[i] - ema[i-4]) / ema[i-4] * 100
+    
+    # Momentum (4-bar ROC)
+    mom = [0.0] * n
+    for i in range(4, n):
+        if close[i-4] > 0:
+            mom[i] = (close[i] - close[i-4]) / close[i-4] * 100
+    
+    ema_by_ts = {ts_list[i]: ema[i] for i in range(n)}
+    slope_by_ts = {ts_list[i]: slope[i] for i in range(n)}
+    mom_by_ts = {ts_list[i]: mom[i] for i in range(n)}
+    
+    return ema_by_ts, slope_by_ts, mom_by_ts
+
+
 STRATEGY_CONFIGS = {
     # === PROVEN STRATEGIES (PF >= 2.0, WR >= 70%) ===
     "whale_watch": {
@@ -656,7 +941,7 @@ STRATEGY_CONFIGS = {
         "tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 16,
         "direction": None, "enabled": True,
         "group": "A",
-        "min_conviction": 0.35,
+        "min_conviction": 0.40,
     },
     "trade_flow": {
         "tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 12,
@@ -678,19 +963,20 @@ STRATEGY_CONFIGS = {
         "min_conviction": 0.5,
     },
     # === DISABLED: PF < 2.0 or insufficient data ===
-    "squeeze_breakout": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": True, "group": "B", "min_conviction": 0.55, "notes": "v2: ATR/BB squeeze Q>=0.80, 63% WR, p=0.0049. Bypasses gates."},
+    "squeeze_breakout": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": True, "group": "B", "min_conviction": 0.55, "notes": "v7.1: Dual detection BB+Donchian, Group B only. BB<3% OR Donchian<1%. Both=1.75x boost, single=1.5x. 16-bar OOS passes."},
     "bb_mom6": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", "min_conviction": 0.5, "confluence_with": "extreme_positioning", "notes": "Only fires with extreme positioning confluence. HC only."},
     "cross_asset": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 12, "direction": None, "enabled": False, "group": "A", "min_conviction": 0.5, "confluence_with": "orderbook_imbalance", "notes": "Confluence with OBI LONG. p=0.0000, mean=0.661%."},
-    "judas_sweep": {"tp_pct": 2.5, "sl_pct": 1.5, "hold_hours": 24, "direction": None, "enabled": True, "group": "A", "min_conviction": 0.5, "notes": "v3 multi-factor: daily/session H/L sweep + rejection wick + volume. Gate PASS: 1895 events, +0.10%, p=0.040."},
+    "judas_sweep": {"tp_pct": 2.5, "sl_pct": 1.5, "hold_hours": 24, "direction": "SHORT", "enabled": True, "group": "A", "min_conviction": 0.5, "notes": "v3: SHORT only (LONG no edge). 1038 SHORT evt, +0.154% 4h p=0.003, +0.225% 6h p=0.0004. BULL+LOW vol best. MID vol dead."},
     "forced_movement": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 4, "direction": None, "enabled": True, "group": "A", "min_conviction": 0.45, "notes": "Structural forced movement: OI divergence + funding squeeze + liq cascade + basis convergence. Bypasses gates."},
     "scalp_v2": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
     "power_of_3": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
     "macro_surprise": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
-    "liquidation_cascade": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 4, "direction": None, "enabled": True, "group": "A", "min_conviction": 0.50, "notes": "v2: real Bybit liquidation data + OI fallback. Bypasses gates."},
-    "taker_flow": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": True, "group": "A", "min_conviction": 0.50, "notes": "v2: z-score thresholds + session filter + flow acceleration. Needs gate validation."},
+    "liquidation_cascade": {"tp_pct": 2.0, "sl_pct": 1.0, "hold_hours": 4, "direction": "SHORT", "enabled": True, "group": "A", "min_conviction": 0.45, "notes": "v4: 8-Agent validated. PRIMARY: OI<-0.01+LS>1.5 (87evt, +0.375%, p=0.011). HIGH: OI<-0.015+LS>1.5 (29evt, +0.976%, p=0.0003). PREMIUM: OI<-0.015+MID (12evt, +2.22%, p=0.002)."},
+    "funding_squeeze": {"tp_pct": 2.0, "sl_pct": 1.0, "hold_hours": 4, "direction": "SHORT", "enabled": True, "group": "A", "min_conviction": 0.50, "notes": "v1: FR z-score > 1.25 SHORT. 602 evt, -0.153% 4h p=0.003, WR=53.8%. MID vol PF=3.01. Skip LOW vol."},
+    "taker_flow": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 8, "direction": None, "enabled": False, "group": "A", "min_conviction": 0.50, "notes": "v2: z-score thresholds + session filter + flow acceleration. Needs gate validation."},
     "vol_rotation": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "B"},
     "kill_zone": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
-    "liquidity_grab": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 12, "direction": None, "enabled": True, "group": "A", "min_conviction": 0.45, "notes": "v2: OB collector + S/R levels + persistence + spoofing."},
+    "liquidity_grab": {"tp_pct": 2.0, "sl_pct": 1.5, "hold_hours": 12, "direction": None, "enabled": False, "group": "A", "min_conviction": 0.45, "notes": "v3.1: derivatives-filtered S/R, ranging-only regime. Gate: 55 events, +0.360% mean, PF=2.21, p=0.049."},
     "cascade": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
     "mtf_confluence": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "A"},
     "momentum_v3": {"tp_pct": 0.5, "sl_pct": 1.0, "hold_hours": 8, "direction": None, "enabled": False, "group": "B"},
@@ -700,6 +986,7 @@ STRATEGY_CONFIGS = {
 RISK_PCT = 0.02
 LEVERAGE = 25
 MAX_SLIPPAGE_PCT = 0.30
+MAX_POSITION_PCT = 0.50  # Max 50% of available capital per position (prevents overcompounding)
 BLOCKED_HOURS = {19, 20, 21}
 
 # === KILL ZONE SESSION BONUS ===
@@ -743,6 +1030,75 @@ BLOCKED_DAYS = {"Sat"}
 MAX_POSITIONS = 3
 SIGNAL_MAX_AGE_SEC = 1200
 FEE_PCT = 0.001
+REENTRY_COOLDOWN_SEC = 300
+CONSECUTIVE_LOSS_COOLDOWN = 1800
+MAX_CONSECUTIVE_LOSSES = 3
+PRICE_DEDUP_PCT = 0.002
+DYNAMIC_INTERVAL_ACTIVE = 60
+DYNAMIC_INTERVAL_IDLE = 300
+MAX_DIRECTIONAL_EXPOSURE = 0.06
+
+# === REGIME-STRATEGY GATE (data-driven from regime_strategy_matrix.json) ===
+# RANGING/UP: ALL strategies active. DOWN/STRONG_DOWN: block contrarian only.
+REGIME_STRATEGY_GATE = {
+    "failed_breakout":      {"allowed": ["RANGING", "BULL"]},
+    "positioning_fade":     {"allowed": ["RANGING", "CHOP_MILD", "CHOP_BEAR", "NEUTRAL", "CRISIS"]},
+    "liquidity_grab":       {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "liquidation_cascade":  {"allowed": ["RANGING", "BULL", "BEAR", "MILDLY_BEARISH"]},
+    "funding_squeeze":  {"allowed": ["RANGING", "BULL", "BEAR", "MILDLY_BEARISH"]},
+    "orderbook_imbalance":  {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "taker_flow":           {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "trade_flow":           {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "judas_sweep":          {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "forced_movement":      {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "squeeze_breakout":     {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "whale_watch":          {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "structural_break":     {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "funding_arb":          {"allowed": ["RANGING", "BULL", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+}
+
+REGIME_TPSL_SCALE = {
+    "BULL":           {"tp_scale": 1.0, "sl_scale": 1.0},
+    "BEAR":           {"tp_scale": 1.0, "sl_scale": 1.1},
+    "RANGING":        {"tp_scale": 0.9, "sl_scale": 0.9},
+    "STRESS":         {"tp_scale": 1.2, "sl_scale": 1.3},
+    "MILDLY_BEARISH": {"tp_scale": 1.0, "sl_scale": 1.05},
+}
+REENTRY_COOLDOWN_SEC = 300        # 5 min cooldown after close before re-entering same strategy+direction
+CONSECUTIVE_LOSS_COOLDOWN = 1800   # 30 min cooldown after 2 consecutive losses (same strategy+direction)
+MAX_CONSECUTIVE_LOSSES = 3         # Pause strategy+direction after 3 consecutive losses
+PRICE_DEDUP_PCT = 0.002            # Skip signal if entry within 0.2% of last closed trade (same strategy)
+DYNAMIC_INTERVAL_ACTIVE = 60       # Check every 60s when positions are open
+DYNAMIC_INTERVAL_IDLE = 300        # Check every 5min when flat (no positions)
+MAX_DIRECTIONAL_EXPOSURE = 0.06    # Max 6% of capital at risk in same direction across all positions
+
+# === REGIME-STRATEGY GATE: Which strategies can fire in which regimes ===
+# Format: {strategy: {"allowed": [list of regimes], "blocked": [list of regimes]}}
+# If strategy not listed, it's allowed in all regimes (default pass-through)
+REGIME_STRATEGY_GATE = {
+    "failed_breakout":      {"allowed": ["RANGING"]},
+    "liquidity_grab":       {"allowed": ["RANGING", "MILDLY_BEARISH"]},
+    "squeeze_breakout":     {"allowed": ["RANGING", "BULL", "BEAR", "MILDLY_BEARISH"]},
+    "positioning_fade":     {"allowed": ["RANGING", "CHOP_MILD", "CHOP_BEAR", "NEUTRAL", "CRISIS"]},
+    "whale_watch":          {"allowed": ["RANGING", "BEAR", "STRESS", "MILDLY_BEARISH"]},
+    "trade_flow":           {"allowed": ["RANGING", "BULL", "BEAR", "STRESS"]},
+    "forced_movement":      {"allowed": ["STRESS", "BEAR", "MILDLY_BEARISH"]},
+    "liquidation_cascade":  {"allowed": ["BULL", "BEAR", "STRESS", "RANGING", "MILDLY_BEARISH"]},
+    "orderbook_imbalance":  {"allowed": ["BULL", "BEAR", "STRESS", "RANGING", "MILDLY_BEARISH"]},
+    "taker_flow":           {"allowed": ["BULL", "BEAR", "STRESS", "RANGING", "MILDLY_BEARISH"]},
+    "judas_sweep":          {"allowed": ["BULL", "BEAR", "STRESS", "RANGING", "MILDLY_BEARISH"]},
+    "structural_break":     {"allowed": ["RANGING", "MILDLY_BEARISH"]},
+}
+
+# === REGIME TP/SL SCALING: Multiply TP/SL based on regime ===
+# Multiplier applied to TP and SL distances
+REGIME_TPSL_SCALE = {
+    "BULL":           {"tp_scale": 1.0, "sl_scale": 1.0},     # Normal
+    "BEAR":           {"tp_scale": 1.0, "sl_scale": 1.1},     # Slightly wider SL in bear
+    "RANGING":        {"tp_scale": 0.9, "sl_scale": 0.9},     # Tighter in ranging
+    "STRESS":         {"tp_scale": 1.2, "sl_scale": 1.3},     # Wider both in stress
+    "MILDLY_BEARISH": {"tp_scale": 1.0, "sl_scale": 1.05},    # Slightly wider SL
+}
 MIN_CONVICTION = 0.5
 ORDER_TYPE = "limit"
 LIMIT_OFFSET_PCT = 0.02
@@ -765,6 +1121,8 @@ def load_state():
         "total_pnl": 0, "total_fees": 0, "pnl_total": 0,
         "trades_count": 0, "wins": 0, "losses": 0, "timeouts": 0,
         "last_signal_ts": None, "dd_cooldown_until": None,
+        "cooldown_tracker": {},
+        "cooldown_tracker": {},  # {strat_dir: {"closed_at": iso, "entry_price": float, "consec_losses": int}}
     }
 
 def save_state(state):
@@ -887,20 +1245,14 @@ def get_latest_signals(gate, monitor):
         session_bonus = get_session_bonus(sig_data.get("timestamp", "") or data.get("timestamp", ""))
         conviction = min(conviction + session_bonus, 0.95)
 
-        # === REGIME FILTER: failed_breakout only in ranging markets ===
-        if strat_name == "failed_breakout":
-            if gate._regime_classifier:
-                rc = gate._regime_classifier
-                if not rc.is_ranging():
-                    rejected["other"].append(f"{strat_name}(regime={rc.regime})")
-                    continue
-        # === REGIME FILTER: positioning_fade + whale_watch only in bearish/stress ===
-        if strat_name in ("positioning_fade", "whale_watch"):
-            if gate._regime_classifier:
-                rc = gate._regime_classifier
-                # Reject only in strong BULL; allow RANGING, MILDLY_BEARISH, BEAR, STRESS
-                if rc.is_bullish() and rc.confidence >= 0.7:
-                    rejected["other"].append(f"{strat_name}(regime={rc.regime},conf={rc.confidence:.2f})")
+        # === UNIVERSAL REGIME GATE: Check if strategy is allowed in current regime ===
+        if gate._regime_classifier:
+            rc = gate._regime_classifier
+            regime_gate = REGIME_STRATEGY_GATE.get(strat_name)
+            if regime_gate:
+                allowed_regimes = regime_gate.get("allowed", [])
+                if rc.regime not in allowed_regimes:
+                    rejected["other"].append(f"{strat_name}(regime={rc.regime} not in {allowed_regimes})")
                     continue
 
         if cfg["direction"] and direction != cfg["direction"]:
@@ -912,6 +1264,13 @@ def get_latest_signals(gate, monitor):
         if direction in b_directions:
             group_boost = 1.5
             confirmed_by = [s.get("strategy") for s in group_b_fired if s.get("direction") == direction]
+            # Tiered boost: squeeze_breakout with both BB+Donchian = 1.75x
+            squeeze_confirms = [s for s in group_b_fired if s.get("strategy") == "squeeze_breakout" and s.get("direction") == direction]
+            for sq in squeeze_confirms:
+                det_type = sq.get("details", {}).get("detection_type", "")
+                if "bb" in det_type and "donchian" in det_type:
+                    group_boost = 1.75  # Both detectors fired — higher conviction
+                    break
 
         # Confluence check for bb_mom6 (requires extreme positioning)
         if strat_name == "bb_mom6" and hasattr(gate, 'confluence'):
@@ -1021,8 +1380,48 @@ def close_position(state, pos, exit_price, outcome, monitor=None):
     state["open_positions"] = [p for p in state["open_positions"] if p.get("order_id") != pos.get("order_id")]
     log_trade(closed)
     log(f"CLOSE: {outcome} {d} ${entry:.2f}->${exit_price:.2f} PnL=${pnl:+.2f}")
+    # V2: Record trade outcome for per-strategy cooldown tracking
+    try:
+        if 'orchestrator' in dir() and hasattr(orchestrator, 'record_trade_outcome'):
+            orchestrator.record_trade_outcome(pos.get('strategy','?'), d, outcome, entry, now.timestamp())
+    except Exception: pass
+    # FIX: Persist state immediately after every trade close (prevents stale capital on crash/restart)
+    save_state(state)
 
-    # Record in live monitor
+    # === COOLDOWN TRACKING: Record close for re-entry prevention ===
+    strat = pos.get("strategy", "unknown")
+    direction = pos.get("direction", "LONG")
+    cooldown_key = f"{strat}_{direction}"
+    if "cooldown_tracker" not in state:
+        state["cooldown_tracker"] = {}
+    tracker = state["cooldown_tracker"].get(cooldown_key, {})
+    # Track consecutive losses
+    if outcome in ("LOSS", "TIMEOUT"):
+        consec = tracker.get("consec_losses", 0) + 1
+    else:
+        consec = 0
+    state["cooldown_tracker"][cooldown_key] = {
+        "closed_at": datetime.now(timezone.utc).isoformat(),
+        "entry_price": entry,
+        "consec_losses": consec,
+    }
+    save_state(state)
+
+    # === COOLDOWN TRACKING ===
+    strat = pos.get("strategy", "unknown")
+    direction = pos.get("direction", "LONG")
+    cooldown_key = f"{strat}_{direction}"
+    if "cooldown_tracker" not in state:
+        state["cooldown_tracker"] = {}
+    tracker = state["cooldown_tracker"].get(cooldown_key, {})
+    consec = (tracker.get("consec_losses", 0) + 1) if outcome in ("LOSS", "TIMEOUT") else 0
+    state["cooldown_tracker"][cooldown_key] = {
+        "closed_at": datetime.now(timezone.utc).isoformat(),
+        "entry_price": entry,
+        "consec_losses": consec,
+    }
+    save_state(state)
+
     if monitor:
         monitor.record_trade(pos.get("strategy", "unknown"), outcome)
         monitor.record_pnl(pos.get("strategy", "unknown"), pnl)
@@ -1060,7 +1459,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--once", action="store_true")
-    parser.add_argument("--interval", type=int, default=60)
+    parser.add_argument("--interval", type=int, default=300, help="Base interval in seconds (overridden by dynamic interval)")
     parser.add_argument("--reload-gate", action="store_true", help="Reload isolation gate results")
     parser.add_argument("--monitor-report", action="store_true", help="Print monitor report and exit")
     parser.add_argument("--resume", type=str, help="Resume a paused strategy by name")
@@ -1070,8 +1469,41 @@ def main():
     gate = IsolationGateGuardian(ISOLATION_GATE_FILE)
     monitor = LivePerformanceMonitor(BACKTEST_BENCH_FILE)
     confluence = ConfluenceChecker()
+    # V2 UPGRADE: Use OrchestratorV2 if available (momentum regime, cooldown, dedup)
+    if V2_AVAILABLE:
+        orchestrator = OrchestratorV2(initial_capital=INITIAL_CAPITAL)
+        log("ORCHESTRATOR V2: Multi-agent system with momentum regime + cooldown + dedup")
+    else:
+        orchestrator = Orchestrator(initial_capital=INITIAL_CAPITAL)
+    validation = ValidationAgent(os.path.join(BASE, "config"), os.path.join(BASE, "live", "data"))
+    log("ORCHESTRATOR: Multi-agent system initialized")
+
+    # === ORCHESTRATOR ALREADY INITIALIZED ABOVE (V2 if available, else V1) ===
     gate.confluence = confluence  # attach for use in signal filtering
     regime_classifier = RegimeClassifier(confluence)
+
+    # === DIRECTIONAL CONSENSUS GATE INIT ===
+    ohlcv_csv = os.path.join(BASE, "data", "eth_15m_extended.csv")
+    ohlcv_data = []
+    try:
+        import csv
+        with open(ohlcv_csv) as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    ohlcv_data.append({
+                        'ts': row['Open time'],
+                        'close': float(row['Close']),
+                    })
+                except: pass
+        log(f"CONSENSUS GATE: Loaded {len(ohlcv_data)} OHLCV bars")
+    except Exception as e:
+        log(f"CONSENSUS GATE: Failed to load OHLCV: {e}", "WARN")
+    
+    _ema_by_ts, _slope_by_ts, _mom_by_ts = build_gate_metrics(ohlcv_data)
+    consensus_gate = DirectionalConsensusGate(_ema_by_ts, _slope_by_ts, _mom_by_ts, regime_classifier)
+    log(f"CONSENSUS GATE: Initialized (EMA={len(_ema_by_ts)}, slope={len(_slope_by_ts)}, mom={len(_mom_by_ts)})")
+
     gate._regime_classifier = regime_classifier  # attach for use in signal filtering
     # Pass latest scan data to regime classifier for richer signals
     _scan_data = None
@@ -1082,8 +1514,12 @@ def main():
                 _scan_data = json.load(f)
     except:
         pass
-    regime, conf, signals = regime_classifier.classify(_scan_data)
-    log(f"REGIME: {regime} (confidence={conf:.2f}) signals={signals}")
+    regime, conf, regime_signals = regime_classifier.classify(_scan_data)
+    log(f"REGIME: {regime} (confidence={conf:.2f}) signals={regime_signals}")
+    log(f"REGIME GATE: Active strategies per regime:")
+    for r_name in ["BULL", "BEAR", "RANGING", "STRESS", "MILDLY_BEARISH"]:
+        allowed_strats = [k for k, v in REGIME_STRATEGY_GATE.items() if r_name in v.get("allowed", [])]
+        log(f"  {r_name}: {allowed_strats}")
 
     # Handle CLI commands
     if args.monitor_report:
@@ -1124,7 +1560,23 @@ def main():
             if now.hour in BLOCKED_HOURS or now.strftime("%a") in BLOCKED_DAYS:
                 time.sleep(args.interval); continue
 
-            # Reload gate if requested
+            # === RE-CLASSIFY REGIME EVERY LOOP ===
+            try:
+                _scan_files = sorted([f for f in os.listdir(SCAN_DIR) if f.startswith("scan_") and f.endswith(".json")], reverse=True)
+                if _scan_files:
+                    with open(os.path.join(SCAN_DIR, _scan_files[0])) as f:
+                        _scan_data = json.load(f)
+                regime, conf, regime_signals = regime_classifier.classify(_scan_data)
+            except: pass
+
+            try:
+                _scan_files = sorted([f for f in os.listdir(SCAN_DIR) if f.startswith("scan_") and f.endswith(".json")], reverse=True)
+                if _scan_files:
+                    with open(os.path.join(SCAN_DIR, _scan_files[0])) as f:
+                        _scan_data = json.load(f)
+                regime, conf, regime_signals = regime_classifier.classify(_scan_data)
+            except: pass
+
             if args.reload_gate:
                 gate.load()
                 log("Reloaded isolation gate results")
@@ -1175,8 +1627,116 @@ def main():
                 if len(state["open_positions"]) >= MAX_POSITIONS:
                     continue
 
+                # === COOLDOWN CHECKS: Prevent re-entry spam ===
                 entry = sig["entry"]; sl = sig["sl"]; tp1 = sig["tp1"]
                 cfg = sig["cfg"]
+                sig_direction = sig["direction"]
+                cooldown_key = f"{sig['strategy']}_{sig_direction}"
+                tracker = state.get("cooldown_tracker", {}).get(cooldown_key, {})
+                if tracker:
+                    # Check 1: Post-close cooldown (5 min)
+                    try:
+                        closed_at = datetime.fromisoformat(tracker["closed_at"])
+                        elapsed = (now - closed_at).total_seconds()
+                        if elapsed < REENTRY_COOLDOWN_SEC:
+                            log(f"COOLDOWN: {sig['strategy']} {sig_direction} — {REENTRY_COOLDOWN_SEC - elapsed:.0f}s remaining")
+                            continue
+                    except: pass
+                    # Check 2: Price dedup — skip if entry within 0.2% of last closed entry
+                    last_entry = tracker.get("entry_price", 0)
+                    if last_entry > 0 and entry > 0:
+                        price_diff_pct = abs(entry - last_entry) / last_entry
+                        if price_diff_pct < PRICE_DEDUP_PCT:
+                            log(f"PRICE DEDUP: {sig['strategy']} {sig_direction} entry ${entry:.2f} within {PRICE_DEDUP_PCT*100:.1f}% of last ${last_entry:.2f} ({price_diff_pct*100:.3f}%)")
+                            continue
+                    # Check 3: Consecutive loss breaker
+                    consec = tracker.get("consec_losses", 0)
+                    if consec >= MAX_CONSECUTIVE_LOSSES:
+                        log(f"CONSEC LOSS BREAKER: {sig['strategy']} {sig_direction} — {consec} consecutive losses, paused", "WARN")
+                        continue
+                    if consec >= 2:
+                        try:
+                            closed_at = datetime.fromisoformat(tracker["closed_at"])
+                            elapsed = (now - closed_at).total_seconds()
+                            if elapsed < CONSECUTIVE_LOSS_COOLDOWN:
+                                log(f"CONSEC COOLDOWN: {sig['strategy']} {sig_direction} — {consec} losses, {CONSECUTIVE_LOSS_COOLDOWN - elapsed:.0f}s remaining")
+                                continue
+                        except: pass
+
+                # === ORCHESTRATOR: Full multi-agent evaluation ===
+                # Get scan data for Structure Agent
+                _scan_for_orch = None
+                _deriv_for_orch = None
+                try:
+                    _scan_files = sorted([f for f in os.listdir(SCAN_DIR) if f.startswith("scan_") and f.endswith(".json")], reverse=True)
+                    if _scan_files:
+                        with open(os.path.join(SCAN_DIR, _scan_files[0])) as f:
+                            _scan_for_orch = json.load(f)
+                    _deriv_for_orch = confluence.deriv_by_ts if hasattr(confluence, 'deriv_by_ts') else None
+                except: pass
+
+                # Run through Orchestrator (Structure + Risk + Execution agents)
+                # V2: Build price_history for momentum regime + trend filter
+                _price_history = []
+                try:
+                    _price_history = [float(c[4]) for c in klines[-50:]] if 'klines' in dir() else []
+                except: pass
+
+                decision = orchestrator.evaluate_signal(
+                    signal=sig,
+                    state=state,
+                    gate=gate,
+                    monitor=monitor,
+                    regime=getattr(regime_classifier, 'regime', 'RANGING'),
+                    regime_confidence=getattr(regime_classifier, 'confidence', 0.5),
+                    exchange=exchange,
+                    scan_data=_scan_for_orch,
+                    deriv_data=_deriv_for_orch,
+                    symbol=SYMBOL,
+                    price_history=_price_history,
+                    timestamp=now.timestamp(),
+                )
+
+                if not decision["approved"]:
+                    log(f"ORCHESTRATOR REJECT: {sig['strategy']} {sig['direction']} — {decision['reason']}")
+                    continue
+
+                # Use Orchestrator's position
+                pos = decision["position"]
+                pos["order_id"] = f"dry_{int(now.timestamp())}" if dry_run else None
+
+                entry = pos["fill_price"]
+
+                # === DIRECTIONAL CONSENSUS GATE CHECK ===
+                gate_action, gate_new_dir, gate_details = consensus_gate.evaluate(
+                    ts=now.strftime("%Y-%m-%d %H:%M:%S"),
+                    direction=sig.get('direction', '?'),
+                    price=entry,
+                    swing_bias=getattr(regime_classifier, '_last_swing_bias', '?')
+                )
+                
+                if gate_action == 'BLOCK':
+                    log(f"CONSENSUS BLOCK: {sig['strategy']} {sig['direction']} — {gate_details['reason']}")
+                    continue
+                
+                if gate_action == 'FLIP':
+                    log(f"CONSENSUS FLIP: {sig['strategy']} {sig['direction']} -> {gate_new_dir} — {gate_details['reason']}")
+                    # Flip the signal direction
+                    sig['direction'] = gate_new_dir
+                    # Recalculate TP/SL for flipped direction
+                    if gate_new_dir == 'LONG':
+                        sl = entry * (1 - cfg['sl_pct'] / 100.0)
+                        tp1 = entry * (1 + cfg['tp_pct'] / 100.0)
+                    else:
+                        sl = entry * (1 + cfg['sl_pct'] / 100.0)
+                        tp1 = entry * (1 - cfg['tp_pct'] / 100.0)
+                    # Update position
+                    pos['direction'] = gate_new_dir
+                    pos['sl'] = sl
+                    pos['tp'] = tp1
+
+                sl = pos["sl"]
+                tp1 = pos["tp"]
 
                 if not entry or not sl or not tp1:
                     # === FIX 7: Structural TP/SL fallback ===
@@ -1199,25 +1759,84 @@ def main():
                     if not entry or not sl or not tp1:
                         continue
 
-                if dry_run:
-                    fill_price = entry * (1 + 0.001) if sig["direction"] == "LONG" else entry * (1 - 0.001)
-                else:
-                    fill_price = entry
+                # === ORCHESTRATOR EVALUATION ===
+                _scan_for_orch = None
+                _deriv_for_orch = None
+                try:
+                    _scan_files = sorted([f for f in os.listdir(SCAN_DIR) if f.startswith("scan_") and f.endswith(".json")], reverse=True)
+                    if _scan_files:
+                        with open(os.path.join(SCAN_DIR, _scan_files[0])) as f:
+                            _scan_for_orch = json.load(f)
+                    _deriv_for_orch = confluence.deriv_by_ts if hasattr(confluence, 'deriv_by_ts') else None
+                except: pass
 
-                sl_pct = abs(fill_price - sl) / fill_price
+                decision = orchestrator.evaluate_signal(
+                    signal=sig, state=state, gate=gate, monitor=monitor,
+                    regime=getattr(regime_classifier, 'regime', 'RANGING'),
+                    regime_confidence=getattr(regime_classifier, 'confidence', 0.5),
+                    exchange=exchange, scan_data=_scan_for_orch,
+                    deriv_data=_deriv_for_orch, symbol=SYMBOL,
+                )
+                if not decision["approved"]:
+                    log(f"ORCHESTRATOR REJECT: {sig['strategy']} {sig['direction']} \u2014 {decision['reason']}")
+                    continue
+
+                pos = decision["position"]
+                pos["order_id"] = f"dry_{int(now.timestamp())}" if dry_run else None
+                entry = pos["fill_price"]; sl = pos["sl"]; tp1 = pos["tp"]
+                fill_price = entry
+                cfg = sig["cfg"]
+
+                sl_pct = abs(entry - sl) / entry if entry else 0
                 if sl_pct <= 0: continue
-                if sl_pct < 0.003:
-                    strategy_sl_pct = cfg["sl_pct"] / 100.0
-                    if strategy_sl_pct > sl_pct:
-                        sl_orig = sl_pct
-                        sl_pct = strategy_sl_pct
-                        if sig["direction"] == "LONG":
-                            sl = fill_price * (1 - sl_pct)
-                        else:
-                            sl = fill_price * (1 + sl_pct)
-                        log(f"SL adjusted: signal {sl_orig*100:.3f}% too tight, using strategy config {cfg['sl_pct']}% -> SL=${sl:.2f}")
+                # FIX: Always enforce minimum SL from config (prevents tiny SLs from structural signals)
+                strategy_sl_pct = cfg["sl_pct"] / 100.0
+                if sl_pct < strategy_sl_pct:
+                    sl_orig = sl_pct
+                    sl_pct = strategy_sl_pct
+                    if sig["direction"] == "LONG":
+                        sl = fill_price * (1 - sl_pct)
                     else:
-                        log(f"SKIP: SL too tight ({sl_pct*100:.4f}% < 0.3%)")
+                        sl = fill_price * (1 + sl_pct)
+                    log(f"SL adjusted: signal {sl_orig*100:.3f}% too tight, using strategy config {cfg['sl_pct']}% -> SL=${sl:.2f}")
+
+                # === REGIME-AWARE TP/SL SCALING ===
+                if gate._regime_classifier:
+                    rc = gate._regime_classifier
+                    regime_scale = REGIME_TPSL_SCALE.get(rc.regime, {})
+                    tp_mult = regime_scale.get("tp_scale", 1.0)
+                    sl_mult = regime_scale.get("sl_scale", 1.0)
+                    if tp_mult != 1.0 or sl_mult != 1.0:
+                        if sig["direction"] == "LONG":
+                            tp_dist = abs(tp1 - fill_price) if tp1 else 0
+                            sl_dist = abs(fill_price - sl) if sl else 0
+                            if tp_dist > 0: tp1 = fill_price + tp_dist * tp_mult
+                            if sl_dist > 0: sl = fill_price - sl_dist * sl_mult
+                        else:
+                            tp_dist = abs(fill_price - tp1) if tp1 else 0
+                            sl_dist = abs(sl - fill_price) if sl else 0
+                            if tp_dist > 0: tp1 = fill_price - tp_dist * tp_mult
+                            if sl_dist > 0: sl = fill_price + sl_dist * sl_mult
+                        log(f"REGIME SCALE: {rc.regime} tp={tp_mult:.2f}x sl={sl_mult:.2f}x -> TP=${tp1:.2f} SL=${sl:.2f}")
+
+                # === R:R FILTER + OB-BASED TP TARGETING ===
+                tp_dist = abs(tp1 - fill_price)
+                sl_dist = abs(fill_price - sl)
+                current_rr = tp_dist / sl_dist if sl_dist > 0 else 0
+                MIN_RR = 1.0  # Minimum risk:reward ratio
+
+                if current_rr < MIN_RR:
+                    # TP too tight — try to find a better TP from liquidity data
+                    ob_tp = get_liquidity_tp(sig["direction"], fill_price, sl, min_rr=MIN_RR)
+                    if ob_tp:
+                        old_tp = tp1
+                        tp1 = ob_tp
+                        tp_dist = abs(tp1 - fill_price)
+                        current_rr = tp_dist / sl_dist
+                        log(f"OB TP TARGET: {sig['strategy']} {sig['direction']} TP ${old_tp:.2f} (RR={current_rr:.2f}) -> ${tp1:.2f} (RR={current_rr:.2f}) from liquidity")
+                    else:
+                        # No valid liquidity target found — skip this signal
+                        log(f"SKIP: {sig['strategy']} R:R {current_rr:.2f} < {MIN_RR} and no valid liquidity TP found")
                         continue
 
                 group_boost = sig.get("group_boost", 1.0)
@@ -1226,8 +1845,29 @@ def main():
                 if available <= 0:
                     log(f"SKIP: no available margin (committed=${committed:.2f}, capital=${state['capital']:.2f})")
                     continue
+                # === CORRELATION-AWARE SIZING: Cap directional exposure ===
+                same_dir_risk = 0.0
+                for p in state["open_positions"]:
+                    if p["direction"] == sig["direction"]:
+                        p_sl_dist = abs(p["fill_price"] - p["sl"])
+                        same_dir_risk += p_sl_dist * p["size"]
+                max_dir_risk = state["capital"] * MAX_DIRECTIONAL_EXPOSURE
+                remaining_dir_risk = max(0, max_dir_risk - same_dir_risk)
+
                 size = (available * RISK_PCT * group_boost) / (sl_pct * LEVERAGE)
                 if size < 0.001: continue
+                # Cap size so total directional risk doesn't exceed limit
+                new_sl_dist = abs(fill_price - sl)
+                if new_sl_dist > 0:
+                    max_size_dir = remaining_dir_risk / new_sl_dist
+                    if size > max_size_dir and max_size_dir > 0:
+                        log(f"DIR EXPOSURE CAP: {sig['direction']} risk {same_dir_risk:.2f}/{max_dir_risk:.2f}, size {size:.4f} -> {max_size_dir:.4f}")
+                        size = max_size_dir
+                # FIX: Cap by MAX_POSITION_PCT of available capital (prevents overcompounding after wins)
+                max_size_pct = (available * MAX_POSITION_PCT) / fill_price
+                if size > max_size_pct:
+                    log(f"SIZE CAPPED: {MAX_POSITION_PCT*100:.0f}% capital limit, size {size:.4f} -> {max_size_pct:.4f}")
+                    size = max_size_pct
                 # Cap by available margin (max 80% of available)
                 max_notional = available * LEVERAGE * 0.8
                 max_size = max_notional / fill_price
@@ -1255,6 +1895,8 @@ def main():
                     "trailed": False,
                 }
                 state["open_positions"].append(pos)
+                # Record entry for rate limiting (only when trade actually opens)
+                orchestrator.validation.record_entry(now.timestamp())
                 confirmed = sig.get("confirmed_by", [])
                 conf_str = f" +B:{','.join(confirmed)}" if confirmed else " (solo)"
                 log(f"{'DRY RUN: ' if dry_run else ''}OPEN {sig['direction']} {size:.4f} ETH @ ${fill_price:.2f} TP=${tp1:.2f} SL=${sl:.2f} [{sig['strategy']}]{conf_str} boost={group_boost:.1f}x")
@@ -1263,7 +1905,10 @@ def main():
             log(f"Capital: ${state['capital']:.2f} | Positions: {len(state['open_positions'])} | Trades: {state['trades_count']} ({state['wins']}W/{state['losses']}L)")
 
             if args.once: break
-            time.sleep(args.interval)
+            # === DYNAMIC INTERVAL: faster when positions are open ===
+
+            sleep_time = DYNAMIC_INTERVAL_ACTIVE if state["open_positions"] else DYNAMIC_INTERVAL_IDLE
+            time.sleep(sleep_time)
 
         except KeyboardInterrupt:
             log("Shutting down..."); save_state(state); break
